@@ -217,8 +217,10 @@ var addDivAction = function(divAction) {
     $("#cancelButton").click(cancelButtonClick);
 
     height = $("#divAction").height();
-    $("#divAction").height(0);
-    $("#divAction").animate({ height: height }, 1000);
+    $("#divAction").height(1);
+    $("#divAction").animate({ height: height }, 1000, function() {
+//        resize_battle();
+    });
 };
 
 var enableDivAction = function() {

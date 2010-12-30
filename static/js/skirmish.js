@@ -278,6 +278,7 @@ var pollUpdater = {
                     $(this).append("<option value=\"" + action.skirmish_users[i] + "\">" + action.skirmish_users[i] + "</option>");
                 }
             });
+            resize_battle();
         }
         // can join
         else if(action.type == 3) {

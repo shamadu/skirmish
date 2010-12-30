@@ -23,6 +23,7 @@ spell_messages = {
     12 : _("<b>{0}</b> has tried to attack <b>{1}</b> but has no weapon in hands"),
     13 : _("<b>{0}</b> receives the reflected damage <font class=\"font-damage\">{1}</font>/{2}(<b>{3}</b>[<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>])"),
     14 : _("<b>{0}</b> has rounded <b>{1}</b> with mirror shield [{2}/{3}][<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>]"),
+    15 : _("<b>{0}</b> has tried to attack <b>{1}</b> but he has dodged"),
 }
 
 class SpellInfo:
@@ -149,6 +150,11 @@ class BerserkFurySpell(Ability):
             self.experience,
             self.who_character.experience)
 
+class FierceShotSpell(BerserkFurySpell):
+    def init(self, who_character, whom_character):
+        super(FierceShotSpell, self).init_internal(spells[build_id(12, 1)], who_character, whom_character)
+        self.attack = 0
+
 class AffectAttackSpell(object):
     def is_succeed_attack(self, attack_character, defence_character):
         self.attack_character = attack_character
@@ -162,6 +168,33 @@ class AffectAttackSpell(object):
     # implement if inherit
     def get_attack_message(self, locale):
         pass
+
+class EvasionSpell(Ability, AffectAttackSpell):
+    def init(self, who_character, whom_character):
+        super(EvasionSpell, self).init_internal(spells[build_id(12, 0)], who_character, whom_character)
+
+    def check_succeed_attack(self):
+        return False
+
+    def get_attack_message(self, locale):
+        return locale.translate(spell_messages[15]).format(
+            self.attack_character.name,
+            self.defence_character.name)
+
+    def on_round_start(self):
+        self.experience = self.who_character.level*10
+        self.who_character.experience += self.experience
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[0]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.experience,
+            self.who_character.experience)
+
+class DodgeSpell(EvasionSpell):
+    def init(self, who_character, whom_character):
+        super(DodgeSpell, self).init_internal(spells[build_id(13, 0)], who_character, whom_character)
 
 class DisarmamentSpell(Ability, AffectAttackSpell):
     def init(self, who_character, whom_character):
@@ -298,10 +331,7 @@ class DirectDamageSpell(Spell):
         self.damage = 0
 
     def process(self, percent):
-        spell_damage = self.spell_info.base_amount
-        damage = max(0.90 + (self.who_character.intellect / 100), 1) ** 2 * spell_damage
-        absorb = self.whom_character.magic_defence * 0.001
-        self.damage = round(damage - damage*percent*absorb, 2)
+        self.damage = smarty.get_spell_damage(self.who_character, percent, self.spell_info.base_amount, self.who_character)
         if smarty.is_critical_magic_hit(self.who_character, self.whom_character):
             self.damage *= 1.5
 
@@ -385,10 +415,10 @@ spells = {
     build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 0, True, 1, 0, 5, 15, _("")),
     build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 0, True, 1, 0, 5, 15, _("")),
     # archer
-    build_id(12, 0) : SpellInfo(build_id(12, 0), _("Evasion"),                  2, 0, True, 1, 0, 5, 15, _("")),
-    build_id(12, 1) : SpellInfo(build_id(12, 1), _("Berserk Fury"),             2, 4, True, 1, 0, 1, 15, _("")),
+    build_id(12, 0) : SpellInfo(build_id(12, 0), _("Dodge"),                    2, 3, True, 1, 0, 5, 15, _("")),
+    build_id(12, 1) : SpellInfo(build_id(12, 1), _("Fierce Shot"),              2, 4, True, 1, 0, 1, 15, _("")),
     # rogue
-    build_id(13, 0) : SpellInfo(build_id(13, 0), _("Evasion"),                  3, 0, True, 1, 0, 5, 15, _("")),
+    build_id(13, 0) : SpellInfo(build_id(13, 0), _("Evasion"),                  3, 3, True, 1, 0, 5, 15, _("")),
     build_id(13, 1) : SpellInfo(build_id(13, 1), _("Trip"),                     3, 0, False, 1, 0, 5, 15, _("")),
     # mage
     build_id(14, 0) : SpellInfo(build_id(14, 0), _("Frost Needle"),             4, 1, False, 1, 1.5, 1, 15, _("")),
@@ -410,7 +440,9 @@ spells = {
 spells_action_classes = {
     build_id(10, 0) : BerserkFurySpell,
     build_id(10, 1) : DisarmamentSpell,
-    build_id(12, 1) : BerserkFurySpell,
+    build_id(12, 0) : DodgeSpell,
+    build_id(12, 1) : FierceShotSpell,
+    build_id(13, 0) : EvasionSpell,
     build_id(14, 0) : FrostNeedleSpell,
     build_id(14, 1) : FireSparkSpell,
     build_id(14, 2) : PhantomsSpell,

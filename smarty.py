@@ -268,13 +268,12 @@ def get_damage(character_to_attack, attack_percent, character_to_defence):
     absorb = character_to_defence.armor * 0.001
     return round((damage*attack_percent) - damage*absorb, 2)
 
-def get_spell_damage(character_to_attack, attack_percent, character_to_defence):
-    min_damage = items_manager.items[character_to_attack.current_weapon_id].min_damage
-    max_damage = items_manager.items[character_to_attack.current_weapon_id].max_damage
-    weapon_damage = random.uniform(min_damage, max_damage)
-    damage = max(0.90 + (character_to_attack.strength / 100), 1) ** 2 * weapon_damage
-    absorb = character_to_defence.armor * 0.001
-    return round((damage*attack_percent) - damage*absorb, 2)
+def get_spell_damage(character_caster, damage_percent, base_amount, character_for_damage):
+    min_damage = base_amount*0.85
+    max_damage = base_amount*1.15
+    damage = max(0.90 + (character_caster.intellect / 100), 1) ** 2 * random.uniform(min_damage, max_damage)
+    absorb = character_for_damage.magic_defence * 0.001
+    return round((damage - damage*absorb)*damage_percent, 2)
 
 def get_heal(character_caster, heal_percent, base_amount, character_for_heal):
     min_heal = base_amount*0.85
