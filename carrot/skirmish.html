@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Skirmish</title>
+    <link href="bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="skirmish.css" rel="stylesheet" type="text/css">
+    <script src="jquery-1.7.2.min.js"></script>
+    <script src="bootstrap.js"></script>
+    <script src="common.js"></script>
+    <script src="skirmish.js"></script>
+</head>
+
+<body>
+    <div id="divMain" class="divMain">
+        <p>Hello, {{ login }}.</p>
+        <p><button id="logoutButton">Logout</button></p>
+        <p><label>Class</label></p>
+        <p>
+            <ul class="nav nav-pills">
+                <li class="dropdown" id="menu1">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
+                        Dropdown
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </p>
+    </div>
+    <div class="divChat">
+        <div class="tabbable">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#1" data-toggle="tab">En</a></li>
+                <li><a href="#2" data-toggle="tab">Ru</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="1">
+                    <p><textarea id="en" class="textArea" rows="10" cols="0"></textarea></p>
+                </div>
+                <div class="tab-pane" id="2">
+                    <p><textarea id="ru" class="textArea" rows="10" cols="0"></textarea></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">initialize();</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+.divLogin {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 220px;
+    vertical-align: middle;
+}
+
+.errorLabel {
+    width: 300px;
+    color: red;
+}
