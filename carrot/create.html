@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <title>Create new character</title>
+    <link href="bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="create.css" rel="stylesheet" type="text/css" />
+    <script src="jquery-1.7.2.min.js"></script>
+    <script src="common.js"></script>
+    <script src="create.js"></script>
+</head>
+
+<body>
+<table width="200" border="0" align="center">
+  <tr align="center" valign="middle">
+    <td>Name</td>
+    <td><label id="nameLabel"  style="margin: auto;">{{ name }}</label></td>
+  </tr>
+  <tr>
+    <td height="40">Class</td>
+    <td>
+     <select id="classMenu" style="margin: auto;">
+        <option>Warrior</option>
+        <option>Archer</option>
+        <option>Guardian</option>
+        <option>Rogue</option>
+        <option>Mage</option>
+        <option>Priest</option>
+        <option>Warlock</option>
+        <option>Necromancer</option>
+      </select>
+    </td>
+  </tr>
+  <tr align="center" valign="middle">
+    <td></td>
+    <td><input id="createButton" class="createButton" type="button" value="Create"  style="margin: auto;"/></td>
+  </tr>
+</table>
+<script type="text/javascript">initialize();</script>
+</body>
+</html>

@@ -14,25 +14,45 @@
 <body>
     <div id="divMain" class="divMain">
         <p>Hello, {{ login }}.</p>
-        <p><button id="logoutButton">Logout</button></p>
-        <p><label>Class</label></p>
-        <p>
-            <ul class="nav nav-pills">
-                <li class="dropdown" id="menu1">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
-                        Dropdown
-                        <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </p>
+        <p><button id="logoutButton" style="margin:0 5px 0 5px;">Logout</button><button id="dropButton">Drop</button></p>
+		<table width="200" border="0">
+		  <tr>
+			<td>Name</td>
+			<td><label id="nameLabel"></label></td>
+		  </tr>
+		  <tr>
+			<td>Class</td>
+			<td><label id="classLabel"></label></td>
+		  </tr>
+		  <tr>
+			<td>Level</td>
+			<td><label id="levelLabel"></label></td>
+		  </tr>
+		  <tr>
+			<td>HP</td>
+			<td><label id="HPLabel"></label></td>
+		  </tr>
+		  <tr>
+			<td>MP</td>
+			<td><label id="MPLabel"></label></td>
+		  </tr>
+		  <tr>
+			<td>Strength</td>
+			<td><label id="strengthLabel"></label></td>
+		  </tr>
+		  <tr>
+			<td>Dexterity</td>
+			<td><label id="dexterityLabel"></label></td>
+		  </tr>
+		  <tr>
+			<td>Intellect</td>
+			<td><label id="intellectLbel"></label></td>
+		  </tr>
+		  <tr>
+			<td>Wisdom</td>
+			<td><label id="wisdomLabel"></label></td>
+		  </tr>
+		</table>
     </div>
     <div class="divChat">
         <div class="tabbable">

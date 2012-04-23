@@ -7,7 +7,7 @@
  */
 
 var initialize = function () {
-    addEvent(document.getElementById("loginButton"), "click", loginFunc);
+    $("#loginButton").click(loginFunc);
 };
 
 var loginFunc = function () {

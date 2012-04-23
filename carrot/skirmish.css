@@ -4,13 +4,13 @@
     height: auto;
     top: 5px;
     bottom: 5px;
-    right: 260px;
+    right: 280px;
     left: 5px;
 }
 .divMain {
     position: absolute;
     right: 5px;
-    width: 55px;
+    width: 255px;
 }
 
 .textArea {

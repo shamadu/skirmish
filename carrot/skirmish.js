@@ -6,17 +6,9 @@
  * To change this template use File | Settings | File Templates.
  */
 
-function addEvent(obj, type, fn)
-{
-    if (obj.addEventListener)
-        obj.addEventListener(type, fn, false);
-    else if (obj.attachEvent)
-        obj.attachEvent("on"+type, fn);
-}
-
 var initialize = function () {
-    addEvent(document.getElementById("logoutButton"), "click", logoutFunc);
-
+    $("#logoutButton").click(logoutFunc);
+    $("#dropButton").click(dropFunc);
     $('a[data-toggle="tab"]').on('shown', function (e) {
         e.target // activated tab
         e.relatedTarget // previous tab
@@ -27,5 +19,11 @@ var initialize = function () {
 var logoutFunc = function () {
     $.getJSON('/logout', {}, function(res) {
         window.location.href='/login';
+    });
+};
+
+var dropFunc = function () {
+    $.getJSON('/drop', {}, function(res) {
+        window.location.href='/create';
     });
 };
