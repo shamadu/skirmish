@@ -32,6 +32,9 @@ class SkirmishApplication(tornado.web.Application):
             host="127.0.0.1:3306", database="users",
             user="root", password="passw0rd")
 
+        # uncomment in case db should be created - first start
+        self.db.execute("create table if not exists users (id integer(11) primary key not null auto_increment unique, login text, password text)")
+
         self.online_users = dict()
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -63,8 +66,6 @@ class LoginHandler(BaseHandler):
         login = self.get_argument("login")
         password = self.get_argument("password")
 
-        # uncomment in case db should be created - first start
-#        self.db.execute("create table if not exists users (id integer(11) primary key not null auto_increment unique, login text, password text)")
         # try to find user with this login in db:
         user = self.db.get("select * from users where login = %s", login)
         if not user:
