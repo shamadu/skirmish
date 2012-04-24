@@ -5,6 +5,7 @@ import tornado.web
 import tornado.httpserver
 import tornado.database
 import os
+from characters_manager import CharactersManager
 
 __author__ = 'PavelP'
 
@@ -19,6 +20,7 @@ class SkirmishApplication(tornado.web.Application):
             (r'/logout', LogoutHandler,),
             (r'/create', CreateCharacterHandler,),
             (r'/drop', DropCharacterHandler,),
+            (r'/info', InfoCharacterHandler,),
             (r'/(.*)', tornado.web.StaticFileHandler, dict(path=os.path.join(os.path.dirname(__file__))))
         ]
         settings = {
@@ -37,9 +39,8 @@ class SkirmishApplication(tornado.web.Application):
         # uncomment in case db should be created - first start
         self.db.execute("create table if not exists users (id integer(11) primary key not null auto_increment unique, "
                         "login text, password text)")
-        self.db.execute("create table if not exists characters (id integer(11) primary key not null auto_increment unique, "
-                        "name text, class integer, level integer, hp integer, mp integer, strength integer, dexterity  integer, "
-                        "intellect  integer, wisdom  integer)")
+
+        self.characters_manager = CharactersManager(self.db)
 
         self.online_users = dict()
 
@@ -48,23 +49,27 @@ class BaseHandler(tornado.web.RequestHandler):
     def db(self):
         return self.application.db
 
+    @property
+    def characters_manager(self):
+        return self.application.characters_manager
+
     def get_current_user(self):
         return self.get_secure_cookie("login")
 
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        character = self.db.get("select * from characters where name = %s", self.current_user)
+        character = self.characters_manager.get(self.current_user)
         if not character:
         # no such user - redirect to creation
-            self.redirect("/create");
+            self.redirect("/create")
         else:
             self.render("skirmish.html", login=self.current_user)
 
 class CreateCharacterHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        character = self.db.get("select * from characters where name = %s", self.current_user)
+        character = self.characters_manager.get(self.current_user)
         if not character:
         # no such user - redirect to creation
             self.render("create.html", name=self.current_user)
@@ -74,13 +79,19 @@ class CreateCharacterHandler(BaseHandler):
     def post(self, *args, **kwargs):
         classID = self.get_argument("classID")
         # insert the new character
-        self.db.execute("insert into characters (name, class, level, hp, mp, strength, dexterity, intellect, wisdom) values "
-                        "(%s, %s, %s, %s, %s, %s, %s, %s, %s)", self.current_user, classID, 1, 1, 1, 1, 1, 1, 1)
+        self.characters_manager.create(self.current_user, classID)
 
 class DropCharacterHandler(BaseHandler):
     def get(self, *args, **kwargs):
         # remove the character from DB
-        self.db.execute("delete from characters where name = %s", self.current_user)
+        self.characters_manager.remove(self.current_user)
+
+class InfoCharacterHandler(BaseHandler):
+    def post(self, *args, **kwargs):
+        if self.get_argument("action") == 'classes_list':
+            self.write(self.characters_manager.get_classes())
+        elif self.get_argument("action") == 'character_info':
+            self.write(self.characters_manager.get_info(self.current_user))
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):

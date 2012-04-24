@@ -9,6 +9,23 @@
 var initialize = function () {
     $("#logoutButton").click(logoutFunc);
     $("#dropButton").click(dropFunc);
+    $.postJSON('/info', {'action' : 'character_info'}, function(res) {
+        var characterInfo = $.parseJSON(res);
+        $("#nameLabel").text(characterInfo.name);
+        $("#classLabel").text(characterInfo.char_class);
+        $("#levelLabel").text(characterInfo.level);
+        $("#HPLabel").text(characterInfo.hp);
+        $("#MPLabel").text(characterInfo.mp);
+        $("#strengthLabel").text(characterInfo.strength);
+        $("#dexterityLabel").text(characterInfo.dexterity);
+        $("#intellectLabel").text(characterInfo.intellect);
+        $("#wisdomLabel").text(characterInfo.wisdom);
+
+        width = $("#characterInfoTable").width();
+        $("#divMain").width(width);
+        $("#divChat").css('right', width + 25 + 'px');
+    });
+
     $('a[data-toggle="tab"]').on('shown', function (e) {
         e.target // activated tab
         e.relatedTarget // previous tab
@@ -16,14 +33,8 @@ var initialize = function () {
     })
 };
 
-var logoutFunc = function () {
-    $.getJSON('/logout', {}, function(res) {
-        window.location.href='/login';
-    });
-};
-
 var dropFunc = function () {
-    $.getJSON('/drop', {}, function(res) {
+    $.getJSON('/drop', {}, function() {
         window.location.href='/create';
     });
 };

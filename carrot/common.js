@@ -25,3 +25,9 @@ jQuery.getJSON = function(url, args, callback) {
             callback(response);
         }});
 };
+
+var logoutFunc = function () {
+    $.getJSON('/logout', {}, function() {
+        window.location.href='/login';
+    });
+};

@@ -7,15 +7,23 @@
  */
 
 var initialize = function () {
-    $("#createButton").click(onSelectClass);
+    $("#createButton").click(createFunc);
+    $("#logoutButton").click(logoutFunc);
+
+    // ask server for class names
+    $.postJSON('/info', {'action' : 'classes_list'}, function(res) {
+        var myOptions = $.parseJSON(res);
+        var mySelect = $("#classMenu");
+        $.each(myOptions, function(val, text) {
+            mySelect.append(
+                $('<option></option>').val(val).html(text)
+            );
+        });
+    });
 };
 
-var onSelectClass = function () {
-    var formData = {
-        "classID":document.getElementById("classMenu").selectedIndex
-    };
-    $.postJSON('/create', formData, function(res) {
+var createFunc = function () {
+    $.postJSON('/create', {"classID":document.getElementById("classMenu").selectedIndex}, function() {
         window.location.href='/';
     })
-
-}
+};
