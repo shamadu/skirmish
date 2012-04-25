@@ -6,16 +6,20 @@
  * To change this template use File | Settings | File Templates.
  */
 
-function getCookie(name) {
+var getCookie = function(name) {
     var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
     return r ? r[1] : undefined;
 }
 
-jQuery.postJSON = function(url, args, callback) {
+jQuery.postJSON = function(url, args, callback_success, callback_error) {
     args._xsrf = getCookie("_xsrf");
     $.ajax({url: url, data: $.param(args), dataType: "text", type: "POST"}).done(function(res) {
-        callback(res)
+        callback_success(res)
+    })
+    .fail(function(res) {
+        callback_error(res)
     });
+
 };
 
 jQuery.getJSON = function(url, args, callback) {

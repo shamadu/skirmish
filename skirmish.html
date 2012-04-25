@@ -69,12 +69,15 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="1">
-                    <p><textarea id="en" class="textArea" rows="10" cols="0"></textarea></p>
+                    <p><textarea id="en" class="textArea" rows="10" cols="0" readonly="readonly"></textarea></p>
                 </div>
                 <div class="tab-pane" id="2">
-                    <p><textarea id="ru" class="textArea" rows="10" cols="0"></textarea></p>
+                    <p><textarea id="ru" class="textArea" rows="10" cols="0" readonly="readonly"></textarea></p>
                 </div>
             </div>
+			<div class="divSend">
+			    <textarea id="sendTextArea" class="textArea" rows="10" cols="0"></textarea><button id="sendButton" class="sendButton">Send</button>
+			</div>
         </div>
     </div>
     <script type="text/javascript">initialize();</script>

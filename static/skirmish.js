@@ -9,13 +9,21 @@
 var initialize = function () {
     $("#logoutButton").click(logoutFunc);
     $("#dropButton").click(dropFunc);
+    $("#sendButton").click(sendFunc);
+    $("#sendTextArea").keypress(keyPress);
     updateCharacterInfo();
+    $.postJSON('/bot/users/onstart', {}, function(res) {
+        var users = $.parseJSON(res);
+        updateUsers(users)
+    });
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
         e.target // activated tab
         e.relatedTarget // previous tab
         window.alert("tab!");
     })
+    messager.poll();
+    users_updater.poll();
 };
 
 var dropFunc = function () {
@@ -66,6 +74,10 @@ var updateCharacterInfo = function() {
     });
 }
 
+var updateUsers = function(users) {
+    // clear div and add labels to divUsers
+}
+
 var resize = function() {
     width = $("#characterInfoTable").width();
     $("#divMain").width(width);
@@ -74,3 +86,62 @@ var resize = function() {
     width = $("#divUsers").width();
     $("#tabChat").css('right', width + 25 + 'px');
 }
+
+var sendFunc = function() {
+    data = {
+        'to' : 'all',
+        'body' : $("#sendTextArea").val()
+    }
+    $("#sendTextArea").val("");
+    $.postJSON('/bot/message/new', data, function() {
+    });
+}
+
+var keyPress = function(event) {
+    if ( event.which == 10 && event.ctrlKey) {
+        sendFunc();
+    }
+}
+
+var messager = {
+    errorSleepTime: 500,
+
+    poll: function() {
+        $.postJSON('/bot/message/poll', {}, messager.onSuccess, messager.onError);
+    },
+
+    onSuccess: function(response) {
+        var message = $.parseJSON(response);
+        // add message to chat
+        window.alert("" + message.to + message.from + message.body);
+
+        messager.errorSleepTime = 500;
+        window.setTimeout(messager.poll, 0);
+    },
+
+    onError: function(response) {
+        messager.errorSleepTime *= 2;
+        window.setTimeout(messager.poll, messager.errorSleepTime);
+    }
+};
+
+var users_updater = {
+    errorSleepTime: 500,
+
+    poll: function() {
+        $.postJSON('/bot/users/poll', {}, users_updater.onSuccess, users_updater.onError);
+    },
+
+    onSuccess: function(response) {
+        var users = $.parseJSON(response);
+        updateUsers(users)
+
+        users_updater.errorSleepTime = 500;
+        window.setTimeout(users_updater.poll, 0);
+    },
+
+    onError: function(response) {
+        users_updater.errorSleepTime *= 2;
+        window.setTimeout(users_updater.poll, users_updater.errorSleepTime);
+    }
+};

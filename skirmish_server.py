@@ -11,9 +11,6 @@ from messager import Messager
 
 __author__ = 'PavelP'
 
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for x in range(size))
-
 class SkirmishApplication(tornado.web.Application):
     def __init__(self):
         handlers = [
@@ -23,7 +20,9 @@ class SkirmishApplication(tornado.web.Application):
             (r'/create', CreateCharacterHandler,),
             (r'/drop', DropCharacterHandler,),
             (r'/info', InfoCharacterHandler,),
-            (r'/bot/battle', BotHandler,),
+            (r'/bot/battle', BattleBotHandler,),
+            (r'/bot/users/poll', PollUsersHandler,),
+            (r'/bot/users/onstart', UsersHandler,),
             (r'/bot/message/poll', PollMessageHandler,),
             (r'/bot/message/new', NewMessageHandler,),
         ]
@@ -51,7 +50,7 @@ class SkirmishApplication(tornado.web.Application):
 
         self.messager = Messager()
 
-    self.online_users = dict()
+        self.online_users = dict()
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -82,35 +81,7 @@ class MainHandler(BaseHandler):
             self.redirect("/create")
         else:
             self.render("skirmish.html", login=self.current_user)
-
-class CreateCharacterHandler(BaseHandler):
-    @tornado.web.authenticated
-    def get(self, *args, **kwargs):
-        character = self.characters_manager.get(self.current_user)
-        if not character:
-        # no such user - redirect to creation
-            self.render("create.html", name=self.current_user)
-        else:
-            self.redirect("/")
-
-    def post(self, *args, **kwargs):
-        classID = self.get_argument("classID")
-        # insert the new character
-        self.characters_manager.create(self.current_user, classID)
-
-class DropCharacterHandler(BaseHandler):
-    def get(self, *args, **kwargs):
-        # remove the character from DB
-        self.characters_manager.remove(self.current_user)
-
-class InfoCharacterHandler(BaseHandler):
-    def post(self, *args, **kwargs):
-        if self.get_argument("action") == 'classes_list':
-            self.write(self.characters_manager.get_classes())
-        elif self.get_argument("action") == 'character_info':
-            character_info = self.characters_manager.get_info(self.current_user)
-            character_info['status'] = self.bot.get_user_status(self.current_user)
-            self.write(character_info)
+            self.bot.user_online(self.current_user)
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -147,33 +118,83 @@ class LoginHandler(BaseHandler):
 
 class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
+        self.bot.user_offline(self.current_user)
         self.clear_cookie("login")
 
-class BotHandler(BaseHandler):
+class CreateCharacterHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, *args, **kwargs):
+        character = self.characters_manager.get(self.current_user)
+        if not character:
+        # no such user - redirect to creation
+            self.render("create.html", name=self.current_user)
+        else:
+            self.redirect("/")
+
+    def post(self, *args, **kwargs):
+        classID = self.get_argument("classID")
+        # insert the new character
+        self.characters_manager.create(self.current_user, classID)
+
+class DropCharacterHandler(BaseHandler):
+    def get(self, *args, **kwargs):
+        # remove the character from DB
+        self.characters_manager.remove(self.current_user)
+
+class InfoCharacterHandler(BaseHandler):
+    def post(self, *args, **kwargs):
+        if self.get_argument("action") == 'classes_list':
+            self.write(self.characters_manager.get_classes())
+        elif self.get_argument("action") == 'character_info':
+            character_info = self.characters_manager.get_info(self.current_user)
+            character_info['status'] = self.bot.get_user_status(self.current_user)
+            self.write(character_info)
+
+class BattleBotHandler(BaseHandler):
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'join':
-            self.bot.add_user(self.current_user)
+            self.bot.user_join(self.current_user)
         elif self.get_argument("action") == 'leave':
-            self.bot.remove_user(self.current_user)
+            self.bot.user_leave(self.current_user)
+
+class PollUsersHandler(BaseHandler):
+    @tornado.web.authenticated
+    @tornado.web.asynchronous
+    def post(self, *args, **kwargs):
+        self.bot.subscribe(self.current_user, self.on_users_changed)
+
+    def on_users_changed(self, users):
+        # Closed client connection
+        if self.request.connection.stream.closed():
+            return
+        self.finish(users)
+
+    def on_connection_close(self):
+        self.bot.unsubscribe(self.current_user)
+
+class UsersHandler(BaseHandler):
+    @tornado.web.authenticated
+    def post(self, *args, **kwargs):
+        self.write(self.bot.get_users())
 
 class PollMessageHandler(BaseHandler):
     @tornado.web.authenticated
     @tornado.web.asynchronous
-    def post(self):
-        self.messager.subscribe(self.current_user, self.on_new_messages)
+    def post(self, *args, **kwargs):
+        self.messager.subscribe(self.current_user, self.on_new_message)
 
-    def on_new_messages(self, messages):
+    def on_new_message(self, message):
         # Closed client connection
         if self.request.connection.stream.closed():
             return
-        self.finish(dict(messages=messages))
+        self.finish(message)
 
     def on_connection_close(self):
         self.messager.unsubscribe(self.current_user)
 
 class NewMessageHandler(BaseHandler):
     @tornado.web.authenticated
-    def post(self):
+    def post(self, *args, **kwargs):
         message = {
             "from": self.current_user,
             "to": self.get_argument("to"),
