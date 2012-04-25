@@ -3,12 +3,12 @@
 <html>
 <head>
     <title>Skirmish</title>
-    <link href="bootstrap.css" rel="stylesheet" type="text/css">
-    <link href="skirmish.css" rel="stylesheet" type="text/css">
-    <script src="jquery-1.7.2.min.js" type="text/javascript"></script>
-    <script src="bootstrap.js" type="text/javascript"></script>
-    <script src="common.js" type="text/javascript"></script>
-    <script src="skirmish.js" type="text/javascript"></script>
+    <link href="static/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="static/skirmish.css" rel="stylesheet" type="text/css">
+    <script src="static/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="static/bootstrap.js" type="text/javascript"></script>
+    <script src="static/common.js" type="text/javascript"></script>
+    <script src="static/skirmish.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -55,9 +55,14 @@
 			<td><label id="wisdomLabel"></label></td>
 		  </tr>
 		</table>
+		<div class="divCenter">
+            <p><button id="joinLeaveButton" style="margin:0 0 0 0;">Join</button></p>
+        </div>
     </div>
     <div id="divChat" class="divChat">
-        <div class="tabbable">
+		<div id="divUsers" class="divUsers">
+		</div>
+        <div id="tabChat" class="tabbable">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#1" data-toggle="tab">En</a></li>
                 <li><a href="#2" data-toggle="tab">Ru</a></li>

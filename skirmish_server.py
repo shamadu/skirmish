@@ -5,7 +5,9 @@ import tornado.web
 import tornado.httpserver
 import tornado.database
 import os
+from bot import Bot
 from characters_manager import CharactersManager
+from messager import Messager
 
 __author__ = 'PavelP'
 
@@ -21,12 +23,15 @@ class SkirmishApplication(tornado.web.Application):
             (r'/create', CreateCharacterHandler,),
             (r'/drop', DropCharacterHandler,),
             (r'/info', InfoCharacterHandler,),
-            (r'/(.*)', tornado.web.StaticFileHandler, dict(path=os.path.join(os.path.dirname(__file__))))
+            (r'/bot/battle', BotHandler,),
+            (r'/bot/message/poll', PollMessageHandler,),
+            (r'/bot/message/new', NewMessageHandler,),
         ]
         settings = {
             "cookie_secret" : "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
             "login_url": "/login",
             "xsrf_cookies": True,
+            "static_path" : os.path.join(os.path.dirname(__file__), "static"),
             }
 
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -41,8 +46,12 @@ class SkirmishApplication(tornado.web.Application):
                         "login text, password text)")
 
         self.characters_manager = CharactersManager(self.db)
+        self.bot = Bot()
+        self.bot.start()
 
-        self.online_users = dict()
+        self.messager = Messager()
+
+    self.online_users = dict()
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -52,6 +61,14 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def characters_manager(self):
         return self.application.characters_manager
+
+    @property
+    def bot(self):
+        return self.application.bot
+
+    @property
+    def messager(self):
+        return self.application.messager
 
     def get_current_user(self):
         return self.get_secure_cookie("login")
@@ -91,7 +108,9 @@ class InfoCharacterHandler(BaseHandler):
         if self.get_argument("action") == 'classes_list':
             self.write(self.characters_manager.get_classes())
         elif self.get_argument("action") == 'character_info':
-            self.write(self.characters_manager.get_info(self.current_user))
+            character_info = self.characters_manager.get_info(self.current_user)
+            character_info['status'] = self.bot.get_user_status(self.current_user)
+            self.write(character_info)
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -129,6 +148,38 @@ class LoginHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
         self.clear_cookie("login")
+
+class BotHandler(BaseHandler):
+    def post(self, *args, **kwargs):
+        if self.get_argument("action") == 'join':
+            self.bot.add_user(self.current_user)
+        elif self.get_argument("action") == 'leave':
+            self.bot.remove_user(self.current_user)
+
+class PollMessageHandler(BaseHandler):
+    @tornado.web.authenticated
+    @tornado.web.asynchronous
+    def post(self):
+        self.messager.subscribe(self.current_user, self.on_new_messages)
+
+    def on_new_messages(self, messages):
+        # Closed client connection
+        if self.request.connection.stream.closed():
+            return
+        self.finish(dict(messages=messages))
+
+    def on_connection_close(self):
+        self.messager.unsubscribe(self.current_user)
+
+class NewMessageHandler(BaseHandler):
+    @tornado.web.authenticated
+    def post(self):
+        message = {
+            "from": self.current_user,
+            "to": self.get_argument("to"),
+            "body": self.get_argument("body"),
+            }
+        self.messager.new_message(message)
 
 def main():
     http_server = tornado.httpserver.HTTPServer(SkirmishApplication())

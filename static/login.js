@@ -8,6 +8,7 @@
 
 var initialize = function () {
     $("#loginButton").click(loginFunc);
+    $("#passwordText").keypress(keyPress);
 };
 
 var loginFunc = function () {
@@ -26,3 +27,8 @@ var loginFunc = function () {
     })
 };
 
+var keyPress = function(event) {
+    if ( event.which == 13 ) {
+        loginFunc();
+    }
+}

@@ -4,9 +4,21 @@
     height: auto;
     top: 5px;
     bottom: 5px;
-    right: 155px;
+    right: 130px;
     left: 5px;
 }
+.divUsers {
+    position: absolute;
+    right: 5px;
+    width: auto;
+}
+
+.tabbable {
+    position: absolute;
+    right: 160px;
+    left: 0;
+}
+
 .divMain {
     position: absolute;
     right: 5px;
