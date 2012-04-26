@@ -15,9 +15,8 @@
 
 .tabbable {
     position: absolute;
-    right: 160px;
+    right: 0px;
     left: 0;
-    width: 100%;
     height: 100%;
 }
 

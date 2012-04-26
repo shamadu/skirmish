@@ -15,6 +15,7 @@ var initialize = function () {
     $.postJSON('/bot/users/onstart', {}, function(res) {
         var users = $.parseJSON(res);
         updateUsers(users)
+        resize();
     });
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
@@ -69,19 +70,30 @@ var updateCharacterInfo = function() {
             $("#joinLeaveButton").click(joinFunc);
             $("#joinLeaveButton").html("Join");
         }
-
-        resize();
     });
 };
 
 var updateUsers = function(users) {
-    // clear div and add labels to divUsers
+    $("#divUsers").empty();
+    var skirmish_users = users.skirmish.split(',');
+    if (skirmish_users.length != 0 && skirmish_users[0].length != 0) {
+        for (i = 0; i < skirmish_users.length; ++i) {
+            $("#divUsers").append("<label>+" + skirmish_users[i] + "</label>")
+        }
+    }
+
+    var online_users = users.online.split(',');
+    if (online_users.length != 0 && online_users[0].length != 0) {
+        for (i = 0; i < online_users.length; ++i) {
+            $("#divUsers").append("<label>" + online_users[i] + "</label>")
+        }
+    }
 };
 
 var resize = function() {
     width = $("#characterInfoTable").width();
     $("#divMain").width(width);
-    $("#divChat").css('right', width + 25 + 'px');
+    $("#divChat").css('right', width + 15 + 'px');
 
     width = $("#divUsers").width();
     $("#tabChat").css('right', width + 25 + 'px');
@@ -117,8 +129,20 @@ var messager = {
         var message = $.parseJSON(response);
         if(message.to == "all") {
             today = new Date();
-            message_formatted = "[" + today.getHours() + ":" + today.getMinutes() + ":" +
-            + today.getSeconds() + "]<" + message.from + ">: " + message.body + "\n";
+            hours = today.getHours();
+            if(hours < 10) {
+                hours = "0" + hours;
+            }
+            minutes = today.getMinutes();
+            if(minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            seconds = today.getSeconds();
+            if(seconds < 10) {
+                seconds = "0" + seconds;
+            }
+            message_formatted = "[" + hours + ":" + minutes + ":" +
+            + seconds + "]<" + message.from + ">: " + message.body + "\n";
             $("#enTextArea").val($("#enTextArea").val() + message_formatted);
         }
 
