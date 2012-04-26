@@ -21,7 +21,7 @@ var initialize = function () {
         e.target // activated tab
         e.relatedTarget // previous tab
         window.alert("tab!");
-    })
+    });
     messager.poll();
     users_updater.poll();
 };
@@ -72,36 +72,39 @@ var updateCharacterInfo = function() {
 
         resize();
     });
-}
+};
 
 var updateUsers = function(users) {
     // clear div and add labels to divUsers
-}
+};
 
 var resize = function() {
     width = $("#characterInfoTable").width();
     $("#divMain").width(width);
-    $("#divChat").css('right', width + 10 + 'px');
+    $("#divChat").css('right', width + 25 + 'px');
 
     width = $("#divUsers").width();
     $("#tabChat").css('right', width + 25 + 'px');
-}
+};
 
 var sendFunc = function() {
     data = {
         'to' : 'all',
         'body' : $("#sendTextArea").val()
-    }
+    };
     $("#sendTextArea").val("");
+    $("#sendTextArea").focus();
     $.postJSON('/bot/message/new', data, function() {
     });
-}
+};
 
 var keyPress = function(event) {
-    if ( event.which == 10 && event.ctrlKey) {
+    // mozilla has 13 key for enter with/without ctrl, chrome and IE
+    // have 10 key if enter is pressed with ctrl
+    if ((event.which == 10 || event.which == 13 )&& event.ctrlKey) {
         sendFunc();
     }
-}
+};
 
 var messager = {
     errorSleepTime: 500,
@@ -112,8 +115,12 @@ var messager = {
 
     onSuccess: function(response) {
         var message = $.parseJSON(response);
-        // add message to chat
-        window.alert("" + message.to + message.from + message.body);
+        if(message.to == "all") {
+            today = new Date();
+            message_formatted = "[" + today.getHours() + ":" + today.getMinutes() + ":" +
+            + today.getSeconds() + "]<" + message.from + ">: " + message.body + "\n";
+            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+        }
 
         messager.errorSleepTime = 500;
         window.setTimeout(messager.poll, 0);
