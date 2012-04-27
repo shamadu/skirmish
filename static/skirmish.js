@@ -19,7 +19,8 @@ var initialize = function () {
         window.alert("tab!");
     });
     messager.poll();
-    users_updater.poll();
+    onlineUsersUpdater.poll();
+//    battleBotUpdater.poll();
 };
 
 var dropFunc = function () {
@@ -66,25 +67,6 @@ var updateCharacterInfo = function() {
             $("#joinLeaveButton").html("Join");
         }
     });
-};
-
-var updateUsers = function(users) {
-    $("#divUsers").empty();
-    var skirmish_users = users.skirmish.split(',');
-    if (skirmish_users.length != 0 && skirmish_users[0].length != 0) {
-        for (i = 0; i < skirmish_users.length; ++i) {
-            $("#divUsers").append("<label>+" + skirmish_users[i] + "</label>")
-        }
-    }
-
-    var online_users = users.online.split(',');
-    if (online_users.length != 0 && online_users[0].length != 0) {
-        for (i = 0; i < online_users.length; ++i) {
-            $("#divUsers").append("<label>" + online_users[i] + "</label>")
-        }
-    }
-
-    resize()
 };
 
 var resize = function() {
@@ -153,23 +135,67 @@ var messager = {
     }
 };
 
-var users_updater = {
+var onlineUsersUpdater = {
     errorSleepTime: 500,
 
     poll: function() {
-        $.postJSON('/users/poll', {}, users_updater.onSuccess, users_updater.onError);
+        $.postJSON('/users/poll', {}, onlineUsersUpdater.onSuccess, onlineUsersUpdater.onError);
+    },
+
+    onSuccess: function(response) {
+        updateOnlineUsers(response)
+
+        onlineUsersUpdater.errorSleepTime = 500;
+        window.setTimeout(onlineUsersUpdater.poll, 0);
+    },
+
+    onError: function(response) {
+        onlineUsersUpdater.errorSleepTime *= 2;
+        window.setTimeout(onlineUsersUpdater.poll, onlineUsersUpdater.errorSleepTime);
+    }
+};
+
+var battleBotUpdater = {
+    errorSleepTime: 500,
+
+    poll: function() {
+        $.postJSON('/bot/poll', {}, battleBotUpdater.onSuccess, battleBotUpdater.onError);
     },
 
     onSuccess: function(response) {
         var users = $.parseJSON(response);
-        updateUsers(users)
+        updateSkirmishUsers(users)
 
-        users_updater.errorSleepTime = 500;
-        window.setTimeout(users_updater.poll, 0);
+        battleBotUpdater.errorSleepTime = 500;
+        window.setTimeout(battleBotUpdater.poll, 0);
     },
 
     onError: function(response) {
-        users_updater.errorSleepTime *= 2;
-        window.setTimeout(users_updater.poll, users_updater.errorSleepTime);
+        battleBotUpdater.errorSleepTime *= 2;
+        window.setTimeout(battleBotUpdater.poll, battleBotUpdater.errorSleepTime);
     }
+};
+
+var updateOnlineUsers = function(users) {
+    $("#divOnlineUsers").empty();
+    var online_users = String(users).split(',');
+    if (online_users.length != 0 && online_users[0].length != 0) {
+        for (i = 0; i < online_users.length; ++i) {
+            $("#divOnlineUsers").append("<label>" + online_users[i] + "</label>")
+        }
+    }
+
+    resize()
+};
+
+var updateSkirmishUsers = function(users) {
+    $("#divSkirmishUsers").empty();
+    var skirmish_users = String(users.skirmish_users).split(',');
+    if (skirmish_users.length != 0 && skirmish_users[0].length != 0) {
+        for (i = 0; i < skirmish_users.length; ++i) {
+            $("#divSkirmishUsers").append("<label>+" + skirmish_users[i] + "</label>")
+        }
+    }
+
+    resize()
 };

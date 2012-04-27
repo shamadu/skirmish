@@ -7,9 +7,10 @@ class Messager():
         pass
 
     def subscribe(self, name, callback):
-        if not name in self.callbacks:
-            self.callbacks[name] = callback
-            for message in self.cache:
+        self.callbacks[name] = callback
+        if name in self.cache.keys():
+            private_cache = self.cache[name]
+            for message in private_cache:
                 callback(message)
 
     def unsubscribe(self, name):
@@ -23,9 +24,8 @@ class Messager():
                 callback(message)
         elif to_whom in self.callbacks:
             self.callbacks[to_whom](message)
-        elif to_whom in self.cache:
+        elif to_whom in self.cache and len(self.cache[to_whom]) < 10:
             self.cache[to_whom].append(message)
         else:
             self.cache[to_whom] = list()
-
-        self.callbacks.clear()
+            self.cache[to_whom].append(message)

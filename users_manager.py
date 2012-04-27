@@ -1,3 +1,4 @@
+from collections import deque
 from threading import Thread
 import time
 
@@ -11,8 +12,8 @@ class UsersManager(Thread):
     def __init__(self, db):
         Thread.__init__(self)
         self.db = db
-        self.skirmish_users = list()
         self.online_users = dict()
+        self.cache = dict()
 
     def run(self):
         while 1:
@@ -49,27 +50,19 @@ class UsersManager(Thread):
     def user_logout(self, login):
         self.user_offline(login)
 
-    def user_join(self, name):
-        if not name in self.skirmish_users:
-            self.skirmish_users.append(name)
-            self.push_users()
-
-    def user_leave(self, name):
-        if name in self.skirmish_users:
-            self.skirmish_users.remove(name)
-            self.push_users()
-
     def user_offline(self, name):
-        if name in self.online_users:
+        if name in self.online_users.keys():
             self.online_users.pop(name)
             self.unsubscribe(name)
-            self.push_users()
+            self.send_online_users()
 
     def subscribe(self, name, callback):
-        if not name in self.online_users:
+        if name in self.cache.keys() and self.cache[name]:
+            callback(self.cache[name].popleft())
+        elif not name in self.online_users.keys():
             self.online_users[name] = OnlineUser()
             self.online_users[name].callback = callback
-            self.push_users()
+            self.send_online_users()
         else:
             self.online_users[name].callback = callback
 
@@ -77,15 +70,14 @@ class UsersManager(Thread):
         if name in self.online_users:
             self.online_users[name].callback = None
 
-    def get_user_status(self, name):
-        if name in self.skirmish_users:
-            return 'battle'
-        else:
-            return 'rest'
-
-    def get_users(self):
-         return {"online" : ', '.join(self.online_users.keys()), "skirmish" : ', '.join(self.skirmish_users)}
-
-    def push_users(self):
+    def send_online_users(self):
         for online_user in self.online_users.values():
-            online_user.callback(self.get_users())
+            if online_user.callback:
+                callback_tmp = online_user.callback
+                online_user.callback = None
+                callback_tmp(', '.join(self.online_users.keys()))
+
+    def send_online_users_to(self, name):
+        if not name in self.cache.keys():
+            self.cache[name] = deque()
+        self.cache[name].append(', '.join(self.online_users.keys()) + ', ' + name)

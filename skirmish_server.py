@@ -1,10 +1,9 @@
-import random
-import string
 import tornado.ioloop
 import tornado.web
 import tornado.httpserver
 import tornado.database
 import os
+from battle_bot import BattleBot
 from users_manager import UsersManager
 from characters_manager import CharactersManager
 from messager import Messager
@@ -21,6 +20,7 @@ class SkirmishApplication(tornado.web.Application):
             (r'/drop', DropCharacterHandler,),
             (r'/info', InfoCharacterHandler,),
             (r'/bot/battle', BattleBotHandler,),
+            (r'/bot/poll', PollBotHandler,),
             (r'/users/poll', PollUsersHandler,),
             (r'/message/poll', PollMessageHandler,),
             (r'/message/new', NewMessageHandler,),
@@ -47,6 +47,9 @@ class SkirmishApplication(tornado.web.Application):
         self.users_manager = UsersManager(self.db)
         self.users_manager.start()
 
+        self.battle_bot = BattleBot()
+        self.battle_bot.start()
+
         self.messager = Messager()
 
         self.online_users = dict()
@@ -65,6 +68,10 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.application.users_manager
 
     @property
+    def battle_bot(self):
+        return self.application.battle_bot
+
+    @property
     def messager(self):
         return self.application.messager
 
@@ -80,6 +87,8 @@ class MainHandler(BaseHandler):
             self.redirect("/create")
         else:
             self.render("skirmish.html", login=self.current_user)
+            self.users_manager.send_online_users_to(self.current_user)
+#            self.battle_bot.send_skirmish_users_to(self.current_user)
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -128,15 +137,30 @@ class InfoCharacterHandler(BaseHandler):
             self.write(self.characters_manager.get_classes())
         elif self.get_argument("action") == 'character_info':
             character_info = self.characters_manager.get_info(self.current_user)
-            character_info['status'] = self.users_manager.get_user_status(self.current_user)
+            character_info['status'] = self.battle_bot.get_user_status(self.current_user)
             self.write(character_info)
 
 class BattleBotHandler(BaseHandler):
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'join':
-            self.users_manager.user_join(self.current_user)
+            self.battle_bot.user_join(self.current_user)
         elif self.get_argument("action") == 'leave':
-            self.users_manager.user_leave(self.current_user)
+            self.battle_bot.user_leave(self.current_user)
+
+class PollBotHandler(BaseHandler):
+    @tornado.web.authenticated
+    @tornado.web.asynchronous
+    def post(self, *args, **kwargs):
+        self.battle_bot.subscribe(self.current_user, self.on_users_changed)
+
+    def on_users_changed(self, users):
+        # Closed client connection
+        if self.request.connection.stream.closed():
+            return
+        self.finish(users)
+
+    def on_connection_close(self):
+        self.battle_bot.unsubscribe(self.current_user)
 
 class PollUsersHandler(BaseHandler):
     @tornado.web.authenticated
