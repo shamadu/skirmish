@@ -1,9 +1,7 @@
 /**
- * Created with PyCharm.
- * User: PavelP
+ * Author: Pavel Padinker
  * Date: 17.04.12
  * Time: 11:00
- * To change this template use File | Settings | File Templates.
  */
 
 var initialize = function () {

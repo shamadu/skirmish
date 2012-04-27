@@ -1,9 +1,7 @@
 /**
- * Created with PyCharm.
- * User: PavelP
+ * Author: Pavel Padinker
  * Date: 20.04.12
  * Time: 11:19
- * To change this template use File | Settings | File Templates.
  */
 
 var getCookie = function(name) {

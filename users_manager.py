@@ -1,7 +1,7 @@
 from threading import Thread
 import time
 
-__author__ = 'Pavel'
+__author__ = 'Pavel Padinker'
 
 class OnlineUser():
     def __init__(self):

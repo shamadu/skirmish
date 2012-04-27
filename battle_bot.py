@@ -2,7 +2,7 @@ from collections import deque
 from threading import Thread
 import time
 
-__author__ = 'Pavel'
+__author__ = 'Pavel Padinker'
 
 class BattleBot(Thread):
     def __init__(self):

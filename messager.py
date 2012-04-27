@@ -1,4 +1,4 @@
-__author__ = 'Pavel'
+__author__ = 'Pavel Padinker'
 
 class Messager():
     def __init__(self):

@@ -8,7 +8,7 @@ from users_manager import UsersManager
 from characters_manager import CharactersManager
 from messager import Messager
 
-__author__ = 'PavelP'
+__author__ = 'Pavel Padinker'
 
 class SkirmishApplication(tornado.web.Application):
     def __init__(self):

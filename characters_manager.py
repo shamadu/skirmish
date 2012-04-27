@@ -1,4 +1,4 @@
-__author__ = 'Pavel'
+__author__ = 'Pavel Padinker'
 
 class CharactersManager:
     def __init__(self, db):
