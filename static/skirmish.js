@@ -12,11 +12,6 @@ var initialize = function () {
     $("#sendButton").click(sendFunc);
     $("#sendTextArea").keypress(keyPress);
     updateCharacterInfo();
-    $.postJSON('/bot/users/onstart', {}, function(res) {
-        var users = $.parseJSON(res);
-        updateUsers(users)
-        resize();
-    });
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
         e.target // activated tab
@@ -88,6 +83,8 @@ var updateUsers = function(users) {
             $("#divUsers").append("<label>" + online_users[i] + "</label>")
         }
     }
+
+    resize()
 };
 
 var resize = function() {
@@ -106,7 +103,7 @@ var sendFunc = function() {
     };
     $("#sendTextArea").val("");
     $("#sendTextArea").focus();
-    $.postJSON('/bot/message/new', data, function() {
+    $.postJSON('message/new', data, function() {
     });
 };
 
@@ -122,7 +119,7 @@ var messager = {
     errorSleepTime: 500,
 
     poll: function() {
-        $.postJSON('/bot/message/poll', {}, messager.onSuccess, messager.onError);
+        $.postJSON('/message/poll', {}, messager.onSuccess, messager.onError);
     },
 
     onSuccess: function(response) {
@@ -160,7 +157,7 @@ var users_updater = {
     errorSleepTime: 500,
 
     poll: function() {
-        $.postJSON('/bot/users/poll', {}, users_updater.onSuccess, users_updater.onError);
+        $.postJSON('/users/poll', {}, users_updater.onSuccess, users_updater.onError);
     },
 
     onSuccess: function(response) {
