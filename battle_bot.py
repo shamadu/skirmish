@@ -1,3 +1,4 @@
+from collections import deque
 from threading import Thread
 import time
 
@@ -33,15 +34,12 @@ class BattleBot(Thread):
 
     def subscribe(self, name, callback):
         if name in self.cache.keys() and self.cache[name]:
-            actions = self.cache[name]
-            for action in actions:
-                callback(action)
-            self.cache[name] = None
+            callback(self.cache[name].popleft())
         else:
             self.callbacks[name] = callback
 
     def unsubscribe(self, name):
-        if name in self.callbacks:
+        if name in self.callbacks.keys():
             self.callbacks[name] = None
 
     def send_skirmish_users(self):
@@ -54,11 +52,6 @@ class BattleBot(Thread):
 
     def send_skirmish_users_to(self, name):
         action = {"skirmish_users" : ', '.join(self.skirmish_users)}
-        if name in self.callbacks.keys() and self.callbacks[name]:
-            callback_tmp = self.callbacks[name]
-            self.callbacks[name] = None
-            callback_tmp(action)
-        else:
-            if not name in self.cache or not self.cache[name]:
-                self.cache[name] = list()
-            self.cache[name].append(action)
+        if not name in self.cache or not self.cache[name]:
+            self.cache[name] = deque()
+        self.cache[name].append(action)

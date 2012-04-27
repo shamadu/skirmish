@@ -87,8 +87,8 @@ class MainHandler(BaseHandler):
             self.redirect("/create")
         else:
             self.render("skirmish.html", login=self.current_user)
-            self.users_manager.send_online_users_to(self.current_user)
-#            self.battle_bot.send_skirmish_users_to(self.current_user)
+            self.users_manager.reset_user(self.current_user)
+            self.battle_bot.send_skirmish_users_to(self.current_user)
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):

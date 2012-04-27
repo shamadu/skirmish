@@ -1,4 +1,3 @@
-from collections import deque
 from threading import Thread
 import time
 
@@ -13,7 +12,6 @@ class UsersManager(Thread):
         Thread.__init__(self)
         self.db = db
         self.online_users = dict()
-        self.cache = dict()
 
     def run(self):
         while 1:
@@ -57,9 +55,7 @@ class UsersManager(Thread):
             self.send_online_users()
 
     def subscribe(self, name, callback):
-        if name in self.cache.keys() and self.cache[name]:
-            callback(self.cache[name].popleft())
-        elif not name in self.online_users.keys():
+        if not name in self.online_users.keys():
             self.online_users[name] = OnlineUser()
             self.online_users[name].callback = callback
             self.send_online_users()
@@ -77,7 +73,5 @@ class UsersManager(Thread):
                 online_user.callback = None
                 callback_tmp(', '.join(self.online_users.keys()))
 
-    def send_online_users_to(self, name):
-        if not name in self.cache.keys():
-            self.cache[name] = deque()
-        self.cache[name].append(', '.join(self.online_users.keys()) + ', ' + name)
+    def reset_user(self, name):
+        self.user_offline(name)

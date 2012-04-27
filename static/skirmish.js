@@ -20,7 +20,7 @@ var initialize = function () {
     });
     messager.poll();
     onlineUsersUpdater.poll();
-//    battleBotUpdater.poll();
+    battleBotUpdater.poll();
 };
 
 var dropFunc = function () {
@@ -120,8 +120,7 @@ var messager = {
             if(seconds < 10) {
                 seconds = "0" + seconds;
             }
-            message_formatted = "[" + hours + ":" + minutes + ":" +
-            + seconds + "]<" + message.from + ">: " + message.body + "\n";
+            message_formatted = "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + message.body + "\n";
             $("#enTextArea").val($("#enTextArea").val() + message_formatted);
         }
 
@@ -129,7 +128,7 @@ var messager = {
         window.setTimeout(messager.poll, 0);
     },
 
-    onError: function(response) {
+    onError: function() {
         messager.errorSleepTime *= 2;
         window.setTimeout(messager.poll, messager.errorSleepTime);
     }
@@ -143,13 +142,13 @@ var onlineUsersUpdater = {
     },
 
     onSuccess: function(response) {
-        updateOnlineUsers(response)
+        updateOnlineUsers(response);
 
         onlineUsersUpdater.errorSleepTime = 500;
         window.setTimeout(onlineUsersUpdater.poll, 0);
     },
 
-    onError: function(response) {
+    onError: function() {
         onlineUsersUpdater.errorSleepTime *= 2;
         window.setTimeout(onlineUsersUpdater.poll, onlineUsersUpdater.errorSleepTime);
     }
@@ -164,13 +163,13 @@ var battleBotUpdater = {
 
     onSuccess: function(response) {
         var users = $.parseJSON(response);
-        updateSkirmishUsers(users)
+        updateSkirmishUsers(users);
 
         battleBotUpdater.errorSleepTime = 500;
         window.setTimeout(battleBotUpdater.poll, 0);
     },
 
-    onError: function(response) {
+    onError: function() {
         battleBotUpdater.errorSleepTime *= 2;
         window.setTimeout(battleBotUpdater.poll, battleBotUpdater.errorSleepTime);
     }
