@@ -90,8 +90,14 @@ var sendFunc = function() {
 var keyPress = function(event) {
     // mozilla has 13 key for enter with/without ctrl, chrome and IE
     // have 10 key if enter is pressed with ctrl
-    if ((event.which == 10 || event.which == 13 )&& event.ctrlKey) {
-        sendFunc();
+    if ((event.which == 10 || event.which == 13 )) {
+        if(event.ctrlKey) {
+            $("#sendTextArea").val($("#sendTextArea").val() + "\n");
+            $("#sendTextArea").focus();
+        }
+        else {
+            sendFunc();
+        }
     }
 };
 
@@ -118,7 +124,12 @@ var messager = {
             if(seconds < 10) {
                 seconds = "0" + seconds;
             }
-            message_formatted = "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + message.body + "\n";
+
+            body_lines = message.body.split("\n");
+            message_formatted = ""
+            for(line in body_lines){
+                message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + body_lines[line] + "\n";
+            }
             $("#enTextArea").val($("#enTextArea").val() + message_formatted);
         }
 
