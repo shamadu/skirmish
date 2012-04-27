@@ -5,5 +5,10 @@
     <orderEntry type="jdk" jdkName="Python 2.7.2 virtualenv at D:\py\ve_skirmish" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="TemplatesService">
+    <option name="templateLanguage" value="Django" />
+    <option name="TEMPLATE_CONFIGURATION" value="Django" />
+    <option name="TEMPLATES_IN_JAVASCRIPT" value="true" />
+  </component>
 </module>
 

@@ -20,7 +20,11 @@
   <tr align="center" valign="middle">
     <td>Class</td>
     <td>
-     <select id="classMenu" style="margin: auto;"></select>
+     <select id="classMenu" style="margin: auto;">
+         {% for class_name in classes.keys() %}
+         <option value="{{ class_name }}">{{ classes[class_name] }}</option>
+         {% end %}
+     </select>
     </td>
   </tr>
   <tr align="center" valign="middle">

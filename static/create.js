@@ -9,17 +9,6 @@
 var initialize = function () {
     $("#createButton").click(createFunc);
     $("#logoutButton").click(logoutFunc);
-
-    // ask server for class names
-    $.postJSON('/info', {'action' : 'classes_list'}, function(res) {
-        var myOptions = $.parseJSON(res);
-        var mySelect = $("#classMenu");
-        $.each(myOptions, function(val, text) {
-            mySelect.append(
-                $('<option></option>').val(val).html(text)
-            );
-        });
-    });
 };
 
 var createFunc = function () {

@@ -46,7 +46,7 @@ var leaveFunc = function () {
 };
 
 var updateCharacterInfo = function() {
-    $.postJSON('/info', {'action' : 'character_info'}, function(res) {
+    $.postJSON('/info', {}, function(res) {
         var characterInfo = $.parseJSON(res);
         $("#nameLabel").text(characterInfo.name);
         $("#classLabel").text(characterInfo.char_class);

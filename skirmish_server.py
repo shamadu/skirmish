@@ -117,7 +117,7 @@ class CreateCharacterHandler(BaseHandler):
         character = self.characters_manager.get(self.current_user)
         if not character:
         # no such user - redirect to creation
-            self.render("create.html", name=self.current_user)
+            self.render("create.html", name=self.current_user, classes=self.characters_manager.get_classes())
         else:
             self.redirect("/")
 
@@ -133,12 +133,9 @@ class DropCharacterHandler(BaseHandler):
 
 class InfoCharacterHandler(BaseHandler):
     def post(self, *args, **kwargs):
-        if self.get_argument("action") == 'classes_list':
-            self.write(self.characters_manager.get_classes())
-        elif self.get_argument("action") == 'character_info':
-            character_info = self.characters_manager.get_info(self.current_user)
-            character_info['status'] = self.battle_bot.get_user_status(self.current_user)
-            self.write(character_info)
+        character_info = self.characters_manager.get_info(self.current_user)
+        character_info['status'] = self.battle_bot.get_user_status(self.current_user)
+        self.write(character_info)
 
 class BattleBotHandler(BaseHandler):
     def post(self, *args, **kwargs):
