@@ -1,3 +1,5 @@
+from smarty import get_class_name
+
 __author__ = 'Pavel Padinker'
 
 class CharactersManager:
@@ -6,17 +8,6 @@ class CharactersManager:
         self.db.execute("create table if not exists characters (id integer(11) primary key not null auto_increment unique, "
                         "name text, char_class integer, level integer, hp integer, mp integer, strength integer, dexterity  integer, "
                         "intellect  integer, wisdom  integer)")
-        self.classes = {
-            0 : 'Warrior',
-            1 : 'Guardian',
-            2 : 'Archer',
-            3 : 'Rogue',
-            4 : 'Mage',
-            5 : 'Priest',
-            6 : 'Warlock',
-            7 : 'Necromancer',
-            }
-
 
     def get(self, name):
             return self.db.get("select * from characters where name = %s", name)
@@ -27,9 +18,6 @@ class CharactersManager:
 
     def remove(self, name):
         self.db.execute("delete from characters where name = %s", name)
-
-    def get_classes(self):
-        return self.classes
 
     def get_info(self, name):
     # return character info
@@ -46,17 +34,7 @@ class CharactersManager:
             'wisdom' : character.wisdom
         }
 
-        character_info['char_class'] = {
-            0 : 'Warrior',
-            1 : 'Guardian',
-            2 : 'Archer',
-            3 : 'Rogue',
-            4 : 'Mage',
-            5 : 'Priest',
-            6 : 'Warlock',
-            7 : 'Necromancer',
-            }[character_info['char_class']]
-
+        character_info['char_class'] = get_class_name(character_info['char_class'])
         return character_info
 
 def main():

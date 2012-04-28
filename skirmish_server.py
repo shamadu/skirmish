@@ -4,6 +4,7 @@ import tornado.httpserver
 import tornado.database
 import os
 from battle_bot import BattleBot
+from smarty import get_classes
 from users_manager import UsersManager
 from characters_manager import CharactersManager
 from messager import Messager
@@ -47,7 +48,7 @@ class SkirmishApplication(tornado.web.Application):
         self.users_manager = UsersManager(self.db)
         self.users_manager.start()
 
-        self.battle_bot = BattleBot()
+        self.battle_bot = BattleBot(self.characters_manager)
         self.battle_bot.start()
 
         self.messager = Messager()
@@ -117,7 +118,7 @@ class CreateCharacterHandler(BaseHandler):
         character = self.characters_manager.get(self.current_user)
         if not character:
         # no such user - redirect to creation
-            self.render("create.html", name=self.current_user, classes=self.characters_manager.get_classes())
+            self.render("create.html", name=self.current_user, classes=get_classes())
         else:
             self.redirect("/")
 
@@ -155,6 +156,7 @@ class PollBotHandler(BaseHandler):
         if self.request.connection.stream.closed():
             return
 
+        result = {}
         if action.type == "show_div_action":
             result = {"show_div_action" : self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"])}
         elif action.type == "show_skirmish_users":

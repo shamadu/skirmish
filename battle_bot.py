@@ -1,6 +1,8 @@
 from collections import deque
 from threading import Thread
+from characters_manager import CharactersManager
 import time
+import smarty
 
 __author__ = 'Pavel Padinker'
 
@@ -11,12 +13,25 @@ class Action:
         self.args = args
 
 class UserInfo:
-    def __init__(self):
-        self.action = ""
+    def __init__(self, character):
+        self.character = character
+        self.show_div_action = Action(
+            False,
+            "show_div_action",
+                {"actions" : {
+                "attack" : smarty.get_attack_count(character.char_class, character.level),
+                "defence" : smarty.get_defence_count(character.char_class, character.level),
+                smarty.get_ability_name(character.char_class) : smarty.get_spell_count(character.char_class, character.level),
+                smarty.get_substance_name(character.char_class) : 0,
+                },
+                 "users" : {}
+            }
+        )
 
 class BattleBot(Thread):
-    def __init__(self):
+    def __init__(self, characters_manager):
         Thread.__init__(self)
+        self.characters_manager = characters_manager
         self.skirmish_users = dict()
         self.callbacks = dict()
         self.cache = dict()
@@ -28,21 +43,11 @@ class BattleBot(Thread):
 
     def user_join(self, name):
         if not name in self.skirmish_users.keys():
-            self.skirmish_users[name] = UserInfo()
+            self.skirmish_users[name] = UserInfo(self.characters_manager.get(name))
             self.send_skirmish_users()
 
-            action = Action(
-                False,
-                "show_div_action",
-                    {"actions" : {
-                    "attack" : 2,
-                    "defence" : 3,
-                    "spell" : 1,
-                    "mana" : 0,
-                    },
-                     "users" : {"a", "bbbbbbbbbbbbbbbb", "c"}
-                }
-            )
+            action = self.skirmish_users[name].show_div_action
+            action.args["users"] = self.skirmish_users.keys()
             self.send_action_to(name, action)
 
 
@@ -108,3 +113,6 @@ class BattleBot(Thread):
         if not name in self.cache or not self.cache[name]:
             self.cache[name] = deque()
         self.cache[name].append(action)
+        if name in self.skirmish_users:
+            self.cache[name].append(self.skirmish_users[name].show_div_action)
+
