@@ -41,7 +41,7 @@
 .divMain {
     position: absolute;
     right: 5px;
-    width: 130px;
+    width: auto;
 }
 
 .divCenter {

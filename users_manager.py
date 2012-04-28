@@ -73,5 +73,5 @@ class UsersManager(Thread):
                 online_user.callback = None
                 callback_tmp(', '.join(self.online_users.keys()))
 
-    def reset_user(self, name):
+    def reenter_from_user(self, name):
         self.user_offline(name)

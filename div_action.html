@@ -1,0 +1,22 @@
+<div id="divAction" style="width: auto">
+    {% for action in actions.keys() %}
+    <div style="width: auto">{{ action.title() }}
+        {% if actions[action] == 0 %}
+        <input type="text" id="{{ action }}Value{{ i }}" style="width: 50px">
+        %
+        {% else %}
+            {% for i in range(actions[action]) %}
+            <div  style="width: auto">
+                <select id="{{ action }}_user{{ i }}" style="margin: auto; width: auto;">
+                    {% for user in users %}
+                    <option value="{{ user }}">{{ user }}</option>
+                    {% end %}
+                </select>
+                <input type="text" id="{{ action }}Value{{ i }}" style="width: 50px">
+                %
+            </div>
+            {% end %}
+        {% end %}
+    </div>
+    {% end %}
+</div>

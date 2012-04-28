@@ -87,8 +87,8 @@ class MainHandler(BaseHandler):
             self.redirect("/create")
         else:
             self.render("skirmish.html", login=self.current_user)
-            self.users_manager.reset_user(self.current_user)
-            self.battle_bot.send_skirmish_users_to(self.current_user)
+            self.users_manager.reenter_from_user(self.current_user)
+            self.battle_bot.reenter_from_user(self.current_user)
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -148,13 +148,21 @@ class PollBotHandler(BaseHandler):
     @tornado.web.authenticated
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
-        self.battle_bot.subscribe(self.current_user, self.on_users_changed)
+        self.battle_bot.subscribe(self.current_user, self.on_action)
 
-    def on_users_changed(self, users):
+    def on_action(self, action, *args, **kwargs):
         # Closed client connection
         if self.request.connection.stream.closed():
             return
-        self.finish(users)
+
+        if action.type == "show_div_action":
+            result = {"show_div_action" : self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"])}
+        elif action.type == "show_skirmish_users":
+            result = {"show_skirmish_users" : action.args["skirmish_users"]}
+        if action.type == "hide_div_action":
+            result = {"hide_div_action" : ""}
+
+        self.finish(result)
 
     def on_connection_close(self):
         self.battle_bot.unsubscribe(self.current_user)

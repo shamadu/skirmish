@@ -69,7 +69,6 @@ var updateCharacterInfo = function() {
 
 var resize = function() {
     width = $("#characterInfoTable").width();
-    $("#divMain").width(width);
     $("#divChat").css('right', width + 15 + 'px');
 
     width = $("#divUsers").width();
@@ -163,27 +162,6 @@ var onlineUsersUpdater = {
     }
 };
 
-var battleBotUpdater = {
-    errorSleepTime: 500,
-
-    poll: function() {
-        $.postJSON('/bot/poll', {}, battleBotUpdater.onSuccess, battleBotUpdater.onError);
-    },
-
-    onSuccess: function(response) {
-        var users = $.parseJSON(response);
-        updateSkirmishUsers(users);
-
-        battleBotUpdater.errorSleepTime = 500;
-        window.setTimeout(battleBotUpdater.poll, 0);
-    },
-
-    onError: function() {
-        battleBotUpdater.errorSleepTime *= 2;
-        window.setTimeout(battleBotUpdater.poll, battleBotUpdater.errorSleepTime);
-    }
-};
-
 var updateOnlineUsers = function(users) {
     $("#divOnlineUsers").empty();
     var online_users = String(users).split(',');
@@ -196,9 +174,38 @@ var updateOnlineUsers = function(users) {
     resize()
 };
 
-var updateSkirmishUsers = function(users) {
+var battleBotUpdater = {
+    errorSleepTime: 500,
+
+    poll: function() {
+        $.postJSON('/bot/poll', {}, battleBotUpdater.onSuccess, battleBotUpdater.onError);
+    },
+
+    onSuccess: function(response) {
+        var action = $.parseJSON(response);
+        if("show_skirmish_users" in action) {
+            updateSkirmishUsers(action.show_skirmish_users);
+        }
+        else if("show_div_action" in action) {
+            showDivAction(action.show_div_action);
+        }
+        else if("hide_div_action" in action) {
+            hideDivAction();
+        }
+
+        battleBotUpdater.errorSleepTime = 500;
+        window.setTimeout(battleBotUpdater.poll, 0);
+    },
+
+    onError: function() {
+        battleBotUpdater.errorSleepTime *= 2;
+        window.setTimeout(battleBotUpdater.poll, battleBotUpdater.errorSleepTime);
+    }
+};
+
+var updateSkirmishUsers = function(skirmish_users) {
     $("#divSkirmishUsers").empty();
-    var skirmish_users = String(users.skirmish_users).split(',');
+    skirmish_users = String(skirmish_users).split(',');
     if (skirmish_users.length != 0 && skirmish_users[0].length != 0) {
         for (i = 0; i < skirmish_users.length; ++i) {
             $("#divSkirmishUsers").append("<label>+" + skirmish_users[i] + "</label>")
@@ -207,3 +214,13 @@ var updateSkirmishUsers = function(users) {
 
     resize()
 };
+
+var showDivAction = function(divAction) {
+    $("#divMain").append(divAction);
+    resize()
+}
+
+var hideDivAction = function(divAction) {
+    $("#divAction").remove();
+    resize()
+}
