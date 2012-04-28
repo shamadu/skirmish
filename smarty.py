@@ -59,17 +59,17 @@ def get_spell_count(classID, level):
 def get_ability_name(classID):
     ability_name = ""
     if classID < 4:
-        ability_name = "spell"
-    else:
         ability_name = "skill"
+    else:
+        ability_name = "spell"
 
     return ability_name
 
 def get_substance_name(classID):
     substance_name = ""
     if classID < 4:
-        substance_name = "mana"
-    else:
         substance_name = "energy"
+    else:
+        substance_name = "mana"
 
     return substance_name

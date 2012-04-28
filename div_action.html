@@ -6,7 +6,7 @@
         %
         {% else %}
             {% for i in range(actions[action]) %}
-            <div  style="width: auto">
+            <div  style="width: auto; padding: 5px;">
                 <select id="{{ action }}_user{{ i }}" style="margin: auto; width: auto;">
                     {% for user in users %}
                     <option value="{{ user }}">{{ user }}</option>
