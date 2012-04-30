@@ -144,6 +144,10 @@ class BattleBotHandler(BaseHandler):
             self.battle_bot.user_join(self.current_user)
         elif self.get_argument("action") == 'leave':
             self.battle_bot.user_leave(self.current_user)
+        elif self.get_argument("action") == 'turn do':
+            self.battle_bot.user_turn(self.current_user)
+        elif self.get_argument("action") == 'turn cancel':
+            self.battle_bot.user_turn_cancel(self.current_user)
 
 class PollBotHandler(BaseHandler):
     @tornado.web.authenticated

@@ -216,11 +216,87 @@ var updateSkirmishUsers = function(skirmish_users) {
 };
 
 var showDivAction = function(divAction) {
+    $("#divAction").remove();
     $("#divMain").append(divAction);
     resize()
-}
+
+    $("#cancelButton").attr('disabled', 'true');
+
+    $("#divAction input[type=text]").keyup(function(){
+        value = $(this).val();
+        lastChar = value.charAt(value.length - 1)
+        if(lastChar > '9' || lastChar < '0') {
+            $(this).val(value.substring(0, value.length - 1))
+        }
+    })
+
+    $("#divAction input[type=text]").change(function(){
+        if(!checkTurnSum($(this))) {
+            window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
+        }
+    });
+
+    $("#resetButton").click(function(){
+        $("#divAction input[type=text]").each(function() {
+            $(this).val("")
+        });
+    });
+
+    $("#doButton").click(function(){
+        arrTurnAction = new Array();
+        if(!checkTurnSum($(this), arrTurnAction)) {
+            window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
+        }
+        else {
+            $.postJSON('/bot/battle', {'action' : 'turn do'}, function(){
+                $("#divAction *").attr('disabled', true);
+                $("#cancelButton").removeAttr('disabled');
+            });
+        }
+    });
+
+    $("#cancelButton").click(function(){
+        $.postJSON('/bot/battle', {'action' : 'turn cancel'}, function(){
+            $("#cancelButton").attr('disabled', true);
+            $("#divAction *").removeAttr('disabled');
+        });
+    });
+};
+
+var checkTurnSum = function(element, arrResult) {
+    result = true;
+    value = element.val()
+    if(!isNaN(value)) {
+        var sum = 0;
+        i = 0;
+        $("#divAction input[type=text]").each(function() {
+            intVal = parseInt($(this).val())
+            if(isNaN(intVal)) {
+                $(this).val("0")
+                result = false;
+            }
+            else {
+                $(this).val(intVal);
+                sum += intVal;
+                if(arrResult) {
+                    arrResult[i] = intVal;
+                }
+            }
+            ++i;
+        });
+        if(sum > 100) {
+            element.val(value - (sum - 100));
+        }
+    }
+    else {
+        element.val("0")
+        result = false;
+    }
+
+    return result;
+};
 
 var hideDivAction = function(divAction) {
     $("#divAction").remove();
     resize()
-}
+};

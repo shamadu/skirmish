@@ -1,6 +1,5 @@
-from collections import deque
+from collections import deque, OrderedDict
 from threading import Thread
-from characters_manager import CharactersManager
 import time
 import smarty
 
@@ -18,15 +17,17 @@ class UserInfo:
         self.show_div_action = Action(
             False,
             "show_div_action",
-                {"actions" : {
-                "attack" : smarty.get_attack_count(character.char_class, character.level),
-                "defence" : smarty.get_defence_count(character.char_class, character.level),
-                smarty.get_ability_name(character.char_class) : smarty.get_spell_count(character.char_class, character.level),
-                smarty.get_substance_name(character.char_class) : 0,
-                },
-                 "users" : {}
+            {
+                "actions" : OrderedDict(),
+                 "users" :
+                {
+                }
             }
         )
+        self.show_div_action.args["actions"]["attack"] = smarty.get_attack_count(self.character.char_class, self.character.level)
+        self.show_div_action.args["actions"]["defence"] = smarty.get_defence_count(self.character.char_class, self.character.level)
+        self.show_div_action.args["actions"][smarty.get_ability_name(character.char_class)] = smarty.get_spell_count(self.character.char_class, self.character.level)
+        self.show_div_action.args["actions"][smarty.get_substance_name(character.char_class)] = 0
 
 class BattleBot(Thread):
     def __init__(self, characters_manager):
@@ -56,11 +57,17 @@ class BattleBot(Thread):
             action = Action(
                 False,
                 "hide_div_action",
-                    {}
+                {}
             )
             self.send_action_to(name, action)
             self.skirmish_users.pop(name)
             self.send_skirmish_users()
+
+    def user_turn(self):
+        pass
+
+    def user_turn_cancel(self):
+        pass
 
     def get_user_status(self, name):
         if name in self.skirmish_users.keys():
