@@ -11,6 +11,41 @@ classes = {
     7 : 'Necromancer',
     }
 
+spells = {
+    # warrior
+    0 : {
+        1 : {"Berserk Fury", "Disarmament"}
+    },
+    # guardian
+    1 : {
+        1 : {"Armor", "Shield Block"}
+    },
+    # archer
+    2 : {
+        1 : {"Evasion", "Berserk Fury"}
+    },
+    # rogue
+    3 : {
+        1 : {"Evasion", "Trip"}
+    },
+    # mage
+    4 : {
+        1 : {"Frost Needle", "Fire Spark"}
+    },
+    # priest
+    5 : {
+        1 : {"Prayer for Attack", "Prayer for Protection"}
+    },
+    # warlock
+    6 : {
+        1 : {"Curse of Weakness", "Leech Life"}
+    },
+    # necromancer
+    7 : {
+        1 : {"Infection", "Stench"}
+    }
+    }
+
 def get_classes():
     return classes
 
@@ -51,14 +86,17 @@ def get_defence_count(classID, level):
 
 def get_spell_count(classID, level):
     spell_count = 1
+    # TODO: add level condition - 4 or 5 or smth else
     if 5 == classID or 6 == classID:
         spell_count = 2
 
     return spell_count
 
-# TODO: add real spells here from static tables or something
 def get_spells(classID, level):
-    return {"Ice", "Fire", "Poison"}
+    result = list()
+    for enough_level in range(level):
+        result += spells[classID][enough_level + 1]
+    return result
 
 def get_ability_name(classID):
     ability_name = ""

@@ -8,6 +8,10 @@ __author__ = 'Pavel Padinker'
 class Action:
     def __init__(self, for_all, type, args):
         self.for_all = for_all
+        # types are:
+        # show_div_action
+        # show_skirmish_users
+        # start_registration
         self.type = type
         self.args = args
 
@@ -38,13 +42,13 @@ class UserInfo:
             "show_div_action",
             {
                 "actions" : OrderedDict([
-                    ("attack" , smarty.get_attack_count(self.character.char_class, self.character.level)),
-                    ("defence" , smarty.get_defence_count(self.character.char_class, self.character.level)),
-                    (smarty.get_ability_name(character.char_class) , smarty.get_spell_count(self.character.char_class, self.character.level)),
-                    (smarty.get_substance_name(character.char_class) , 0)
+                    ("attack" , smarty.get_attack_count(self.character.classID, self.character.level)),
+                    ("defence" , smarty.get_defence_count(self.character.classID, self.character.level)),
+                    (smarty.get_ability_name(character.classID) , smarty.get_spell_count(self.character.classID, self.character.level)),
+                    (smarty.get_substance_name(character.classID) , 0)
             ]),
                 "users" : list(),
-                "spells" : smarty.get_spells(self.character.char_class, self.character.level)
+                "spells" : smarty.get_spells(self.character.classID, self.character.level)
             }
         )
 
@@ -58,10 +62,37 @@ class BattleBot(Thread):
         self.callbacks = dict()
         self.cache = dict()
 
+        self.registration_time = 20
+        self.turn_time = 20
+        self.counter = 0
+        # phases:
+        # -1 - none
+        # 0 - registration
+        # 1,2,... - rounds
+        self.phase = -1
+
     def run(self):
         while 1:
+            if self.phase == -1 and self.counter == 0:
+                self.send_action(Action(True, "start_registration", {}))
+                self.phase = 0
+                counter += 1
+            elif self.phase == 0 and self.counter == self.registration_time:
+                self.send_action(Action(True, "end_registration", {}))
+                self.phase = 1
+                self.counter = 0
+            elif self.phase > 0 and self.counter == 0:
+                self.send_action(Action(True, "start_turn", {}))
+            elif self.phase > 0 and self.counter == self.turn_time:
+                self.send_action(Action(True, "end_turn", {}))
+                self.phase += 1
+                self.counter = 0
+                self.process_round_result()
             time.sleep(1)
             pass
+
+    def process_round_result(self):
+        pass
 
     def user_join(self, name):
         if not name in self.skirmish_users.keys():

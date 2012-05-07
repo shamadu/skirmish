@@ -22,6 +22,7 @@ var initialize = function () {
 };
 
 var dropButtonClick = function () {
+    leaveButtonClick();
     $.getJSON('/drop', {}, function() {
         window.location.href='/create';
     });
@@ -47,7 +48,7 @@ var updateCharacterInfo = function() {
     $.postJSON('/info', {}, function(res) {
         var characterInfo = $.parseJSON(res);
         $("#nameLabel").text(characterInfo.name);
-        $("#classLabel").text(characterInfo.char_class);
+        $("#classLabel").text(characterInfo.className);
         $("#levelLabel").text(characterInfo.level);
         $("#HPLabel").text(characterInfo.hp);
         $("#MPLabel").text(characterInfo.mp);

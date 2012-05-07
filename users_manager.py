@@ -12,6 +12,8 @@ class UsersManager(Thread):
         Thread.__init__(self)
         self.db = db
         self.online_users = dict()
+        self.db.execute("create table if not exists users (id integer(11) primary key not null auto_increment unique, "
+                        "login text, password text)")
 
     def run(self):
         while 1:

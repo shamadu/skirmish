@@ -40,10 +40,6 @@ class SkirmishApplication(tornado.web.Application):
             host="127.0.0.1:3306", database="users",
             user="root", password="passw0rd")
 
-        # uncomment in case db should be created - first start
-        self.db.execute("create table if not exists users (id integer(11) primary key not null auto_increment unique, "
-                        "login text, password text)")
-
         self.characters_manager = CharactersManager(self.db)
         self.users_manager = UsersManager(self.db)
         self.users_manager.start()
@@ -87,7 +83,10 @@ class MainHandler(BaseHandler):
         # no such user - redirect to creation
             self.redirect("/create")
         else:
-            self.render("skirmish.html", login=self.current_user)
+            substance_name = "mana"
+            if character.classID < 4:
+                substance_name = "energy"
+            self.render("skirmish.html", login=self.current_user, substance=substance_name)
             self.users_manager.reenter_from_user(self.current_user)
             self.battle_bot.reenter_from_user(self.current_user)
 
