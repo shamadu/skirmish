@@ -6,7 +6,7 @@
 
 var initialize = function () {
     $("#logoutButton").click(logoutFunc);
-    $("#dropButton").click(dropFunc);
+    $("#dropButton").click(dropButtonClick);
     $("#sendButton").click(sendFunc);
     $("#sendTextArea").keypress(keyPress);
     updateCharacterInfo();
@@ -21,24 +21,24 @@ var initialize = function () {
     battleBotUpdater.poll();
 };
 
-var dropFunc = function () {
+var dropButtonClick = function () {
     $.getJSON('/drop', {}, function() {
         window.location.href='/create';
     });
 };
 
-var joinFunc = function () {
+var joinButtonClick = function () {
     $.postJSON('/bot/battle', {'action' : 'join'}, function() {
         $('#joinLeaveButton').unbind('click');
-        $("#joinLeaveButton").click(leaveFunc);
+        $("#joinLeaveButton").click(leaveButtonClick);
         $("#joinLeaveButton").html("Leave");
     });
 };
 
-var leaveFunc = function () {
+var leaveButtonClick = function () {
     $.postJSON('/bot/battle', {'action' : 'leave'}, function() {
         $('#joinLeaveButton').unbind('click');
-        $("#joinLeaveButton").click(joinFunc);
+        $("#joinLeaveButton").click(joinButtonClick);
         $("#joinLeaveButton").html("Join");
     });
 };
@@ -57,11 +57,11 @@ var updateCharacterInfo = function() {
         $("#wisdomLabel").text(characterInfo.wisdom);
 
         if (characterInfo.status == 'battle') {
-            $("#joinLeaveButton").click(leaveFunc);
+            $("#joinLeaveButton").click(leaveButtonClick);
             $("#joinLeaveButton").html("Leave");
         }
         else {
-            $("#joinLeaveButton").click(joinFunc);
+            $("#joinLeaveButton").click(joinButtonClick);
             $("#joinLeaveButton").html("Join");
         }
     });
@@ -236,33 +236,17 @@ var showDivAction = function(divAction) {
         }
     });
 
-    $("#resetButton").click(function(){
-        $("#divAction input[type=text]").each(function() {
-            $(this).val("")
-        });
-    });
+    $("#resetButton").click(resetButtonClick);
 
-    $("#doButton").click(function(){
-        arrTurnAction = new Array();
-        if(!checkTurnSum($(this), arrTurnAction)) {
-            window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
-        }
-        else {
-            $.postJSON('/bot/battle', {'action' : 'turn do'}, function(){
-                $("#divAction *").attr('disabled', true);
-                $("#cancelButton").removeAttr('disabled');
-            });
-        }
-    });
+    $("#doButton").click(doButtonClick);
 
-    $("#cancelButton").click(function(){
-        $.postJSON('/bot/battle', {'action' : 'turn cancel'}, function(){
-            $("#cancelButton").attr('disabled', true);
-            $("#divAction *").removeAttr('disabled');
-        });
-    });
+    $("#cancelButton").click(cancelButtonClick);
 };
 
+/*
+    Return true if all values (text inputs in div with id "divAction") are correct (integer), false otherwise
+    arrResult is filled with values from text inputs
+ */
 var checkTurnSum = function(element, arrResult) {
     result = true;
     value = element.val()
@@ -300,3 +284,43 @@ var hideDivAction = function(divAction) {
     $("#divAction").remove();
     resize()
 };
+
+var doButtonClick = function() {
+    arrTurnAction = new Array();
+    if(!checkTurnSum($(this), arrTurnAction)) {
+        window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
+    }
+    else {
+        /*
+            Prepare turn information:
+            <action1>:<player1>:[<spell1>]:<percent1>,<action2>:<player2>:[<spell2>]:<percent2>,...
+         */
+        turnInfo = "";
+        $(".action").each(function() {
+            turnInfo += $(this).attr("action") + ":";
+            value = $(".user_select option:selected", this).html();
+            turnInfo += ((value) ? value : "") + ":";
+            value = $(".spell_select option:selected", this).html();
+            turnInfo += ((value) ? value : "") + ":";
+            turnInfo += $("input[type=text]", this).val();
+            turnInfo += ",";
+        });
+        $.postJSON('/bot/battle', {'action' : 'turn do', 'turn_info' : turnInfo}, function(){
+            $("#divAction *").attr('disabled', true);
+            $("#cancelButton").removeAttr('disabled');
+        });
+    }
+}
+
+var cancelButtonClick = function() {
+    $.postJSON('/bot/battle', {'action' : 'turn cancel'}, function(){
+        $("#cancelButton").attr('disabled', true);
+        $("#divAction *").removeAttr('disabled');
+    });
+}
+
+var resetButtonClick = function() {
+    $("#divAction input[type=text]").each(function() {
+        $(this).val("0")
+    });
+}

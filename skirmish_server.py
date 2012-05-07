@@ -145,7 +145,7 @@ class BattleBotHandler(BaseHandler):
         elif self.get_argument("action") == 'leave':
             self.battle_bot.user_leave(self.current_user)
         elif self.get_argument("action") == 'turn do':
-            self.battle_bot.user_turn(self.current_user)
+            self.battle_bot.user_turn(self.current_user, self.get_argument("turn_info"))
         elif self.get_argument("action") == 'turn cancel':
             self.battle_bot.user_turn_cancel(self.current_user)
 
@@ -162,7 +162,7 @@ class PollBotHandler(BaseHandler):
 
         result = {}
         if action.type == "show_div_action":
-            result = {"show_div_action" : self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"])}
+            result = {"show_div_action" : self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])}
         elif action.type == "show_skirmish_users":
             result = {"show_skirmish_users" : action.args["skirmish_users"]}
         if action.type == "hide_div_action":

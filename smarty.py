@@ -56,6 +56,10 @@ def get_spell_count(classID, level):
 
     return spell_count
 
+# TODO: add real spells here from static tables or something
+def get_spells(classID, level):
+    return {"Ice", "Fire", "Poison"}
+
 def get_ability_name(classID):
     ability_name = ""
     if classID < 4:

@@ -11,6 +11,25 @@ class Action:
         self.type = type
         self.args = args
 
+class TurnInfo:
+    def __init__(self):
+        self.done = False
+        self.turn_info = list()
+        pass;
+
+    def is_done(self):
+        return self.done
+
+    def parse_turn_info(self, turn_info):
+        actions = turn_info.split(",")
+        for action in actions:
+            self.turn_info.append(action.split(":"))
+        self.done = True
+
+    def cancel_turn(self):
+        self.done = False
+        self.turn_info = list()
+
 class UserInfo:
     def __init__(self, character):
         self.character = character
@@ -18,16 +37,18 @@ class UserInfo:
             False,
             "show_div_action",
             {
-                "actions" : OrderedDict(),
-                 "users" :
-                {
-                }
+                "actions" : OrderedDict([
+                    ("attack" , smarty.get_attack_count(self.character.char_class, self.character.level)),
+                    ("defence" , smarty.get_defence_count(self.character.char_class, self.character.level)),
+                    (smarty.get_ability_name(character.char_class) , smarty.get_spell_count(self.character.char_class, self.character.level)),
+                    (smarty.get_substance_name(character.char_class) , 0)
+            ]),
+                "users" : list(),
+                "spells" : smarty.get_spells(self.character.char_class, self.character.level)
             }
         )
-        self.show_div_action.args["actions"]["attack"] = smarty.get_attack_count(self.character.char_class, self.character.level)
-        self.show_div_action.args["actions"]["defence"] = smarty.get_defence_count(self.character.char_class, self.character.level)
-        self.show_div_action.args["actions"][smarty.get_ability_name(character.char_class)] = smarty.get_spell_count(self.character.char_class, self.character.level)
-        self.show_div_action.args["actions"][smarty.get_substance_name(character.char_class)] = 0
+
+        self.turn_info = TurnInfo()
 
 class BattleBot(Thread):
     def __init__(self, characters_manager):
@@ -63,11 +84,11 @@ class BattleBot(Thread):
             self.skirmish_users.pop(name)
             self.send_skirmish_users()
 
-    def user_turn(self):
-        pass
+    def user_turn(self, name, turn_info):
+        self.skirmish_users[name].turn_info.parse_turn_info(turn_info)
 
-    def user_turn_cancel(self):
-        pass
+    def user_turn_cancel(self, name):
+        self.skirmish_users[name].turn_info.cancel_turn()
 
     def get_user_status(self, name):
         if name in self.skirmish_users.keys():
