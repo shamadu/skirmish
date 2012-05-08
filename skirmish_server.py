@@ -88,7 +88,7 @@ class MainHandler(BaseHandler):
                 substance_name = "energy"
             self.render("skirmish.html", login=self.current_user, substance=substance_name)
             self.users_manager.reenter_from_user(self.current_user)
-            self.battle_bot.reenter_from_user(self.current_user)
+            self.battle_bot.user_enter(self.current_user)
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -134,7 +134,6 @@ class DropCharacterHandler(BaseHandler):
 class InfoCharacterHandler(BaseHandler):
     def post(self, *args, **kwargs):
         character_info = self.characters_manager.get_info(self.current_user)
-        character_info['status'] = self.battle_bot.get_user_status(self.current_user)
         self.write(character_info)
 
 class BattleBotHandler(BaseHandler):
@@ -154,22 +153,27 @@ class PollBotHandler(BaseHandler):
     def post(self, *args, **kwargs):
         self.battle_bot.subscribe(self.current_user, self.on_action)
 
-    def on_action(self, action, *args, **kwargs):
+    def on_action(self, action):
         # Closed client connection
         if self.request.connection.stream.closed():
             return
 
         result = {}
         if action.type == 0:
-            result = {"type" : 0, "div_action" : self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])}
-        elif action.type == 1:
-            result = {"type" : 1}
-        elif action.type == 2:
-            result = {"type" : 2, "skirmish_users" : action.args["skirmish_users"]}
-        elif action.type == 3:
-            result = {"type" : 3}
+            result = action.args
+        elif action.type == 1 or action.type == 2:
+            result = action.args
+        elif action.type == 3 or action.type == 4 or action.type == 5:
+            result["type"] = action.type
+            result["turn_info"] = action.args["turn_info"]
+            result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
+        else:
+            result = action.args
 
-        self.finish(result)
+        def finish_request():
+            self.finish(result)
+
+        tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
     def on_connection_close(self):
         self.battle_bot.unsubscribe(self.current_user)

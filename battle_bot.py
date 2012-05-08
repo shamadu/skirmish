@@ -6,75 +6,87 @@ import smarty
 __author__ = 'Pavel Padinker'
 
 class Action:
-    def __init__(self, for_all, type, args):
-        self.for_all = for_all
+    def __init__(self, type, args):
         # types are:
-        # 0 - show divAction
-        # 1 - hide divAction
-        # 2 - show skirmish users
-        # 3 - start registration
-        # 4 - end registration
-        # 5 - start turn
-        # 6 - end turn
+        # 0 - show skirmish users
+        # 1 - can join
+        # 2 - can leave
+        # 3 - can do turn
+        # 4 - can cancel turn
+        # 5 - wait for result
+        # 6 - registration was started
+        # 7 - registration was ended
+        # 8 - round was started
+        # 9 - round was ended
         self.type = type
         self.args = args
-
-class TurnInfo:
-    def __init__(self):
-        self.done = False
-        self.turn_info = list()
-        pass;
-
-    def is_done(self):
-        return self.done
-
-    def parse_turn_info(self, turn_info):
-        actions = turn_info.split(",")
-        for action in actions:
-            self.turn_info.append(action.split(":"))
-        self.done = True
-
-    def cancel_turn(self):
-        self.done = False
-        self.turn_info = list()
+        self.args["type"] = type
 
 class UserInfo:
     def __init__(self, character):
         self.character = character
-        self.show_div_action = Action(
-            False,
-            0,
-            {
-                "actions" : OrderedDict([
-                    ("attack" , smarty.get_attack_count(self.character.classID, self.character.level)),
-                    ("defence" , smarty.get_defence_count(self.character.classID, self.character.level)),
-                    (smarty.get_ability_name(character.classID) , smarty.get_spell_count(self.character.classID, self.character.level)),
-                    (smarty.get_substance_name(character.classID) , 0)
-            ]),
-                "users" : list(),
-                "spells" : smarty.get_spells(self.character.classID, self.character.level)
-            }
-        )
 
         # user's states:
         # 0 - unregistered
         # 1 - registered
-        # 2 - round turn is in progress
-        # 3 - round turn is finished
+        # 2 - round turn is finished
         self.state = 0 # unregistered
-        self.turn_info = TurnInfo()
+        self.turn_info = list()
+        self.cache = deque()
+        self.turn_info_string = ""
+        self.callback = None
 
+    def set_callback(self, callback):
+        if len(self.cache) != 0 and callback:
+            callback(self.cache.popleft())
+        else:
+            self.callback = callback
+
+    def send_action(self, action):
+        if self.callback:
+            # to avoid replacement of callback in process of callback call
+            callback_tmp = self.callback
+            self.callback = None
+            callback_tmp(action)
+        else:
+            self.add_to_cache(action)
+
+    def add_to_cache(self, action):
+        self.cache.append(action)
+
+    def create_div_args(self, users):
+        return {
+                "actions" : OrderedDict([
+                    ("attack" , smarty.get_attack_count(self.character.classID, self.character.level)),
+                    ("defence" , smarty.get_defence_count(self.character.classID, self.character.level)),
+                    (smarty.get_ability_name(self.character.classID) , smarty.get_spell_count(self.character.classID, self.character.level)),
+                    (smarty.get_substance_name(self.character.classID) , 0)
+                ]),
+                "users" : users,
+                "spells" : smarty.get_spells(self.character.classID, self.character.level)
+                }
+
+    def parse_turn_info(self, turn_info):
+        self.turn_info_string = turn_info
+        actions = self.turn_info_string.split(",")
+        for action in actions:
+            self.turn_info.append(action.split(":"))
+
+    def get_turn_info(self):
+        return self.turn_info_string
+
+    def cancel_turn(self):
+        self.turn_info = list()
 
 class BattleBot(Thread):
     def __init__(self, characters_manager):
         Thread.__init__(self)
         self.characters_manager = characters_manager
-        self.skirmish_users = dict()
-        self.callbacks = dict()
-        self.cache = dict()
+        self.users = dict()
 
-        self.registration_time = 20
-        self.turn_time = 20
+        self.rest_time = 5
+        self.registration_time = 5
+        self.turn_time = 5
         self.counter = 0
         # phases:
         # -1 - none
@@ -84,103 +96,125 @@ class BattleBot(Thread):
 
     def run(self):
         while 1:
-            if self.phase == -1 and self.counter == 0:
-                self.send_action(Action(True, 3, {}))
+            if self.phase == -1 and self.counter == self.rest_time:
                 self.phase = 0
-                self.counter += 1
+                self.counter = 0
+                self.send_action_to_all(Action(6, {}))
+                self.send_action_to_all(Action(1, {}))
             elif self.phase == 0 and self.counter == self.registration_time:
-                self.send_action(Action(True, 4, {}))
                 self.phase = 1
                 self.counter = 0
-            elif self.phase > 0 and self.counter == 0:
-                self.send_action(Action(True, 5, {}))
+                self.send_action_to_all(Action(7, {}))
+            elif self.phase > 0 and self.counter == 1:
+                self.send_action_to_all(Action(8, {"round" : self.phase}))
+                self.send_action_to_skirmish(Action(3, {}))
             elif self.phase > 0 and self.counter == self.turn_time:
-                self.send_action(Action(True, 6, {}))
-                self.phase += 1
-                self.counter = 0
+                self.send_action_to_all(Action(9, {"round" : self.phase}))
+                self.send_action_to_skirmish(Action(5, {}))
                 self.process_round_result()
+                self.counter = 0
+                self.phase += 1
+
+            self.counter += 1
             time.sleep(1)
             pass
 
     def process_round_result(self):
         pass
 
-    def user_join(self, name):
-        if not name in self.skirmish_users.keys():
-            self.skirmish_users[name] = UserInfo(self.characters_manager.get(name))
-            self.send_skirmish_users()
+    def user_join(self, user_name):
+        if self.phase == 0:
+            self.users[user_name].state = 1 # registered
+            self.send_action_to_all(self.create_skirmish_users_action())
+            self.send_action_to_user(user_name, Action(2, {}))
 
-            action = self.skirmish_users[name].show_div_action
-            action.args["users"] = self.skirmish_users.keys()
-            self.send_action_to(name, action)
+    def user_leave(self, user_name):
+        if self.phase == 0:
+            self.users[user_name].state = 0 # unregistered
+            self.send_action_to_all(self.create_skirmish_users_action())
+            self.send_action_to_user(user_name, Action(1, {}))
 
+    def user_turn(self, user_name, turn_info):
+        if self.phase > 0:
+            self.users[user_name].parse_turn_info(turn_info)
+            self.state = 2
+            args = self.users[user_name].create_div_args(self.get_skirmish_users())
+            args["turn_info"] = self.users[user_name].get_turn_info()
+            self.send_action_to_user(user_name, Action(4, args))
 
-    def user_leave(self, name):
-        if name in self.skirmish_users.keys():
-            action = Action(False, 1, {})
-            self.send_action_to(name, action)
-            self.skirmish_users.pop(name)
-            self.send_skirmish_users()
-
-    def user_turn(self, name, turn_info):
-        self.skirmish_users[name].turn_info.parse_turn_info(turn_info)
-
-    def user_turn_cancel(self, name):
-        self.skirmish_users[name].turn_info.cancel_turn()
-
-    def get_user_status(self, name):
-        if name in self.skirmish_users.keys():
-            return 'battle'
-        else:
-            return 'rest'
+    def user_turn_cancel(self, user_name):
+        if self.phase > 0:
+            self.users[user_name].cancel_turn()
+            self.state = 1
+            args = self.users[user_name].create_div_args(self.get_skirmish_users())
+            args["turn_info"] = self.users[user_name].get_turn_info()
+            self.send_action_to_user(user_name, Action(3, args))
 
     def subscribe(self, user_name, callback):
-        if user_name in self.cache.keys() and self.cache[user_name]:
-            callback(self.cache[user_name].popleft())
-        else:
-            self.callbacks[user_name] = callback
+        if not user_name in self.users.keys():
+            self.users[user_name] = UserInfo(self.characters_manager.get(user_name))
+        self.users[user_name].set_callback(callback)
 
     def unsubscribe(self, user_name):
-        if user_name in self.callbacks.keys():
-            self.callbacks[user_name] = None
+        self.users[user_name].set_callback(None)
 
-    def send_skirmish_users(self):
-        action = Action(True, 2, {"skirmish_users" : ', '.join(self.skirmish_users.keys())})
-        self.send_action(action)
+    def get_skirmish_users(self):
+        skirmish_users = list()
+        for user_name in self.users:
+            # 0 is unregistered user
+            if self.users[user_name].state != 0:
+                skirmish_users.append(user_name)
 
-    def add_to_cache(self, user_name, action):
-        if not user_name in self.cache or not self.cache[user_name]:
-            self.cache[user_name] = deque()
-        self.cache[user_name].append(action)
+        return skirmish_users
 
-    def send_action(self, action):
-        if action.for_all:
-            users = self.callbacks.keys()
-        else:
-            users = self.skirmish_users.keys()
+    def create_skirmish_users_action(self):
+        return Action(0, {"skirmish_users" : ', '.join(self.get_skirmish_users())})
 
-        for skirmish_user in users:
-            if self.callbacks[skirmish_user]:
-                callback_tmp = self.callbacks[skirmish_user]
-                self.callbacks[skirmish_user] = None
-                callback_tmp(action)
-            else:
-                self.add_to_cache(skirmish_user, action)
+    def send_action_to_all(self, action):
+        for user_name in self.users.keys():
+            if action.type > 2 and action.type < 6:
+                action.args.update(self.users[user_name].create_div_args(self.get_skirmish_users()))
+                action.args["turn_info"] = ""
+            self.users[user_name].send_action(action)
 
-    def send_action_to(self, user_name, action):
-        if self.callbacks[user_name]:
-            callback_tmp = self.callbacks[user_name]
-            self.callbacks[user_name] = None
-            callback_tmp(action)
-        else:
-            self.add_to_cache(user_name, action)
+    def send_action_to_skirmish(self, action):
+        for user_name in self.get_skirmish_users():
+            if action.type > 2 and action.type < 6:
+                action.args.update(self.users[user_name].create_div_args(self.get_skirmish_users()))
+                action.args["turn_info"] = ""
+            self.users[user_name].send_action(action)
 
-    def reenter_from_user(self, user_name):
+    def send_action_to_user(self, user_name, action):
+        if(user_name in self.users.keys()):
+            self.users[user_name].send_action(action)
+
+    def user_enter(self, user_name):
+        if not user_name in self.users.keys():
+            self.users[user_name] = UserInfo(self.characters_manager.get(user_name))
         # send skirmish users
-        action = Action(True, 2, {"skirmish_users" : ', '.join(self.skirmish_users.keys())})
-        self.send_action_to(user_name, action)
-        # if user state is 1 or 2 - send "registration is in process" action
-
-        if user_name in self.skirmish_users:
-            self.send_action_to(user_name, self.skirmish_users[user_name].show_div_action)
-
+        self.send_action_to_user(user_name, self.create_skirmish_users_action())
+        # if registration is in progress
+        if self.phase == 0:
+            # and if user state is "unregistered", send "can join" action
+            if self.users[user_name].state == 0:
+                self.send_action_to_user(user_name, Action(1, {}))
+            # and if user state is "registered", send "can leave" action
+            elif self.users[user_name].state == 1:
+                self.send_action_to_user(user_name, Action(2, {}))
+        # if round is in progress
+        elif self.phase > 0:
+            # if it's time to do the turn
+            if self.counter < self.turn_time:
+                # and if user state is "registered", send "can do turn" action
+                if self.users[user_name].state == 1:
+                    self.send_action_to_user(user_name, Action(3, self.users[user_name].create_div_args(self.get_skirmish_users())))
+                # and if user state is "round turn is done", send "can cancel turn" action
+                elif self.users[user_name].state == 2:
+                    args = self.users[user_name].create_div_args(self.get_skirmish_users())
+                    args["turn_info"] = self.users[user_name].get_turn_info()
+                    self.send_action_to_user(user_name, Action(4, args))
+            # all turns were done and if user state is "round turn is done", send "wait for result" action
+            elif self.users[user_name].state == 2:
+                args = self.users[user_name].create_div_args(self.get_skirmish_users())
+                args["turn_info"] = self.users[user_name].get_turn_info()
+                self.send_action_to_user(user_name, Action(5, args))

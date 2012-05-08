@@ -9,6 +9,7 @@ var initialize = function () {
     $("#dropButton").click(dropButtonClick);
     $("#sendButton").click(sendFunc);
     $("#sendTextArea").keypress(keyPress);
+    $("#joinLeaveButton").attr('disabled', true);
     updateCharacterInfo();
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
@@ -30,17 +31,11 @@ var dropButtonClick = function () {
 
 var joinButtonClick = function () {
     $.postJSON('/bot/battle', {'action' : 'join'}, function() {
-        $('#joinLeaveButton').unbind('click');
-        $("#joinLeaveButton").click(leaveButtonClick);
-        $("#joinLeaveButton").html("Leave");
     });
 };
 
 var leaveButtonClick = function () {
     $.postJSON('/bot/battle', {'action' : 'leave'}, function() {
-        $('#joinLeaveButton').unbind('click');
-        $("#joinLeaveButton").click(joinButtonClick);
-        $("#joinLeaveButton").html("Join");
     });
 };
 
@@ -56,15 +51,6 @@ var updateCharacterInfo = function() {
         $("#dexterityLabel").text(characterInfo.dexterity);
         $("#intellectLabel").text(characterInfo.intellect);
         $("#wisdomLabel").text(characterInfo.wisdom);
-
-        if (characterInfo.status == 'battle') {
-            $("#joinLeaveButton").click(leaveButtonClick);
-            $("#joinLeaveButton").html("Leave");
-        }
-        else {
-            $("#joinLeaveButton").click(joinButtonClick);
-            $("#joinLeaveButton").html("Join");
-        }
     });
 };
 
@@ -101,6 +87,30 @@ var keyPress = function(event) {
     }
 };
 
+var format_message = function(message) {
+    today = new Date();
+    hours = today.getHours();
+    if(hours < 10) {
+        hours = "0" + hours;
+    }
+    minutes = today.getMinutes();
+    if(minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    seconds = today.getSeconds();
+    if(seconds < 10) {
+        seconds = "0" + seconds;
+    }
+
+    body_lines = message.body.split("\n");
+    message_formatted = "";
+    for(line in body_lines){
+        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + body_lines[line] + "\n";
+    }
+
+    return message_formatted;
+};
+
 var messager = {
     errorSleepTime: 500,
 
@@ -111,25 +121,7 @@ var messager = {
     onSuccess: function(response) {
         var message = $.parseJSON(response);
         if(message.to == "all") {
-            today = new Date();
-            hours = today.getHours();
-            if(hours < 10) {
-                hours = "0" + hours;
-            }
-            minutes = today.getMinutes();
-            if(minutes < 10) {
-                minutes = "0" + minutes;
-            }
-            seconds = today.getSeconds();
-            if(seconds < 10) {
-                seconds = "0" + seconds;
-            }
-
-            body_lines = message.body.split("\n");
-            message_formatted = ""
-            for(line in body_lines){
-                message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + body_lines[line] + "\n";
-            }
+            message_formatted = format_message(message);
             $("#enTextArea").val($("#enTextArea").val() + message_formatted);
         }
 
@@ -184,14 +176,68 @@ var battleBotUpdater = {
 
     onSuccess: function(response) {
         var action = $.parseJSON(response);
+        // update skirmish users
         if(action.type == 0) {
+            updateSkirmishUsers(action.skirmish_users);
+        }
+        // can join
+        else if(action.type == 1) {
+            $("#joinLeaveButton").removeAttr('disabled');
+            $('#joinLeaveButton').unbind('click');
+            $("#joinLeaveButton").click(joinButtonClick);
+            $("#joinLeaveButton").html("Join");
+        }
+        // can leave
+        else if(action.type == 2) {
+            $("#joinLeaveButton").removeAttr('disabled');
+            $('#joinLeaveButton').unbind('click');
+            $("#joinLeaveButton").click(leaveButtonClick);
+            $("#joinLeaveButton").html("Leave");
+        }
+        // can do turn
+        else if(action.type == 3) {
+            removeDivAction();
             showDivAction(action.div_action);
         }
-        else if(action.type == 1) {
-            hideDivAction();
+        // can cancel
+        else if(action.type == 4) {
+            disableDivAction(action.div_action, action.turn_info);
         }
-        else if(action.type == 2) {
-            updateSkirmishUsers(action.skirmish_users);
+        // wait for results
+        else if(action.type == 5) {
+            disableDivAction(action.div_action, action.turn_info);
+            $("#cancelButton").attr('disabled', true);
+            $("#joinLeaveButton").attr('disabled', true);
+        }
+        // registration was started
+        else if(action.type == 6) {
+            message = {};
+            message["body"] = "Registration has been started";
+            message["from"] = "bot";
+            message_formatted = format_message(message);
+            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+        }
+        else if(action.type == 7) {
+            message = {};
+            message["body"] = "Registration has been ended";
+            message["from"] = "bot";
+            message_formatted = format_message(message);
+            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+            $("#joinLeaveButton").attr('disabled', true);
+        }
+        else if(action.type == 8) {
+            message = {};
+            message["body"] = "Round " + action.round + " has been started";
+            message["from"] = "bot";
+            message_formatted = format_message(message);
+            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+        }
+        else if(action.type == 9) {
+            message = {};
+            message["body"] = "Round " + action.round + " has been ended";
+            message["from"] = "bot";
+            message_formatted = format_message(message);
+            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
         }
 
         battleBotUpdater.errorSleepTime = 500;
@@ -217,55 +263,64 @@ var updateSkirmishUsers = function(skirmish_users) {
 };
 
 var showDivAction = function(divAction) {
-    $("#divAction").remove();
-    $("#divMain").append(divAction);
-    resize()
+//    $("#divAction").remove();
+    if($("#divAction").length == 0) {
+        $("#divMain").append(divAction);
+        resize();
 
-    $("#cancelButton").attr('disabled', 'true');
+        $("#cancelButton").attr('disabled', 'true');
 
-    $("#divAction input[type=text]").keyup(function(){
-        value = $(this).val();
-        lastChar = value.charAt(value.length - 1)
-        if(lastChar > '9' || lastChar < '0') {
-            $(this).val(value.substring(0, value.length - 1))
-        }
-    })
+        $("#divAction input[type=text]").keyup(function(){
+            value = $(this).val();
+            lastChar = value.charAt(value.length - 1);
+            if(lastChar > '9' || lastChar < '0') {
+                $(this).val(value.substring(0, value.length - 1))
+            }
+        });
 
-    $("#divAction input[type=text]").change(function(){
-        if(!checkTurnSum($(this))) {
-            window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
-        }
-    });
+        $("#divAction input[type=text]").change(function(){
+            if(!checkTurnSum($(this))) {
+                window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
+            }
+        });
 
-    $("#resetButton").click(resetButtonClick);
+        $("#resetButton").click(resetButtonClick);
 
-    $("#doButton").click(doButtonClick);
+        $("#doButton").click(doButtonClick);
 
-    $("#cancelButton").click(cancelButtonClick);
+        $("#cancelButton").click(cancelButtonClick);
+    }
+    $("#divAction *").removeAttr('disabled');
+    $("#cancelButton").attr('disabled', true);
+};
+
+var disableDivAction = function(divAction, turn_info) {
+    if($("#divAction").length == 0) {
+        showDivAction(divAction);
+    }
+    $("#divAction *").attr('disabled', true);
+    $("#cancelButton").removeAttr('disabled');
 };
 
 /*
     Return true if all values (text inputs in div with id "divAction") are correct (integer), false otherwise
     arrResult is filled with values from text inputs
  */
-var checkTurnSum = function(element, arrResult) {
+var checkTurnSum = function(element) {
     result = true;
-    value = element.val()
+    value = element.val();
     if(!isNaN(value)) {
         var sum = 0;
         i = 0;
         $("#divAction input[type=text]").each(function() {
-            intVal = parseInt($(this).val())
+            intVal = parseInt($(this).val());
             if(isNaN(intVal)) {
-                $(this).val("0")
+                $(this).val("0");
                 result = false;
             }
             else {
                 $(this).val(intVal);
                 sum += intVal;
-                if(arrResult) {
-                    arrResult[i] = intVal;
-                }
             }
             ++i;
         });
@@ -274,21 +329,20 @@ var checkTurnSum = function(element, arrResult) {
         }
     }
     else {
-        element.val("0")
+        element.val("0");
         result = false;
     }
 
     return result;
 };
 
-var hideDivAction = function(divAction) {
+var removeDivAction = function(divAction) {
     $("#divAction").remove();
     resize()
 };
 
 var doButtonClick = function() {
-    arrTurnAction = new Array();
-    if(!checkTurnSum($(this), arrTurnAction)) {
+    if(!checkTurnSum($(this))) {
         window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
     }
     else {
@@ -307,16 +361,12 @@ var doButtonClick = function() {
             turnInfo += ",";
         });
         $.postJSON('/bot/battle', {'action' : 'turn do', 'turn_info' : turnInfo}, function(){
-            $("#divAction *").attr('disabled', true);
-            $("#cancelButton").removeAttr('disabled');
         });
     }
 }
 
 var cancelButtonClick = function() {
     $.postJSON('/bot/battle', {'action' : 'turn cancel'}, function(){
-        $("#cancelButton").attr('disabled', true);
-        $("#divAction *").removeAttr('disabled');
     });
 }
 
