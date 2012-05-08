@@ -184,14 +184,14 @@ var battleBotUpdater = {
 
     onSuccess: function(response) {
         var action = $.parseJSON(response);
-        if("show_skirmish_users" in action) {
-            updateSkirmishUsers(action.show_skirmish_users);
+        if(action.type == 0) {
+            showDivAction(action.div_action);
         }
-        else if("show_div_action" in action) {
-            showDivAction(action.show_div_action);
-        }
-        else if("hide_div_action" in action) {
+        else if(action.type == 1) {
             hideDivAction();
+        }
+        else if(action.type == 2) {
+            updateSkirmishUsers(action.skirmish_users);
         }
 
         battleBotUpdater.errorSleepTime = 500;

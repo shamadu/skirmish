@@ -160,12 +160,14 @@ class PollBotHandler(BaseHandler):
             return
 
         result = {}
-        if action.type == "show_div_action":
-            result = {"show_div_action" : self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])}
-        elif action.type == "show_skirmish_users":
-            result = {"show_skirmish_users" : action.args["skirmish_users"]}
-        if action.type == "hide_div_action":
-            result = {"hide_div_action" : ""}
+        if action.type == 0:
+            result = {"type" : 0, "div_action" : self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])}
+        elif action.type == 1:
+            result = {"type" : 1}
+        elif action.type == 2:
+            result = {"type" : 2, "skirmish_users" : action.args["skirmish_users"]}
+        elif action.type == 3:
+            result = {"type" : 3}
 
         self.finish(result)
 
