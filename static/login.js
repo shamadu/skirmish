@@ -32,12 +32,3 @@ var keyPress = function(event) {
         loginFunc();
     }
 }
-
-var selectLocale = function() {
-    val = $("#locales option:selected").val();
-    setCookie("locale", val);
-    $.getJSON('login', {}, function()
-    {
-        window.location.href='/';
-    });
-}

@@ -1,3 +1,21 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-10 18:14+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
 #: smarty.py:8
 msgid "English"
 msgstr "Английский"
@@ -66,7 +84,7 @@ msgstr "Защита"
 msgid "Create new character"
 msgstr "Создать нового персонажа"
 
-#: create.html:17 skirmish.html:21
+#: create.html:17 login.html:15 skirmish.html:21
 msgid "Name"
 msgstr "Имя"
 
@@ -86,13 +104,13 @@ msgstr "Выйти"
 msgid "Login to Skirmish"
 msgstr "Войти в Схватку"
 
-#: login.html:15 login.html:38
-msgid "Login"
-msgstr "Имя"
-
 #: login.html:19
 msgid "Password"
 msgstr "Пароль"
+
+#: login.html:38
+msgid "Login"
+msgstr "Войти"
 
 #: skirmish.html:5
 msgid "Skirmish"
