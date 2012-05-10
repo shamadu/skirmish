@@ -2,7 +2,7 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>Login to Skirmish</title>
+    <title>{{ _("Login to Skirmish") }}</title>
     <link href="static/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="static/login.css" rel="stylesheet" type="text/css">
     <script src="static/jquery-1.7.2.min.js"></script>
@@ -10,12 +10,34 @@
     <script src="static/login.js"></script>
 </head>
 <body>
-<div id="divLogin" class="divLogin">
-    <p><input type="text" id="loginText"></p>
-    <p><input type="password" id="passwordText"></p>
-    <p><label id="errorLabel" class="errorLabel"></label></p>
-    <p><button id="loginButton">Login</button></p>
-</div>
+<table border="0" align="center">
+    <tr align="center" valign="middle">
+        <td>{{ _("Login") }}</td>
+        <td><input type="text" id="loginText"></td>
+    </tr>
+    <tr align="center" valign="middle">
+        <td>{{ _("Password") }}</td>
+        <td><input type="password" id="passwordText"></td>
+    </tr>
+    <tr align="center" valign="middle">
+        <td>Language</td>
+        <td>
+            <select id="locales" style="margin: auto;">
+                {% for locale in locales.keys() %}
+                <option value="{{ locale }}" {% if selected == locale %} selected="selected" {% end %}>{{ locales[locale] }}</option>
+                {% end %}
+            </select>
+        </td>
+    </tr>
+    <tr align="center" valign="middle">
+        <td></td>
+        <td><label id="errorLabel" class="errorLabel"></label></td>
+    </tr>
+    <tr align="center" valign="middle">
+        <td></td>
+        <td><button id="loginButton">{{ _("Login") }}</button></td>
+    </tr>
+</table>
 <script type="text/javascript">initialize();</script>
 </body>
 </html>

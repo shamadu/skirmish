@@ -2,11 +2,15 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 220px;
     vertical-align: middle;
 }
 
 .errorLabel {
-    width: 300px;
+    margin: auto;
     color: red;
+}
+
+input, select, label {
+    margin: 0 10px 0 10px;
+    width: 200px
 }

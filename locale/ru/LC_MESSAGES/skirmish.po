@@ -1,0 +1,155 @@
+#: smarty.py:8
+msgid "English"
+msgstr "Английский"
+
+#: smarty.py:9
+msgid "Russian"
+msgstr "Русский"
+
+#: smarty.py:13
+msgid "Warrior"
+msgstr "Воин"
+
+#: smarty.py:14
+msgid "Guardian"
+msgstr "Страж"
+
+#: smarty.py:15
+msgid "Archer"
+msgstr "Лучник"
+
+#: smarty.py:16
+msgid "Rogue"
+msgstr "Разбойник"
+
+#: smarty.py:17
+msgid "Mage"
+msgstr "Маг"
+
+#: smarty.py:18
+msgid "Priest"
+msgstr "Жрец"
+
+#: smarty.py:19
+msgid "Warlock"
+msgstr "Колдун"
+
+#: smarty.py:20
+msgid "Necromancer"
+msgstr "Некромант"
+
+#: smarty.py:24
+msgid "Skill"
+msgstr "Способность"
+
+#: smarty.py:25
+msgid "Spell"
+msgstr "Заклинание"
+
+#: smarty.py:30
+msgid "Energy"
+msgstr "Энергия"
+
+#: smarty.py:31
+msgid "Mana"
+msgstr "Мана"
+
+#: smarty.py:35
+msgid "Attack"
+msgstr "Атака"
+
+#: smarty.py:36
+msgid "Defence"
+msgstr "Защита"
+
+#: create.html:6
+msgid "Create new character"
+msgstr "Создать нового персонажа"
+
+#: create.html:17 skirmish.html:21
+msgid "Name"
+msgstr "Имя"
+
+#: create.html:21 skirmish.html:22
+msgid "Class"
+msgstr "Класс"
+
+#: create.html:32
+msgid "Create"
+msgstr "Создать"
+
+#: create.html:32 skirmish.html:18
+msgid "Logout"
+msgstr "Выйти"
+
+#: login.html:5
+msgid "Login to Skirmish"
+msgstr "Войти в Схватку"
+
+#: login.html:15 login.html:38
+msgid "Login"
+msgstr "Имя"
+
+#: login.html:19
+msgid "Password"
+msgstr "Пароль"
+
+#: skirmish.html:5
+msgid "Skirmish"
+msgstr "Схватка"
+
+#: skirmish.html:17
+msgid "Hello"
+msgstr "Здравствуй"
+
+#: skirmish.html:18
+msgid "Drop"
+msgstr "Удалить"
+
+#: skirmish.html:23
+msgid "Level"
+msgstr "Уровень"
+
+#: skirmish.html:24
+msgid "Health"
+msgstr "Здоровье"
+
+#: skirmish.html:26
+msgid "Strength"
+msgstr "Сила"
+
+#: skirmish.html:27
+msgid "Dexterity"
+msgstr "Ловкость"
+
+#: skirmish.html:28
+msgid "Intellect"
+msgstr "Интеллект"
+
+#: skirmish.html:29
+msgid "Wisdom"
+msgstr "Мудрость"
+
+#: skirmish.html:32
+msgid "Join"
+msgstr "Войти"
+
+#: skirmish.html:32
+msgid "Leave"
+msgstr "Покинуть"
+
+#: skirmish.html:56
+msgid "Send"
+msgstr "Отправить"
+
+#: div_action.html:33
+msgid "Do"
+msgstr "Ход"
+
+#: div_action.html:34
+msgid "Reset"
+msgstr "Сброс"
+
+#: div_action.html:35
+msgid "Cancel"
+msgstr "Отменить"

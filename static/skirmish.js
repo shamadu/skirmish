@@ -9,7 +9,11 @@ var initialize = function () {
     $("#dropButton").click(dropButtonClick);
     $("#sendButton").click(sendFunc);
     $("#sendTextArea").keypress(keyPress);
-    $("#joinLeaveButton").attr('disabled', true);
+    $("#joinButton").attr('disabled', true);
+    $("#leaveButton").attr('disabled', true);
+    $("#leaveButton").hide();
+    $("#joinButton").click(joinButtonClick);
+    $("#leaveButton").click(leaveButtonClick);
     updateCharacterInfo();
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
@@ -182,17 +186,15 @@ var battleBotUpdater = {
         }
         // can join
         else if(action.type == 1) {
-            $("#joinLeaveButton").removeAttr('disabled');
-            $('#joinLeaveButton').unbind('click');
-            $("#joinLeaveButton").click(joinButtonClick);
-            $("#joinLeaveButton").html("Join");
+            $("#joinButton").removeAttr('disabled');
+            $("#joinButton").show();
+            $("#leaveButton").hide();
         }
         // can leave
         else if(action.type == 2) {
-            $("#joinLeaveButton").removeAttr('disabled');
-            $('#joinLeaveButton').unbind('click');
-            $("#joinLeaveButton").click(leaveButtonClick);
-            $("#joinLeaveButton").html("Leave");
+            $("#leaveButton").show();
+            $("#leaveButton").removeAttr('disabled');
+            $("#joinButton").hide();
         }
         // can do turn
         else if(action.type == 3) {
@@ -207,7 +209,8 @@ var battleBotUpdater = {
         else if(action.type == 5) {
             disableDivAction(action.div_action, action.turn_info);
             $("#cancelButton").attr('disabled', true);
-            $("#joinLeaveButton").attr('disabled', true);
+            $("#joinButton").attr('disabled', true);
+            $("#leaveButton").attr('disabled', true);
         }
         // registration was started
         else if(action.type == 6) {
@@ -223,7 +226,8 @@ var battleBotUpdater = {
             message["from"] = "bot";
             message_formatted = format_message(message);
             $("#enTextArea").val($("#enTextArea").val() + message_formatted);
-            $("#joinLeaveButton").attr('disabled', true);
+            $("#joinButton").attr('disabled', true);
+            $("#leaveButton").attr('disabled', true);
         }
         else if(action.type == 8) {
             message = {};
@@ -304,7 +308,6 @@ var disableDivAction = function(divAction, turn_info) {
 
 /*
     Return true if all values (text inputs in div with id "divAction") are correct (integer), false otherwise
-    arrResult is filled with values from text inputs
  */
 var checkTurnSum = function(element) {
     result = true;

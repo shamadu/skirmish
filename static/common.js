@@ -9,6 +9,10 @@ var getCookie = function(name) {
     return r ? r[1] : undefined;
 }
 
+var setCookie = function(name, value) {
+    document.cookie = name + "=" + value;
+}
+
 jQuery.postJSON = function(url, args, callback_success, callback_error) {
     args._xsrf = getCookie("_xsrf");
     $.ajax({url: url, data: $.param(args), dataType: "text", type: "POST"}).done(function(res) {

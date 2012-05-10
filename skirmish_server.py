@@ -2,9 +2,11 @@ import tornado.ioloop
 import tornado.web
 import tornado.httpserver
 import tornado.database
+import tornado.locale
 import os
 from battle_bot import BattleBot
 from smarty import get_classes
+import smarty
 from users_manager import UsersManager
 from characters_manager import CharactersManager
 from messager import Messager
@@ -75,6 +77,9 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("login")
 
+    def get_user_locale(self):
+        return tornado.locale.get(self.get_cookie("locale"))
+
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
@@ -83,17 +88,15 @@ class MainHandler(BaseHandler):
         # no such user - redirect to creation
             self.redirect("/create")
         else:
-            substance_name = "mana"
-            if character.classID < 4:
-                substance_name = "energy"
-            self.render("skirmish.html", login=self.current_user, substance=substance_name)
             self.users_manager.reenter_from_user(self.current_user)
-            self.battle_bot.user_enter(self.current_user)
+            self.battle_bot.user_enter(self.current_user, self.locale)
+            self.render("skirmish.html", login=self.current_user, substance=smarty.get_substance_name(character.classID, self.locale))
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
         if not self.current_user:
-            self.render("login.html")
+            locales_dict = smarty.get_locales(self.locale)
+            self.render("login.html", locales=locales_dict, selected=self.get_cookie("locale"))
         else:
             self.redirect("/")
 
@@ -117,7 +120,7 @@ class CreateCharacterHandler(BaseHandler):
         character = self.characters_manager.get(self.current_user)
         if not character:
         # no such user - redirect to creation
-            self.render("create.html", name=self.current_user, classes=get_classes())
+            self.render("create.html", name=self.current_user, classes=get_classes(self.locale))
         else:
             self.redirect("/")
 
@@ -133,7 +136,7 @@ class DropCharacterHandler(BaseHandler):
 
 class InfoCharacterHandler(BaseHandler):
     def post(self, *args, **kwargs):
-        character_info = self.characters_manager.get_info(self.current_user)
+        character_info = self.characters_manager.get_info(self.current_user, self.locale)
         self.write(character_info)
 
 class BattleBotHandler(BaseHandler):
@@ -151,7 +154,7 @@ class PollBotHandler(BaseHandler):
     @tornado.web.authenticated
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
-        self.battle_bot.subscribe(self.current_user, self.on_action)
+        self.battle_bot.subscribe(self.current_user, self.on_action, self.locale)
 
     def on_action(self, action):
         # Closed client connection
@@ -219,6 +222,7 @@ class NewMessageHandler(BaseHandler):
         self.messager.new_message(message)
 
 def main():
+    tornado.locale.load_gettext_translations("locale", "skirmish")
     http_server = tornado.httpserver.HTTPServer(SkirmishApplication())
     http_server.listen(8888)
     tornado.ioloop.IOLoop.instance().start()

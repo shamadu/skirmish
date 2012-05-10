@@ -23,7 +23,7 @@ class Action:
         self.args["type"] = type
 
 class UserInfo:
-    def __init__(self, character):
+    def __init__(self, character, locale):
         self.character = character
 
         # user's states:
@@ -35,6 +35,7 @@ class UserInfo:
         self.cache = deque()
         self.turn_info_string = ""
         self.callback = None
+        self.locale = locale
 
     def set_callback(self, callback):
         if len(self.cache) != 0 and callback:
@@ -55,13 +56,13 @@ class UserInfo:
         self.cache.append(action)
 
     def create_div_args(self, users):
+        actions = OrderedDict()
+        actions[0] = self.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(self.character.classID, self.character.level)
+        actions[1] = self.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(self.character.classID, self.character.level)
+        actions[2] = smarty.get_ability_name(self.character.classID, self.locale) , smarty.get_spell_count(self.character.classID, self.character.level)
+        actions[3] = smarty.get_substance_name(self.character.classID, self.locale) , 0
         return {
-                "actions" : OrderedDict([
-                    ("attack" , smarty.get_attack_count(self.character.classID, self.character.level)),
-                    ("defence" , smarty.get_defence_count(self.character.classID, self.character.level)),
-                    (smarty.get_ability_name(self.character.classID) , smarty.get_spell_count(self.character.classID, self.character.level)),
-                    (smarty.get_substance_name(self.character.classID) , 0)
-                ]),
+                "actions" : actions,
                 "users" : users,
                 "spells" : smarty.get_spells(self.character.classID, self.character.level)
                 }
@@ -150,9 +151,9 @@ class BattleBot(Thread):
             args["turn_info"] = self.users[user_name].get_turn_info()
             self.send_action_to_user(user_name, Action(3, args))
 
-    def subscribe(self, user_name, callback):
+    def subscribe(self, user_name, callback, locale):
         if not user_name in self.users.keys():
-            self.users[user_name] = UserInfo(self.characters_manager.get(user_name))
+            self.users[user_name] = UserInfo(self.characters_manager.get(user_name), locale)
         self.users[user_name].set_callback(callback)
 
     def unsubscribe(self, user_name):
@@ -188,9 +189,11 @@ class BattleBot(Thread):
         if(user_name in self.users.keys()):
             self.users[user_name].send_action(action)
 
-    def user_enter(self, user_name):
+    def user_enter(self, user_name, locale):
         if not user_name in self.users.keys():
-            self.users[user_name] = UserInfo(self.characters_manager.get(user_name))
+            self.users[user_name] = UserInfo(self.characters_manager.get(user_name), locale)
+        else:
+            self.users[user_name].locale = locale
         # send skirmish users
         self.send_action_to_user(user_name, self.create_skirmish_users_action())
         # if registration is in progress

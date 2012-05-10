@@ -1,15 +1,40 @@
+from collections import OrderedDict
+
 __author__ = 'Pavel Padinker'
 
+_ = lambda s: s
+
+locales = OrderedDict([
+    ("en_US", _("English")),
+    ("ru", _("Russian"))
+])
+
 classes = {
-    0 : 'Warrior',
-    1 : 'Guardian',
-    2 : 'Archer',
-    3 : 'Rogue',
-    4 : 'Mage',
-    5 : 'Priest',
-    6 : 'Warlock',
-    7 : 'Necromancer',
+    0 : _('Warrior'),
+    1 : _('Guardian'),
+    2 : _('Archer'),
+    3 : _('Rogue'),
+    4 : _('Mage'),
+    5 : _('Priest'),
+    6 : _('Warlock'),
+    7 : _('Necromancer'),
     }
+
+ability_names = [
+    _("Skill"),
+    _("Spell")
+]
+
+
+substance_names = [
+    _("Energy"),
+    _("Mana")
+]
+
+main_abilities = [
+    _("Attack"),
+    _("Defence")
+]
 
 spells = {
     # warrior
@@ -46,11 +71,20 @@ spells = {
     }
     }
 
-def get_classes():
-    return classes
+def get_locales(locale):
+    result = OrderedDict()
+    for locale_id in locales.keys():
+        result[locale_id] = locale.translate(locales[locale_id])
+    return result
 
-def get_class_name(classID):
-    return classes[classID]
+def get_classes(locale):
+    result = dict()
+    for class_id in classes.keys():
+        result[class_id] = locale.translate(classes[class_id])
+    return result
+
+def get_class_name(locale, classID):
+    return get_classes(locale)[classID]
 
 def get_attack_count(classID, level):
     attack_count = 1
@@ -98,20 +132,20 @@ def get_spells(classID, level):
         result += spells[classID][enough_level + 1]
     return result
 
-def get_ability_name(classID):
+def get_ability_name(classID, locale):
     ability_name = ""
     if classID < 4:
-        ability_name = "skill"
+        ability_name = locale.translate(ability_names[0])
     else:
-        ability_name = "spell"
+        ability_name = locale.translate(ability_names[1])
 
     return ability_name
 
-def get_substance_name(classID):
+def get_substance_name(classID, locale):
     substance_name = ""
     if classID < 4:
-        substance_name = "energy"
+        substance_name = locale.translate(substance_names[0])
     else:
-        substance_name = "mana"
+        substance_name = locale.translate(substance_names[1])
 
     return substance_name

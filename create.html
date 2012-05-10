@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-    <title>Create new character</title>
+    <title>{{ _("Create new character") }}</title>
     <link href="static/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="static/create.css" rel="stylesheet" type="text/css" />
     <script src="static/jquery-1.7.2.min.js" type="text/javascript"></script>
@@ -14,22 +14,22 @@
 <body>
 <table width="200" border="0" align="center">
   <tr align="center" valign="middle">
-    <td>Name</td>
+    <td>{{ _("Name") }}</td>
     <td><label id="nameLabel"  style="margin: auto;">{{ name }}</label></td>
   </tr>
   <tr align="center" valign="middle">
-    <td>Class</td>
+    <td>{{ _("Class") }}</td>
     <td>
      <select id="classMenu" style="margin: auto;">
-         {% for class_name in classes.keys() %}
-         <option value="{{ class_name }}">{{ classes[class_name] }}</option>
+         {% for class_id in classes.keys() %}
+         <option value="{{ class_id }}">{{ classes[class_id] }}</option>
          {% end %}
      </select>
     </td>
   </tr>
   <tr align="center" valign="middle">
       <td></td>
-    <td><div style="width: 150px; margin:5px 10px 5px 10px"><button id="createButton" style="margin:0 2px 0 2px">Create</button><button id="logoutButton" style="margin:0 2px 0 2px">Logout</button></div></td>
+    <td><div style="width: 150px; margin:5px 10px 5px 10px"><button id="createButton" style="margin:0 2px 0 2px">{{ _("Create") }}</button><button id="logoutButton" style="margin:0 2px 0 2px">{{ _("Logout") }}</button></div></td>
   </tr>
 </table>
 <script type="text/javascript">initialize();</script>

@@ -19,7 +19,7 @@ class CharactersManager:
     def remove(self, name):
         self.db.execute("delete from characters where name = %s", name)
 
-    def get_info(self, name):
+    def get_info(self, name, locale):
     # return character info
         character = self.get(name)
         character_info = {
@@ -34,7 +34,7 @@ class CharactersManager:
             'wisdom' : character.wisdom
         }
 
-        character_info['className'] = get_class_name(character_info['classID'])
+        character_info['className'] = get_class_name(locale, character_info['classID'])
         return character_info
 
 def main():

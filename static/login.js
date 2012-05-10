@@ -7,9 +7,11 @@
 var initialize = function () {
     $("#loginButton").click(loginFunc);
     $("#passwordText").keypress(keyPress);
+    $("#locales").change(selectLocale);
 };
 
 var loginFunc = function () {
+    setCookie("locale", $("#locales option:selected").val());
     var formData = {
         "login":$("#loginText").val()
         , "password":$("#passwordText").val()
@@ -29,4 +31,13 @@ var keyPress = function(event) {
     if ( event.which == 13 ) {
         loginFunc();
     }
+}
+
+var selectLocale = function() {
+    val = $("#locales option:selected").val();
+    setCookie("locale", val);
+    $.getJSON('login', {}, function()
+    {
+        window.location.href='/';
+    });
 }
