@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-10 18:14+0300\n"
+"POT-Creation-Date: 2012-05-11 18:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,11 +84,11 @@ msgstr "Защита"
 msgid "Create new character"
 msgstr "Создать нового персонажа"
 
-#: create.html:17 login.html:15 skirmish.html:21
+#: create.html:17 login.html:15 skirmish.html:22
 msgid "Name"
 msgstr "Имя"
 
-#: create.html:21 skirmish.html:22
+#: create.html:21 skirmish.html:23
 msgid "Class"
 msgstr "Класс"
 
@@ -96,7 +96,7 @@ msgstr "Класс"
 msgid "Create"
 msgstr "Создать"
 
-#: create.html:32 skirmish.html:18
+#: create.html:32 skirmish.html:19
 msgid "Logout"
 msgstr "Выйти"
 
@@ -116,47 +116,47 @@ msgstr "Войти"
 msgid "Skirmish"
 msgstr "Схватка"
 
-#: skirmish.html:17
+#: skirmish.html:18
 msgid "Hello"
 msgstr "Здравствуй"
 
-#: skirmish.html:18
+#: skirmish.html:19
 msgid "Drop"
 msgstr "Удалить"
 
-#: skirmish.html:23
+#: skirmish.html:24
 msgid "Level"
 msgstr "Уровень"
 
-#: skirmish.html:24
+#: skirmish.html:25
 msgid "Health"
 msgstr "Здоровье"
 
-#: skirmish.html:26
+#: skirmish.html:27
 msgid "Strength"
 msgstr "Сила"
 
-#: skirmish.html:27
+#: skirmish.html:28
 msgid "Dexterity"
 msgstr "Ловкость"
 
-#: skirmish.html:28
+#: skirmish.html:29
 msgid "Intellect"
 msgstr "Интеллект"
 
-#: skirmish.html:29
+#: skirmish.html:30
 msgid "Wisdom"
 msgstr "Мудрость"
 
-#: skirmish.html:32
+#: skirmish.html:33
 msgid "Join"
 msgstr "Войти"
 
-#: skirmish.html:32
+#: skirmish.html:33
 msgid "Leave"
 msgstr "Покинуть"
 
-#: skirmish.html:56
+#: skirmish.html:57
 msgid "Send"
 msgstr "Отправить"
 
@@ -171,3 +171,19 @@ msgstr "Сброс"
 #: div_action.html:35
 msgid "Cancel"
 msgstr "Отменить"
+
+#: static/locale.js:18
+msgid "Registration has been started"
+msgstr "Регистрация началась"
+
+#: static/locale.js:19
+msgid "Registration has been ended"
+msgstr "Регистрация закончилась"
+
+#: static/locale.js:20
+msgid "Round {0} has been started"
+msgstr "Раунд {0} начался"
+
+#: static/locale.js:21
+msgid "Round {0} has been ended"
+msgstr "Раунд {0} закончился"

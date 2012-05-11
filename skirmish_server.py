@@ -1,3 +1,4 @@
+from tornado import web
 import tornado.ioloop
 import tornado.web
 import tornado.httpserver
@@ -17,6 +18,8 @@ class SkirmishApplication(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r'/', MainHandler,),
+            (r'/static/locale.js', StaticJSHandler,),
+            (r"/static/(.*)", web.StaticFileHandler, {"path": "static"}),
             (r'/login', LoginHandler,),
             (r'/logout', LogoutHandler,),
             (r'/create', CreateCharacterHandler,),
@@ -32,7 +35,6 @@ class SkirmishApplication(tornado.web.Application):
             "cookie_secret" : "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
             "login_url": "/login",
             "xsrf_cookies": True,
-            "static_path" : os.path.join(os.path.dirname(__file__), "static"),
             }
 
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -91,6 +93,12 @@ class MainHandler(BaseHandler):
             self.users_manager.reenter_from_user(self.current_user)
             self.battle_bot.user_enter(self.current_user, self.locale)
             self.render("skirmish.html", login=self.current_user, substance=smarty.get_substance_name(character.classID, self.locale))
+
+class StaticJSHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, *args, **kwargs):
+        self.set_header("Content-Type", "text/javascript")
+        self.write(tornado.escape.xhtml_unescape(self.render_string("static/locale.js")))
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):

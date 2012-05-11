@@ -115,6 +115,12 @@ var format_message = function(message) {
     return message_formatted;
 };
 
+var addTextTo = function(element_id, message) {
+    element = $(element_id)
+    element.val(element.val() + message);
+    element.scrollTop(element[0].scrollHeight - element.height());
+}
+
 var messager = {
     errorSleepTime: 500,
 
@@ -125,8 +131,7 @@ var messager = {
     onSuccess: function(response) {
         var message = $.parseJSON(response);
         if(message.to == "all") {
-            message_formatted = format_message(message);
-            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+            addTextTo("#enTextArea", format_message(message))
         }
 
         messager.errorSleepTime = 500;
@@ -215,33 +220,29 @@ var battleBotUpdater = {
         // registration was started
         else if(action.type == 6) {
             message = {};
-            message["body"] = "Registration has been started";
+            message["body"] = messages[0];
             message["from"] = "bot";
-            message_formatted = format_message(message);
-            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+            addTextTo("#enTextArea", format_message(message))
         }
         else if(action.type == 7) {
             message = {};
-            message["body"] = "Registration has been ended";
+            message["body"] = messages[1];
             message["from"] = "bot";
-            message_formatted = format_message(message);
-            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+            addTextTo("#enTextArea", format_message(message))
             $("#joinButton").attr('disabled', true);
             $("#leaveButton").attr('disabled', true);
         }
         else if(action.type == 8) {
             message = {};
-            message["body"] = "Round " + action.round + " has been started";
+            message["body"] = messages[2].f(action.round);
             message["from"] = "bot";
-            message_formatted = format_message(message);
-            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+            addTextTo("#enTextArea", format_message(message))
         }
         else if(action.type == 9) {
             message = {};
-            message["body"] = "Round " + action.round + " has been ended";
+            message["body"] = messages[3].f(action.round);
             message["from"] = "bot";
-            message_formatted = format_message(message);
-            $("#enTextArea").val($("#enTextArea").val() + message_formatted);
+            addTextTo("#enTextArea", format_message(message))
         }
 
         battleBotUpdater.errorSleepTime = 500;
