@@ -99,23 +99,28 @@ class BattleBot(Thread):
     def run(self):
         while 1:
             if self.phase == -1 and self.counter == smarty.rest_time:
+                # registration start
                 self.phase = 0
                 self.counter = 0
                 self.send_action_to_all(Action(7, {"message_number" : "0"}))
                 self.send_action_to_all(Action(1, {}))
             elif self.phase == 0 and self.counter == smarty.registration_time:
-                self.phase = 1
+                # registration end
                 self.counter = 0
-                self.send_action_to_all(Action(7, {"message_number" : "1"}))
+                if len(self.get_skirmish_users()) > 1:
+                    self.phase = 1
+                    self.send_action_to_all(Action(7, {"message_number" : "1"}))
+                else:
+                    self.send_action_to_all(Action(7, {"message_number" : "5"}))
             elif self.phase > 0 and self.counter == 1:
                 self.send_action_to_all(Action(7, {"message_number" : "2", "round" : self.phase}))
                 self.send_action_to_skirmish(Action(3, {}))
             elif self.phase > 0 and self.counter == smarty.turn_time:
                 self.send_action_to_all(Action(7, {"message_number" : "3", "round" : self.phase}))
                 self.send_action_to_skirmish(Action(5, {}))
-                self.process_round_result()
                 self.counter = 0
                 self.phase += 1
+                self.process_round_result()
 
             self.counter += 1
 
@@ -133,11 +138,18 @@ class BattleBot(Thread):
                 self.users[user_name].state = 0 #unregistered
                 self.send_action_to_all(self.create_skirmish_users_action())
 
-        if not len(self.get_skirmish_users()):
+        if len(self.get_skirmish_users()) < 2:
             self.process_game_result()
 
     def process_game_result(self):
         # TODO:
+        self.send_action_to_all(Action(7, {"message_number" : "4"}))
+        for user_name in self.get_skirmish_users():
+            self.send_action_to_user(user_name, Action(6, {}))
+            self.users[user_name].state = 0 #unregistered
+            self.send_action_to_all(self.create_skirmish_users_action())
+        self.phase = -1
+        self.counter = 0
         pass
 
     def user_join(self, user_name):

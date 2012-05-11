@@ -19,3 +19,5 @@ messages[0] = {{ '"%s"' % _("Registration has been started") }};
 messages[1] = {{ '"%s"' % _("Registration has been ended") }};
 messages[2] = {{ '"%s"' % _("Round {0} has been started") }};
 messages[3] = {{ '"%s"' % _("Round {0} has been ended") }};
+messages[4] = {{ '"%s"' % _("Game has been ended") }};
+messages[5] = {{ '"%s"' % _("Game can't be started, not enough players") }};
