@@ -1,12 +1,19 @@
+# -*- coding: utf-8 -*-
+
 from collections import OrderedDict
 
 __author__ = 'Pavel Padinker'
 
 _ = lambda s: s
 
+rest_time = 5
+registration_time = 5
+turn_time = 5
+
+
 locales = OrderedDict([
-    ("en_US", _("English")),
-    ("ru", _("Russian"))
+    ("en_US", "English"),
+    ("ru", u"Русский")
 ])
 
 classes = {

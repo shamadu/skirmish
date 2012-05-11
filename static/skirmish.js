@@ -217,30 +217,23 @@ var battleBotUpdater = {
             $("#joinButton").attr('disabled', true);
             $("#leaveButton").attr('disabled', true);
         }
-        // registration was started
+        // reset to initial
         else if(action.type == 6) {
-            message = {};
-            message["body"] = messages[0];
-            message["from"] = "bot";
-            addTextTo("#enTextArea", format_message(message))
-        }
-        else if(action.type == 7) {
-            message = {};
-            message["body"] = messages[1];
-            message["from"] = "bot";
-            addTextTo("#enTextArea", format_message(message))
+            removeDivAction();
             $("#joinButton").attr('disabled', true);
             $("#leaveButton").attr('disabled', true);
         }
-        else if(action.type == 8) {
+        // message action
+        else if(action.type == 7) {
             message = {};
-            message["body"] = messages[2].f(action.round);
-            message["from"] = "bot";
-            addTextTo("#enTextArea", format_message(message))
-        }
-        else if(action.type == 9) {
-            message = {};
-            message["body"] = messages[3].f(action.round);
+            if(action.message_number == 2 || action.message_number == 3)
+            {
+                message["body"] = messages[action.message_number].f(action.round);
+            }
+            else
+            {
+                message["body"] = messages[action.message_number];
+            }
             message["from"] = "bot";
             addTextTo("#enTextArea", format_message(message))
         }

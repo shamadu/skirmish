@@ -14,10 +14,8 @@ class Action:
         # 3 - can do turn
         # 4 - can cancel turn
         # 5 - wait for result
-        # 6 - registration was started
-        # 7 - registration was ended
-        # 8 - round was started
-        # 9 - round was ended
+        # 6 - reset to initial
+        # 7 - message action
         self.type = type
         self.args = args
         self.args["type"] = type
@@ -76,8 +74,14 @@ class UserInfo:
     def get_turn_info(self):
         return self.turn_info_string
 
-    def cancel_turn(self):
+    def reset_turn(self):
         self.turn_info = list()
+
+    def is_turn_done(self):
+        if len(self.turn_info) > 0:
+            return True
+        else:
+            return False
 
 class BattleBot(Thread):
     def __init__(self, characters_manager):
@@ -85,42 +89,55 @@ class BattleBot(Thread):
         self.characters_manager = characters_manager
         self.users = dict()
 
-        self.rest_time = 5
-        self.registration_time = 5
-        self.turn_time = 5
-        self.counter = 0
         # phases:
         # -1 - none
         # 0 - registration
         # 1,2,... - rounds
         self.phase = -1
+        self.counter = 0
 
     def run(self):
         while 1:
-            if self.phase == -1 and self.counter == self.rest_time:
+            if self.phase == -1 and self.counter == smarty.rest_time:
                 self.phase = 0
                 self.counter = 0
-                self.send_action_to_all(Action(6, {}))
+                self.send_action_to_all(Action(7, {"message_number" : "0"}))
                 self.send_action_to_all(Action(1, {}))
-            elif self.phase == 0 and self.counter == self.registration_time:
+            elif self.phase == 0 and self.counter == smarty.registration_time:
                 self.phase = 1
                 self.counter = 0
-                self.send_action_to_all(Action(7, {}))
+                self.send_action_to_all(Action(7, {"message_number" : "1"}))
             elif self.phase > 0 and self.counter == 1:
-                self.send_action_to_all(Action(8, {"round" : self.phase}))
+                self.send_action_to_all(Action(7, {"message_number" : "2", "round" : self.phase}))
                 self.send_action_to_skirmish(Action(3, {}))
-            elif self.phase > 0 and self.counter == self.turn_time:
-                self.send_action_to_all(Action(9, {"round" : self.phase}))
+            elif self.phase > 0 and self.counter == smarty.turn_time:
+                self.send_action_to_all(Action(7, {"message_number" : "3", "round" : self.phase}))
                 self.send_action_to_skirmish(Action(5, {}))
                 self.process_round_result()
                 self.counter = 0
                 self.phase += 1
 
             self.counter += 1
+
             time.sleep(1)
             pass
 
     def process_round_result(self):
+        for user_name in self.get_skirmish_users():
+            if self.users[user_name].is_turn_done():
+                # TODO:
+                self.users[user_name].reset_turn()
+                pass
+            else:
+                self.send_action_to_user(user_name, Action(6, {}))
+                self.users[user_name].state = 0 #unregistered
+                self.send_action_to_all(self.create_skirmish_users_action())
+
+        if not len(self.get_skirmish_users()):
+            self.process_game_result()
+
+    def process_game_result(self):
+        # TODO:
         pass
 
     def user_join(self, user_name):
@@ -145,7 +162,7 @@ class BattleBot(Thread):
 
     def user_turn_cancel(self, user_name):
         if self.phase > 0:
-            self.users[user_name].cancel_turn()
+            self.users[user_name].reset_turn()
             self.state = 1
             args = self.users[user_name].create_div_args(self.get_skirmish_users())
             args["turn_info"] = self.users[user_name].get_turn_info()
@@ -207,7 +224,7 @@ class BattleBot(Thread):
         # if round is in progress
         elif self.phase > 0:
             # if it's time to do the turn
-            if self.counter < self.turn_time:
+            if self.counter < smarty.turn_time:
                 # and if user state is "registered", send "can do turn" action
                 if self.users[user_name].state == 1:
                     self.send_action_to_user(user_name, Action(3, self.users[user_name].create_div_args(self.get_skirmish_users())))

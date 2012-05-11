@@ -20,6 +20,8 @@ class SkirmishApplication(tornado.web.Application):
             (r'/', MainHandler,),
             (r'/static/locale.js', StaticJSHandler,),
             (r"/static/(.*)", web.StaticFileHandler, {"path": "static"}),
+            (r"/(favicon\.ico)", web.StaticFileHandler, {"path": "static"}),
+            (r"/(robots\.txt)", web.StaticFileHandler, {"path": ""}),
             (r'/login', LoginHandler,),
             (r'/logout', LogoutHandler,),
             (r'/create', CreateCharacterHandler,),
@@ -199,7 +201,11 @@ class PollUsersHandler(BaseHandler):
         # Closed client connection
         if self.request.connection.stream.closed():
             return
-        self.finish(users)
+
+        def finish_request():
+            self.finish(users)
+
+        tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
     def on_connection_close(self):
         self.users_manager.unsubscribe(self.current_user)
