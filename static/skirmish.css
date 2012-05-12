@@ -1,12 +1,33 @@
+.contentDiv {
+    position: absolute;
+    width: auto;
+    height: auto;
+    left: 5px;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+}
+
+.sideBar {
+    position: absolute;
+    width: auto;
+    left: 5px;
+}
+
+.mouse_pointer {
+    cursor: pointer;
+}
+
 .divChat {
     position: absolute;
     width: auto;
     height: auto;
-    top: 5px;
-    bottom: 125px;
+    top: 0;
+    bottom: 95px;
     right: 130px;
     left: 5px;
 }
+
 .divUsers {
     position: absolute;
     right: 5px;
@@ -19,9 +40,13 @@
 
 .tabbable {
     position: absolute;
-    right: 0px;
+    right: 0;
     left: 0;
     height: 100%;
+}
+
+.nav {
+    margin-bottom: 10px;
 }
 
 .divSend {
@@ -33,7 +58,7 @@
 }
 
 .sendButton {
-    position:fixed;
+    position: absolute;
     left: 320px;
     width: 100px;
 }
@@ -49,9 +74,9 @@
 }
 
 .textArea {
+    position: absolute;
     width: 100%;
     height: 100%;
-    position: absolute;
 }
 
 .characterInfoTable {

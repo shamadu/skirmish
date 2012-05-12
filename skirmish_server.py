@@ -4,7 +4,6 @@ import tornado.web
 import tornado.httpserver
 import tornado.database
 import tornado.locale
-import os
 from battle_bot import BattleBot
 from smarty import get_classes
 import smarty
@@ -220,7 +219,11 @@ class PollMessageHandler(BaseHandler):
         # Closed client connection
         if self.request.connection.stream.closed():
             return
-        self.finish(message)
+
+        def finish_request():
+            self.finish(message)
+
+        tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
     def on_connection_close(self):
         self.messager.unsubscribe(self.current_user)
