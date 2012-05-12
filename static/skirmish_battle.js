@@ -14,7 +14,6 @@ var initialize_battle = function () {
     $("#leaveButton").hide();
     $("#joinButton").click(joinButtonClick);
     $("#leaveButton").click(leaveButtonClick);
-    updateCharacterInfo();
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
         e.target // activated tab
@@ -40,21 +39,6 @@ var joinButtonClick = function () {
 
 var leaveButtonClick = function () {
     $.postJSON('/bot/battle', {'action' : 'leave'}, function() {
-    });
-};
-
-var updateCharacterInfo = function() {
-    $.postJSON('/info', {}, function(res) {
-        var characterInfo = $.parseJSON(res);
-        $("#nameLabel").text(characterInfo.name);
-        $("#classLabel").text(characterInfo.className);
-        $("#levelLabel").text(characterInfo.level);
-        $("#HPLabel").text(characterInfo.hp);
-        $("#MPLabel").text(characterInfo.mp);
-        $("#strengthLabel").text(characterInfo.strength);
-        $("#dexterityLabel").text(characterInfo.dexterity);
-        $("#intellectLabel").text(characterInfo.intellect);
-        $("#wisdomLabel").text(characterInfo.wisdom);
     });
 };
 

@@ -6,6 +6,7 @@
 
 var initialize = function () {
     initialize_battle();
+    initialize_character();
 
     width = $("#sideBar").width();
     $("#contentDiv").css('left', width + 5 + 'px');

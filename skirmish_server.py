@@ -25,7 +25,7 @@ class SkirmishApplication(tornado.web.Application):
             (r'/logout', LogoutHandler,),
             (r'/create', CreateCharacterHandler,),
             (r'/drop', DropCharacterHandler,),
-            (r'/info', InfoCharacterHandler,),
+            (r'/info', PollCharacterInfoHandler,),
             (r'/bot/battle', BattleBotHandler,),
             (r'/bot/poll', PollBotHandler,),
             (r'/users/poll', PollUsersHandler,),
@@ -93,6 +93,7 @@ class MainHandler(BaseHandler):
         else:
             self.users_manager.reenter_from_user(self.current_user)
             self.battle_bot.user_enter(self.current_user, self.locale)
+            self.characters_manager.user_enter(self.current_user, self.locale)
             self.render("skirmish.html", login=self.current_user, substance=smarty.get_substance_name(character.classID, self.locale))
 
 class StaticJSHandler(BaseHandler):
@@ -143,10 +144,24 @@ class DropCharacterHandler(BaseHandler):
         # remove the character from DB
         self.characters_manager.remove(self.current_user)
 
-class InfoCharacterHandler(BaseHandler):
+class PollCharacterInfoHandler(BaseHandler):
+    @tornado.web.authenticated
+    @tornado.web.asynchronous
     def post(self, *args, **kwargs):
-        character_info = self.characters_manager.get_info(self.current_user, self.locale)
-        self.write(character_info)
+        self.characters_manager.subscribe(self.current_user, self.on_action, self.locale)
+
+    def on_action(self, character_info):
+        # Closed client connection
+        if self.request.connection.stream.closed():
+            return
+
+        def finish_request():
+            self.finish(character_info)
+
+        tornado.ioloop.IOLoop.instance().add_callback(finish_request)
+
+    def on_connection_close(self):
+        self.characters_manager.unsubscribe(self.current_user)
 
 class BattleBotHandler(BaseHandler):
     def post(self, *args, **kwargs):

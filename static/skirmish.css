@@ -84,12 +84,20 @@
     border : 0;
 }
 
-.characterInfoTable tr {
+.characterInfoTable,
+.fullCharacterInfoTable tr {
     vertical-align : middle;
     text-align: center;
 }
 
-.characterInfoTable td {
+.characterInfoTable,
+.fullCharacterInfoTable td {
     padding: 0;
     margin: 0, 0, 0, 0;
 }
+
+.fullCharacterInfoTable {
+    width: auto;
+    border : 0;
+}
+
