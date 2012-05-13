@@ -1,0 +1,101 @@
+{% comment login = string user name, sunstance = string substance name, team_content = rendered div for team content %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>{{ _("Skirmish") }}</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/skirmish.css" rel="stylesheet" type="text/css">
+    <script src="../static/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="../static/js/bootstrap.js" type="text/javascript"></script>
+    <script src="../static/js/common.js" type="text/javascript"></script>
+    <script src="../static/js/locale.js" type="text/javascript"></script>
+    <script src="../static/js/skirmish_battle.js" type="text/javascript"></script>
+    <script src="../static/js/skirmish_character.js" type="text/javascript"></script>
+    <script src="../static/js/skirmish.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <div id="sideBar" class="sideBar">
+        <ul class="nav nav-list">
+            <li class="nav-header">
+            </li>
+            <li class="active">
+                <a id="battleAnchor" class="mouse_pointer">{{ _("Battle") }}</a>
+            </li>
+            <li>
+                <a id="characterAnchor" class="mouse_pointer">{{ _("Character") }}</a>
+            </li>
+            <li>
+                <a id="teamAnchor" class="mouse_pointer">{{ _("Team") }}</a>
+            </li>
+        </ul>
+    </div>
+    <div id="contentDiv" class="contentDiv">
+        <div id="battleDiv" class="contentDiv">
+            <div id="divMain" class="divMain">
+                <div class="divCenter">
+                    <p>{{ _("Hello") }}, {{ login }}.</p>
+                    <p><button id="logoutButton" style="margin:0 5px 0 0;">{{ _("Logout") }}</button><button id="dropButton">{{ _("Drop") }}</button></p>
+                </div>
+                <table id="characterInfoTable" class="characterInfoTable">
+                    <tr><td>{{ _("Name") }}</td><td><label id="nameLabel_battle"></label></td></tr>
+                    <tr><td>{{ _("Class") }}</td><td><label id="classLabel_battle"></label></td></tr>
+                    <tr><td>{{ _("Level") }}</td><td><label id="levelLabel_battle"></label></td></tr>
+                    <tr><td>{{ _("Health") }}</td><td><label id="HPLabel_battle"></label></td></tr>
+                    <tr><td>{{ substance }}</td><td><label id="MPLabel_battle"></label></td></tr>
+                </table>
+                <div class="divCenter">
+                    <p><button id="joinButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Join") }}</button><button id="leaveButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Leave") }}</button></p>
+                </div>
+            </div>
+            <div id="divChat" class="divChat">
+                <div id="divUsers" class="divUsers">
+                    <div id="divSkirmishUsers" class="divUsersOnlineSkirmish">
+                    </div>
+                    <div id="divOnlineUsers" class="divUsersOnlineSkirmish">
+                    </div>
+                </div>
+                <div id="tabChat" class="tabbable">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#1" data-toggle="tab">En</a></li>
+                        <li><a href="#2" data-toggle="tab">Ru</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="1">
+                            <textarea id="enTextArea" class="textArea" rows="10" cols="0" readonly="readonly"></textarea>
+                        </div>
+                        <div class="tab-pane" id="2">
+                            <textarea id="ruTextArea" class="textArea" rows="10" cols="0" readonly="readonly"></textarea>
+                        </div>
+                    </div>
+                    <div class="divSend">
+                        <textarea id="sendTextArea" class="textArea" rows="10" cols="0"></textarea><button id="sendButton" class="sendButton">{{ _("Send") }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="characterDiv" class="contentDiv">
+            <table id="fullCharacterInfoTable" class="fullCharacterInfoTable">
+                <tr><td>{{ _("Name") }}</td><td><label id="nameLabel"></label></td></tr>
+                <tr><td>{{ _("Class") }}</td><td><label id="classLabel"></label></td></tr>
+                <tr><td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td></tr>
+                <tr><td>{{ _("Health") }}</td><td><label id="HPLabel"></label></td></tr>
+                <tr><td>{{ substance }}</td><td><label id="MPLabel"></label></td></tr>
+                <tr><td>{{ _("Strength") }}</td><td><label id="strengthLabel"></label></td></tr>
+                <tr><td>{{ _("Dexterity") }}</td><td><label id="dexterityLabel"></label></td></tr>
+                <tr><td>{{ _("Intellect") }}</td><td><label id="intellectLabel"></label></td></tr>
+                <tr><td>{{ _("Wisdom") }}</td><td><label id="wisdomLabel"></label></td></tr>
+            </table>
+        </div>
+
+
+        <div id="teamDiv" class="contentDiv">
+            {{ team_content }}
+        </div>
+    </div>
+    <script type="text/javascript">initialize();</script>
+</body>
+</html>

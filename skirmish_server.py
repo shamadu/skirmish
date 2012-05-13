@@ -17,7 +17,7 @@ class SkirmishApplication(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r'/', MainHandler,),
-            (r'/static/locale.js', StaticJSHandler,),
+            (r'/static/js/locale.js', StaticJSHandler,),
             (r"/static/(.*)", web.StaticFileHandler, {"path": "static"}),
             (r"/(favicon\.ico)", web.StaticFileHandler, {"path": "static"}),
             (r"/(robots\.txt)", web.StaticFileHandler, {"path": ""}),
@@ -94,19 +94,22 @@ class MainHandler(BaseHandler):
             self.users_manager.reenter_from_user(self.current_user)
             self.battle_bot.user_enter(self.current_user, self.locale)
             self.characters_manager.user_enter(self.current_user, self.locale)
-            self.render("skirmish.html", login=self.current_user, substance=smarty.get_substance_name(character.classID, self.locale))
+            self.render("templates/skirmish.html",
+                login=self.current_user,
+                substance=smarty.get_substance_name(character.classID, self.locale),
+                team_content="team_content")
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
         self.set_header("Content-Type", "text/javascript")
-        self.write(tornado.escape.xhtml_unescape(self.render_string("static/locale.js")))
+        self.write(tornado.escape.xhtml_unescape(self.render_string("static/js/locale.js")))
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
         if not self.current_user:
             locales_dict = smarty.get_locales(self.locale)
-            self.render("login.html", locales=locales_dict, selected=self.get_cookie("locale"))
+            self.render("templates/login.html", locales=locales_dict, selected=self.get_cookie("locale"))
         else:
             self.redirect("/")
 
@@ -130,7 +133,7 @@ class CreateCharacterHandler(BaseHandler):
         character = self.characters_manager.get(self.current_user)
         if not character:
         # no such user - redirect to creation
-            self.render("create.html", name=self.current_user, classes=get_classes(self.locale))
+            self.render("templates/create.html", name=self.current_user, classes=get_classes(self.locale))
         else:
             self.redirect("/")
 
@@ -193,7 +196,7 @@ class PollBotHandler(BaseHandler):
         elif action.type == 3 or action.type == 4 or action.type == 5:
             result["type"] = action.type
             result["turn_info"] = action.args["turn_info"]
-            result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
+            result["div_action"] = self.render_string("templates/div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
         else:
             result = action.args
 

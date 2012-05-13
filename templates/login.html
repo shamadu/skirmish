@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>{{ _("Login to Skirmish") }}</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/login.css" rel="stylesheet" type="text/css">
+    <script src="../static/js/jquery-1.7.2.min.js"></script>
+    <script src="../static/js/common.js"></script>
+    <script src="../static/js/login.js"></script>
+</head>
+<body>
+<table border="0" align="center">
+    <tr align="center" valign="middle">
+        <td>{{ _("Name") }}</td>
+        <td><input type="text" id="loginText"></td>
+    </tr>
+    <tr align="center" valign="middle">
+        <td>{{ _("Password") }}</td>
+        <td><input type="password" id="passwordText"></td>
+    </tr>
+    <tr align="center" valign="middle">
+        <td>{{ _("Language") }}</td>
+        <td>
+            <select id="locales" style="margin: auto;">
+                {% for locale in locales.keys() %}
+                <option value="{{ locale }}" {% if selected == locale %} selected="selected" {% end %}>{{ locales[locale] }}</option>
+                {% end %}
+            </select>
+        </td>
+    </tr>
+    <tr align="center" valign="middle">
+        <td></td>
+        <td><label id="errorLabel" class="errorLabel"></label></td>
+    </tr>
+    <tr align="center" valign="middle">
+        <td></td>
+        <td><button id="loginButton">{{ _("Login") }}</button></td>
+    </tr>
+</table>
+<script type="text/javascript">initialize();</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{% comment "actions(dict <action id> : tuple <action name, action count>), users(list of names), spells(list of spells/skills)" %}
+<div id="divAction" style="width: auto">
+    {% for action in actions.keys() %}
+    <div style="width: auto">{{ actions[action][0] }}
+        {% if actions[action][1] == 0 %}
+        <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
+            <input type="text" style="width: 50px" value="0">
+            %
+        </div>
+        {% else %}
+            {% for i in range(actions[action][1]) %}
+            <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
+                <select class="user_select" style="margin: auto; width: auto;">
+                    {% for user in users %}
+                    <option value="{{ user }}">{{ user }}</option>
+                    {% end %}
+                </select>
+                {% if action == 2 %}
+                <select class="spell_select" style="margin: auto; width: auto;">
+                    {% for spell in spells %}
+                    <option value="{{ spell }}">{{ spell }}</option>
+                    {% end %}
+                </select>
+                {% end %}
+                <input type="text" style="margin: auto; width: 50px" value="0">
+                %
+            </div>
+            {% end %}
+        {% end %}
+    </div>
+    {% end %}
+    <div class="divCenter">
+        <button id="doButton" style="margin:0 5px 0 0;">{{ _("Do") }}</button>
+        <button id="resetButton" style="margin:0 5px 0 0;">{{ _("Reset") }}</button>
+        <button id="cancelButton">{{ _("Cancel") }}</button>
+    </div>
+</div>
