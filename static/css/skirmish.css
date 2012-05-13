@@ -101,3 +101,15 @@
     border : 0;
 }
 
+.divTeamCreation {
+    position: absolute;
+    width: auto;
+}
+
+.divTeamCreation p, input {
+    margin-bottom: 2px;
+}
+
+.divTeamCreation input {
+    width: 150px
+}

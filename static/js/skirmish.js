@@ -7,6 +7,7 @@
 var initialize = function () {
     initialize_battle();
     initialize_character();
+    initialize_team();
 
     width = $("#sideBar").width();
     $("#contentDiv").css('left', width + 5 + 'px');

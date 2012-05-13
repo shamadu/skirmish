@@ -25,12 +25,13 @@ class SkirmishApplication(tornado.web.Application):
             (r'/logout', LogoutHandler,),
             (r'/create', CreateCharacterHandler,),
             (r'/drop', DropCharacterHandler,),
-            (r'/info', PollCharacterInfoHandler,),
             (r'/bot/battle', BattleBotHandler,),
             (r'/bot/poll', PollBotHandler,),
             (r'/users/poll', PollUsersHandler,),
             (r'/message/poll', PollMessageHandler,),
+            (r'/info/poll', PollCharacterInfoHandler,),
             (r'/message/new', NewMessageHandler,),
+            (r'/team/create', CreateTeamHandler,),
         ]
         settings = {
             "cookie_secret" : "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
@@ -86,7 +87,7 @@ class BaseHandler(tornado.web.RequestHandler):
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        character = self.characters_manager.get(self.current_user)
+        character = self.characters_manager.get_character(self.current_user)
         if not character:
         # no such user - redirect to creation
             self.redirect("/create")
@@ -94,10 +95,16 @@ class MainHandler(BaseHandler):
             self.users_manager.reenter_from_user(self.current_user)
             self.battle_bot.user_enter(self.current_user, self.locale)
             self.characters_manager.user_enter(self.current_user, self.locale)
+            team_state = 0
+            if len(character.team_name) == 0:
+                # no team, allow to create team
+                team_state = 0
+            else:
+                team_state = 1
             self.render("templates/skirmish.html",
                 login=self.current_user,
                 substance=smarty.get_substance_name(character.classID, self.locale),
-                team_content="team_content")
+                team_state=team_state)
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated
@@ -123,6 +130,7 @@ class LoginHandler(BaseHandler):
         self.write(login_response)
 
 class LogoutHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self, *args, **kwargs):
         self.users_manager.user_logout(self.current_user)
         self.clear_cookie("login")
@@ -130,22 +138,24 @@ class LogoutHandler(BaseHandler):
 class CreateCharacterHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        character = self.characters_manager.get(self.current_user)
+        character = self.characters_manager.get_character(self.current_user)
         if not character:
-        # no such user - redirect to creation
-            self.render("templates/create.html", name=self.current_user, classes=get_classes(self.locale))
+        # no character - redirect to creation
+            self.render("templates/create_character.html", name=self.current_user, classes=get_classes(self.locale))
         else:
             self.redirect("/")
 
+    @tornado.web.authenticated
     def post(self, *args, **kwargs):
         classID = self.get_argument("classID")
         # insert the new character
-        self.characters_manager.create(self.current_user, classID)
+        self.characters_manager.create_character(self.current_user, classID)
 
 class DropCharacterHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self, *args, **kwargs):
         # remove the character from DB
-        self.characters_manager.remove(self.current_user)
+        self.characters_manager.remove_character(self.current_user)
 
 class PollCharacterInfoHandler(BaseHandler):
     @tornado.web.authenticated
@@ -153,13 +163,13 @@ class PollCharacterInfoHandler(BaseHandler):
     def post(self, *args, **kwargs):
         self.characters_manager.subscribe(self.current_user, self.on_action, self.locale)
 
-    def on_action(self, character_info):
+    def on_action(self, action):
         # Closed client connection
         if self.request.connection.stream.closed():
             return
 
         def finish_request():
-            self.finish(character_info)
+            self.finish(action.args)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
@@ -167,6 +177,7 @@ class PollCharacterInfoHandler(BaseHandler):
         self.characters_manager.unsubscribe(self.current_user)
 
 class BattleBotHandler(BaseHandler):
+    @tornado.web.authenticated
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'join':
             self.battle_bot.user_join(self.current_user)
@@ -255,6 +266,11 @@ class NewMessageHandler(BaseHandler):
             "body": self.get_argument("body"),
             }
         self.messager.new_message(message)
+
+class CreateTeamHandler(BaseHandler):
+    @tornado.web.authenticated
+    def post(self, *args, **kwargs):
+        self.characters_manager.create_team(self.current_user, self.get_argument("team_name"))
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

@@ -3,6 +3,16 @@ import smarty
 
 __author__ = 'Pavel Padinker'
 
+class Action:
+    def __init__(self, type, args):
+        # types are:
+        # 0 - character info update
+        # 1 -
+        # 2 -
+        self.type = type
+        self.args = args
+        self.args["type"] = type
+
 class UserInfo:
     def __init__(self, callback, locale):
         self.callback = callback
@@ -32,7 +42,7 @@ class CharactersManager:
         self.db = db
         self.db.execute("create table if not exists characters (id integer(11) primary key not null auto_increment unique, "
                         "name text, classID integer, level integer, hp integer, mp integer, strength integer, dexterity  integer, "
-                        "intellect  integer, wisdom  integer)")
+                        "intellect  integer, wisdom  integer, exp bigint, gold integer, team_name text, rank_in_team text)")
         self.users = dict()
 
     def subscribe(self, user_name, callback, locale):
@@ -44,20 +54,20 @@ class CharactersManager:
     def unsubscribe(self, user_name):
         self.users[user_name].set_callback(None)
 
-    def get(self, name):
+    def get_character(self, name):
         return self.db.get("select * from characters where name = %s", name)
 
-    def create(self, name, classID):
-        self.db.execute("insert into characters (name, classID, level, hp, mp, strength, dexterity, intellect, wisdom) values "
-                        "(%s, %s, %s, %s, %s, %s, %s, %s, %s)", name, classID, 1, 1, 1, 1, 1, 1, 1)
-        self.send_info(name)
+    def create_character(self, name, classID):
+        if not self.get_character(name):
+            self.db.execute("insert into characters (name, classID, level, hp, mp, strength, dexterity, intellect, wisdom, exp, gold, team_name, rank_in_team) values "
+                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", name, classID, 1, 1, 1, 1, 1, 1, 1, 0, 1, "", 0)
 
-    def remove(self, name):
+    def remove_character(self, name):
         self.db.execute("delete from characters where name = %s", name)
 
     def send_info(self, name):
         # return character info
-        character = self.get(name)
+        character = self.get_character(name)
         character_info = [
             character.name,
             smarty.get_class_name(self.users[name].locale, character.classID),
@@ -69,9 +79,12 @@ class CharactersManager:
             str(character.intellect),
             str(character.wisdom)
         ]
-        self.users[name].send_action(":".join(character_info))
+        self.users[name].send_action(Action(0, {"character_info" : ":".join(character_info)}))
 
     def user_enter(self, user_name, locale):
         if not user_name in self.users:
             self.users[user_name] = UserInfo(None, locale)
         self.send_info(user_name)
+
+    def create_team(self, user_name, team_name):
+        self.db.execute("update characters set team_name=%s, rank_in_team=0 where name=%s", team_name, user_name)

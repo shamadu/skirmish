@@ -182,7 +182,7 @@ class BattleBot(Thread):
 
     def subscribe(self, user_name, callback, locale):
         if not user_name in self.users.keys():
-            self.users[user_name] = UserInfo(self.characters_manager.get(user_name), locale)
+            self.users[user_name] = UserInfo(self.characters_manager.get_character(user_name), locale)
         self.users[user_name].set_callback(callback)
 
     def unsubscribe(self, user_name):
@@ -220,7 +220,7 @@ class BattleBot(Thread):
 
     def user_enter(self, user_name, locale):
         if not user_name in self.users.keys():
-            self.users[user_name] = UserInfo(self.characters_manager.get(user_name), locale)
+            self.users[user_name] = UserInfo(self.characters_manager.get_character(user_name), locale)
         else:
             self.users[user_name].locale = locale
         # send skirmish users
