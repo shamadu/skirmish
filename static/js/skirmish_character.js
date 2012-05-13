@@ -29,12 +29,28 @@ var characterInfoUpdater = {
             $("#dexterityLabel").text(characterInfo[6]);
             $("#intellectLabel").text(characterInfo[7]);
             $("#wisdomLabel").text(characterInfo[8]);
+            $("#expLabel").text(characterInfo[9]);
+            $("#goldLabel").text(characterInfo[10]);
+            $("#teamLabel").text(characterInfo[11]);
+            $("#rankLabel").text(characterInfo[12]);
 
             $("#nameLabel_battle").text(characterInfo[0]);
             $("#classLabel_battle").text(characterInfo[1]);
             $("#levelLabel_battle").text(characterInfo[2]);
             $("#HPLabel_battle").text(characterInfo[3]);
             $("#MPLabel_battle").text(characterInfo[4]);
+        }
+        // show create team div
+        else if (action.type == 1) {
+            $("#teamDivContainer").children().remove();
+            $("#teamDivContainer").append(action.team_div);
+            initialize_create_team();
+        }
+        // show team info div
+        else if (action.type == 2) {
+            $("#teamDivContainer").children().remove();
+            $("#teamDivContainer").append(action.team_div);
+            initialize_team_info();
         }
 
         characterInfoUpdater.errorSleepTime = 500;

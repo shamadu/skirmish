@@ -31,12 +31,13 @@ class SkirmishApplication(tornado.web.Application):
             (r'/message/poll', PollMessageHandler,),
             (r'/info/poll', PollCharacterInfoHandler,),
             (r'/message/new', NewMessageHandler,),
-            (r'/team/create', CreateTeamHandler,),
+            (r'/team', TeamHandler,),
         ]
         settings = {
             "cookie_secret" : "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
-            "login_url": "/login",
-            "xsrf_cookies": True,
+            "login_url" : "/login",
+            "xsrf_cookies" : True,
+            "template_path" : "templates"
             }
 
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -96,27 +97,26 @@ class MainHandler(BaseHandler):
             self.battle_bot.user_enter(self.current_user, self.locale)
             self.characters_manager.user_enter(self.current_user, self.locale)
             team_state = 0
-            if len(character.team_name) == 0:
+            if not character.team_name:
                 # no team, allow to create team
                 team_state = 0
             else:
                 team_state = 1
-            self.render("templates/skirmish.html",
+            self.render("skirmish.html",
                 login=self.current_user,
-                substance=smarty.get_substance_name(character.classID, self.locale),
-                team_state=team_state)
+                substance=smarty.get_substance_name(character.classID, self.locale))
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
         self.set_header("Content-Type", "text/javascript")
-        self.write(tornado.escape.xhtml_unescape(self.render_string("static/js/locale.js")))
+        self.write(tornado.escape.xhtml_unescape(self.render_string("../static/js/locale.js")))
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
         if not self.current_user:
             locales_dict = smarty.get_locales(self.locale)
-            self.render("templates/login.html", locales=locales_dict, selected=self.get_cookie("locale"))
+            self.render("login.html", locales=locales_dict, selected=self.get_cookie("locale"))
         else:
             self.redirect("/")
 
@@ -141,7 +141,7 @@ class CreateCharacterHandler(BaseHandler):
         character = self.characters_manager.get_character(self.current_user)
         if not character:
         # no character - redirect to creation
-            self.render("templates/create_character.html", name=self.current_user, classes=get_classes(self.locale))
+            self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
         else:
             self.redirect("/")
 
@@ -168,8 +168,24 @@ class PollCharacterInfoHandler(BaseHandler):
         if self.request.connection.stream.closed():
             return
 
+        result = {}
+
+
+        if action.type == 1:
+            result = action.args
+            result["team_div"] = self.render_string("create_team.html")
+        elif action.type == 2:
+            result["type"] = action.type
+            result["team_div"] = self.render_string("team_info.html",
+                user_name=self.current_user,
+                team_name=action.args["team_name"],
+                team_gold=action.args["team_gold"],
+                members=action.args["members"])
+        else:
+            result = action.args
+
         def finish_request():
-            self.finish(action.args)
+            self.finish(result)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
@@ -207,7 +223,7 @@ class PollBotHandler(BaseHandler):
         elif action.type == 3 or action.type == 4 or action.type == 5:
             result["type"] = action.type
             result["turn_info"] = action.args["turn_info"]
-            result["div_action"] = self.render_string("templates/div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
+            result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
         else:
             result = action.args
 
@@ -267,10 +283,17 @@ class NewMessageHandler(BaseHandler):
             }
         self.messager.new_message(message)
 
-class CreateTeamHandler(BaseHandler):
+class TeamHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self, *args, **kwargs):
-        self.characters_manager.create_team(self.current_user, self.get_argument("team_name"))
+        if self.get_argument("action") == "create":
+            self.write(self.characters_manager.create_team(self.current_user, self.get_argument("team_name")))
+        elif self.get_argument("action") == "promote":
+            self.characters_manager.promote_user(self.current_user, self.get_argument("user_name"))
+        elif self.get_argument("action") == "demote":
+            self.characters_manager.demote_user(self.current_user, self.get_argument("user_name"))
+        elif self.get_argument("action") == "remove":
+            self.characters_manager.remove_user_from_team(self.current_user, self.get_argument("user_name"))
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

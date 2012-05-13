@@ -7,7 +7,6 @@
 var initialize = function () {
     initialize_battle();
     initialize_character();
-    initialize_team();
 
     width = $("#sideBar").width();
     $("#contentDiv").css('left', width + 5 + 'px');
@@ -19,28 +18,28 @@ var initialize = function () {
 };
 
 var showBattle = function() {
-    $("#battleDiv").show();
+    $("#battleDivContainer").show();
     $("#battleAnchor").parent().attr("class", "active");
-    $("#characterDiv").hide();
+    $("#characterDivContainer").hide();
     $("#characterAnchor").parent().removeAttr("class");
-    $("#teamDiv").hide();
+    $("#teamDivContainer").hide();
     $("#teamAnchor").parent().removeAttr("class");
 };
 
 var showCharacter = function() {
-    $("#characterDiv").show();
+    $("#characterDivContainer").show();
     $("#characterAnchor").parent().attr("class", "active");
-    $("#battleDiv").hide();
+    $("#battleDivContainer").hide();
     $("#battleAnchor").parent().removeAttr("class");
-    $("#teamDiv").hide();
+    $("#teamDivContainer").hide();
     $("#teamAnchor").parent().removeAttr("class");
 };
 
 var showTeam = function() {
-    $("#teamDiv").show();
+    $("#teamDivContainer").show();
     $("#teamAnchor").parent().attr("class", "active");
-    $("#battleDiv").hide();
+    $("#battleDivContainer").hide();
     $("#battleAnchor").parent().removeAttr("class");
-    $("#characterDiv").hide();
+    $("#characterDivContainer").hide();
     $("#characterAnchor").parent().removeAttr("class");
 };

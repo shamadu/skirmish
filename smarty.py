@@ -10,6 +10,11 @@ rest_time = 5
 registration_time = 5
 turn_time = 5
 
+error_messages = [
+    _("Team with this name already exists"),
+    _("Character already has team"),
+    _("Can't log in, wrong login or password")
+]
 
 locales = OrderedDict([
     ("en_US", "English"),

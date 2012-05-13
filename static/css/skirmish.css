@@ -1,3 +1,8 @@
+.errorLabel {
+    margin: auto;
+    color: red;
+}
+
 .contentDiv {
     position: absolute;
     width: auto;
@@ -85,7 +90,8 @@
 }
 
 .characterInfoTable,
-.fullCharacterInfoTable tr {
+.fullCharacterInfoTable,
+.teamInfoTable tr {
     vertical-align : middle;
     text-align: center;
 }
@@ -97,6 +103,11 @@
 }
 
 .fullCharacterInfoTable {
+    width: auto;
+    border : 0;
+}
+
+.teamInfoTable {
     width: auto;
     border : 0;
 }

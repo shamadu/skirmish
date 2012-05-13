@@ -1,5 +1,6 @@
 from threading import Thread
 import time
+import smarty
 
 __author__ = 'Pavel Padinker'
 
@@ -40,7 +41,7 @@ class UsersManager(Thread):
             self.db.execute("insert into users (login, password) values (%s, %s)", login, password)
         elif user["password"] != password:
             login_response["error"] = True
-            login_response["msg"] = "Error : can't log in, wrong login or password"
+            login_response["msg"] = smarty.error_messages[2]
 
         if not login_response["error"]:
             login_response["msg"] = login

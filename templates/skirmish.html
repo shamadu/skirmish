@@ -1,4 +1,4 @@
-{% comment login = string user name, sunstance = string substance name, team_state = 0 (create team), 1 (show team) %}
+{% comment login = string user name, sunstance = string substance name %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -33,7 +33,7 @@
         </ul>
     </div>
     <div id="contentDiv" class="contentDiv">
-        <div id="battleDiv" class="contentDiv">
+        <div id="battleDivContainer" class="contentDiv">
             <div id="divMain" class="divMain">
                 <div class="divCenter">
                     <p>{{ _("Hello") }}, {{ login }}.</p>
@@ -78,7 +78,7 @@
         </div>
 
 
-        <div id="characterDiv" class="contentDiv">
+        <div id="characterDivContainer" class="contentDiv">
             <table id="fullCharacterInfoTable" class="fullCharacterInfoTable">
                 <tr><td>{{ _("Name") }}</td><td><label id="nameLabel"></label></td></tr>
                 <tr><td>{{ _("Class") }}</td><td><label id="classLabel"></label></td></tr>
@@ -89,16 +89,15 @@
                 <tr><td>{{ _("Dexterity") }}</td><td><label id="dexterityLabel"></label></td></tr>
                 <tr><td>{{ _("Intellect") }}</td><td><label id="intellectLabel"></label></td></tr>
                 <tr><td>{{ _("Wisdom") }}</td><td><label id="wisdomLabel"></label></td></tr>
+                <tr><td>{{ _("Experience") }}</td><td><label id="expLabel"></label></td></tr>
+                <tr><td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td></tr>
+                <tr><td>{{ _("Team") }}</td><td><label id="teamLabel"></label></td></tr>
+                <tr><td>{{ _("Rank") }}</td><td><label id="rankLabel"></label></td></tr>
             </table>
         </div>
 
 
-        <div id="teamDiv" class="contentDiv">
-            {% if team_state == 0 %}
-                {% include "create_team.html" %}
-            {% elif team_state == 1 %}
-                {% include "team_info.html" %}
-            {% end %}
+        <div id="teamDivContainer" class="contentDiv">
         </div>
     </div>
     <script type="text/javascript">initialize();</script>
