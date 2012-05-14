@@ -48,11 +48,12 @@ class SkirmishApplication(tornado.web.Application):
             user="root", password="passw0rd")
 
         self.characters_manager = CharactersManager(self.db)
-        self.users_manager = UsersManager(self.db)
-        self.users_manager.start()
 
         self.battle_bot = BattleBot(self.characters_manager)
         self.battle_bot.start()
+
+        self.users_manager = UsersManager(self.db, self.battle_bot)
+        self.users_manager.start()
 
         self.messager = Messager()
 
@@ -93,15 +94,8 @@ class MainHandler(BaseHandler):
         # no such user - redirect to creation
             self.redirect("/create")
         else:
-            self.users_manager.reenter_from_user(self.current_user)
             self.battle_bot.user_enter(self.current_user, self.locale)
             self.characters_manager.user_enter(self.current_user, self.locale)
-            team_state = 0
-            if not character.team_name:
-                # no team, allow to create team
-                team_state = 0
-            else:
-                team_state = 1
             self.render("skirmish.html",
                 login=self.current_user,
                 substance=smarty.get_substance_name(character.classID, self.locale))
@@ -131,7 +125,7 @@ class LoginHandler(BaseHandler):
 
 class LogoutHandler(BaseHandler):
     @tornado.web.authenticated
-    def get(self, *args, **kwargs):
+    def post(self, *args, **kwargs):
         self.users_manager.user_logout(self.current_user)
         self.clear_cookie("login")
 
@@ -164,13 +158,10 @@ class PollCharacterInfoHandler(BaseHandler):
         self.characters_manager.subscribe(self.current_user, self.on_action, self.locale)
 
     def on_action(self, action):
-        # Closed client connection
         if self.request.connection.stream.closed():
             return
 
         result = {}
-
-
         if action.type == 1:
             result = action.args
             result["team_div"] = self.render_string("create_team.html")
@@ -182,7 +173,7 @@ class PollCharacterInfoHandler(BaseHandler):
                 team_gold=action.args["team_gold"],
                 members=action.args["members"])
         elif action.type == 3:
-            result["type"] = action.type
+            result = action.args
             result["invitation_div"] = self.render_string("team_invitation.html",
                 user_name=action.args["user_name"],
                 team_name=action.args["team_name"])
@@ -190,7 +181,8 @@ class PollCharacterInfoHandler(BaseHandler):
             result = action.args
 
         def finish_request():
-            self.finish(result)
+            if not self.request.connection.stream.closed():
+                self.finish(result)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
@@ -233,7 +225,8 @@ class PollBotHandler(BaseHandler):
             result = action.args
 
         def finish_request():
-            self.finish(result)
+            if not self.request.connection.stream.closed():
+                self.finish(result)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
@@ -252,7 +245,8 @@ class PollUsersHandler(BaseHandler):
             return
 
         def finish_request():
-            self.finish(users)
+            if not self.request.connection.stream.closed():
+                self.finish(users)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
@@ -271,7 +265,8 @@ class PollMessageHandler(BaseHandler):
             return
 
         def finish_request():
-            self.finish(message)
+            if not self.request.connection.stream.closed():
+                self.finish(message)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
@@ -300,7 +295,13 @@ class TeamHandler(BaseHandler):
         elif self.get_argument("action") == "remove":
             self.characters_manager.remove_user_from_team(self.current_user, self.get_argument("user_name"))
         elif self.get_argument("action") == "invite":
-            self.characters_manager.invite_user_to_team(self.current_user, self.get_argument("user_name"))
+            self.write(self.characters_manager.invite_user_to_team(self.current_user, self.get_argument("user_name")))
+        elif self.get_argument("action") == "confirm":
+            self.characters_manager.user_join_team(self.current_user, self.get_argument("user_name"), self.get_argument("team_name"))
+        elif self.get_argument("action") == "decline":
+            pass
+        elif self.get_argument("action") == "leave":
+            self.characters_manager.user_leave_team(self.current_user)
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

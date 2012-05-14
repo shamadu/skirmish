@@ -19,11 +19,13 @@ team_ranks = {
     5 : ""
 }
 
-error_messages = [
-    _("Team with this name already exists"),
-    _("Character already has team"),
-    _("Can't log in, wrong login or password")
-]
+error_messages = {
+    0 : _("Team with this name already exists"),
+    1 : _("Character already has team"),
+    2 : _("Can't log in, wrong login or password"),
+    3 : _("You can't invite %(user_name)s. This user already has a team"),
+    4 : _("Invitation has been sent")
+}
 
 locales = OrderedDict([
     ("en_US", "English"),

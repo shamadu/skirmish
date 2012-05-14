@@ -9,10 +9,11 @@ class OnlineUser():
         self.counter = 10
 
 class UsersManager(Thread):
-    def __init__(self, db):
+    def __init__(self, db, battle_bot):
         Thread.__init__(self)
         self.db = db
         self.online_users = dict()
+        self.battle_bot = battle_bot
         self.db.execute("create table if not exists users (id integer(11) primary key not null auto_increment unique, "
                         "login text, password text)")
 
@@ -56,6 +57,7 @@ class UsersManager(Thread):
             self.online_users.pop(name)
             self.unsubscribe(name)
             self.send_online_users()
+            self.battle_bot.user_offline(name)
 
     def subscribe(self, name, callback):
         if not name in self.online_users.keys():
@@ -76,5 +78,3 @@ class UsersManager(Thread):
                 online_user.callback = None
                 callback_tmp(', '.join(self.online_users.keys()))
 
-    def reenter_from_user(self, name):
-        self.user_offline(name)

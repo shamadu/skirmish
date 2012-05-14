@@ -4,6 +4,7 @@
     <table class="teamInfoTable">
         <tr><td>{{ _("Name") }}</td><td><label id="teamNameLabel" style="margin: 0 0 0 5px">{{ team_name }}</label></td></tr>
         <tr><td>{{ _("Gold") }}</td><td><label id="goldLabel" style="margin: 0 0 0 5px">{{ team_gold }}</label></td></tr>
+        <tr><td><button id="leaveTeamButton" style="margin: 0 0 0 5px">{{ _("Leave") }}</button></td><td></td></tr>
     </table>
     <h4>{{ _("Team members") }}</h4>
     <table class="teamInfoTable">
@@ -16,26 +17,31 @@
                     {% if members[member_name] == 0 or members[member_name] <= members[user_name] %}
                         disabled
                     {% end %}
-                    >{{ _("Promote") }}</button></td>
+                    >{{ _("Promote") }}</button>
+                </td>
                 <td><button user_name="{{ member_name }}" class="demoteButton"
                     {% if members[member_name] == 5 or members[member_name] <= members[user_name] %}
                         disabled
                     {% end %}
                      >{{ _("Demote") }}</button>
-                </td><td><button user_name="{{ member_name }}" class="removeButton"
+                </td>
+                <td><button user_name="{{ member_name }}" class="removeButton"
                     {% if member_name == user_name or members[member_name] <= members[user_name] %}
                         disabled
                     {% end %}
-                    >{{ _("Remove") }}</button></td>
+                    >{{ _("Remove") }}</button>
+                </td>
             {% end %}
         </tr>
         {% end %}
     </table>
-    <h4>{{ _("Invite user to team") }}</h4>
-    <table class="teamInfoTable">
-        <tr><td>
-            <select id="inviteUserSelect" class="user_select" style="margin: auto; width: auto;">
-            </select>
-        </td><td><button id="inviteUserButton" style="margin: 0 0 0 5px">{{ _("Invite") }}</button></td></tr>
-    </table>
+    {% if members[user_name] < 2 %}
+        <h4>{{ _("Invite user to team") }}</h4>
+        <table class="teamInfoTable">
+            <tr><td>
+                <select id="inviteUserSelect" class="user_select" style="margin: auto; width: auto;">
+                </select>
+            </td><td><button id="inviteUserButton" style="margin: 0 0 0 5px">{{ _("Invite") }}</button></td></tr>
+        </table>
+    {% end %}
 </div>

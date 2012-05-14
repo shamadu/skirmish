@@ -81,20 +81,21 @@ var characterInfoUpdater = {
         }
         // show create team div
         else if (action.type == 1) {
-            $("#teamDivContainer").children().remove();
+            $("#teamDivContainer").empty();
             $("#teamDivContainer").append(action.team_div);
             initialize_create_team();
         }
         // show team info div
         else if (action.type == 2) {
-            $("#teamDivContainer").children().remove();
+            $("#teamDivContainer").empty();
             $("#teamDivContainer").append(action.team_div);
             initialize_team_info();
         }
         // add invitation
         else if (action.type == 3) {
-//            $("#divInvitations").children().remove();
-            $("#divInvitations").append(action.invitation_div);
+            $("#divInvitationContent").empty();
+            $("#divInvitationContent").append(action.invitation_div);
+            initialize_team_invitation(action.user_name, action.team_name);
         }
 
         characterInfoUpdater.errorSleepTime = 500;

@@ -164,6 +164,14 @@ class BattleBot(Thread):
             self.send_action_to_all(self.create_skirmish_users_action())
             self.send_action_to_user(user_name, Action(1, {}))
 
+    # it's called from user_manager
+    def user_offline(self, user_name):
+        if self.phase == 0 or self.phase == -1:
+            self.users.pop(user_name)
+        else:
+            # TODO: remove user from users after battle_bot round
+            pass
+
     def user_turn(self, user_name, turn_info):
         if self.phase > 0:
             self.users[user_name].parse_turn_info(turn_info)

@@ -187,9 +187,48 @@ class CharactersManager:
                     self.send_create_team(remove_user_name)
 
     def invite_user_to_team(self, user_name, invite_user_name):
+        invite_response = {
+            "error" : "False",
+            "msg" : ""
+        }
         user_boss = self.get_character(user_name)
         if user_boss.rank_in_team < 2:
             user_for_inviting = self.get_character(invite_user_name)
             if not user_for_inviting.team_name:
                 self.send_invite(invite_user_name, user_name, user_boss.team_name)
+                invite_response["msg"] = smarty.error_messages[4]
+            else:
+                invite_response["error"] = "True"
+                invite_response["msg"] = smarty.error_messages[3] % {"user_name" : invite_user_name}
+
+        return invite_response
+
+    def user_join_team(self, joined_user, invited_user, team_name):
+        user_boss = self.get_character(invited_user)
+        if user_boss.rank_in_team < 2:
+            user_for_join = self.get_character(joined_user)
+            if not user_for_join.team_name:
+                self.db.execute("update characters set team_name=%s, rank_in_team=5 where name=%s", team_name, joined_user)
+                self.send_team_info_to_members(team_name)
+                self.send_info(joined_user)
+
+    def user_leave_team(self, user_name):
+        user = self.get_character(user_name)
+        # if user is leader
+        if user.rank_in_team == 0:
+            members = self.get_team_members(user.team_name)
+            # if there are no other leaders
+            if members.values().count(0) == 1:
+                # remove team
+                for member_name in members.keys():
+                    self.db.execute("update characters set team_name=%s, rank_in_team=0 where name=%s", None, member_name)
+                    self.send_info(member_name)
+                    self.send_create_team(member_name)
+                return
+        self.db.execute("update characters set team_name=%s, rank_in_team=0 where name=%s", None, user_name)
+        self.send_info(user_name)
+        self.send_create_team(user_name)
+        self.send_team_info_to_members(user.team_name)
+
+
 
