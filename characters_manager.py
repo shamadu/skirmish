@@ -9,6 +9,7 @@ class Action:
         # 0 - character info update
         # 1 - fill team div with content for creation
         # 2 - fill team div with content with team info
+        # 3 - invitation to team
         self.type = type
         self.args = args
         self.args["type"] = type
@@ -42,7 +43,7 @@ class CharactersManager:
         self.db = db
         self.db.execute("create table if not exists characters (id integer(11) primary key not null auto_increment unique, "
                         "name text, classID integer, level integer, hp integer, mp integer, strength integer, dexterity  integer, "
-                        "intellect  integer, wisdom  integer, exp bigint, gold integer, team_name text, rank_in_team text)")
+                        "intellect  integer, wisdom  integer, exp bigint, gold integer, team_name text, rank_in_team int)")
         self.users = dict()
 
     def subscribe(self, user_name, callback, locale):
@@ -80,7 +81,7 @@ class CharactersManager:
             str(character.wisdom),
             str(character.exp),
             str(character.gold),
-            character.team_name,
+            str(character.team_name),
             str(character.rank_in_team)
         ]
         self.users[name].send_action(Action(0, {"character_info" : ":".join(character_info)}))
@@ -92,7 +93,7 @@ class CharactersManager:
         character = self.get_character(user_name)
         if character.team_name:
             # character is in team
-            self.send_team_info(user_name, character.team_name)
+            self.send_team_info_to_user(user_name, character.team_name)
         else:
             # character is not in team
             self.send_create_team(user_name)
@@ -105,7 +106,8 @@ class CharactersManager:
         if not self.get_character(user_name).team_name:
             if len(self.get_team_members(team_name)) == 0:
                 self.db.execute("update characters set team_name=%s, rank_in_team=0 where name=%s", team_name, user_name)
-                self.send_team_info(user_name, team_name)
+                self.send_team_info_to_user(user_name, team_name)
+                self.send_info(user_name)
             else:
                 create_response["error"] = True
                 create_response["msg"] = self.users[user_name].locale.translate(smarty.error_messages[0])
@@ -118,13 +120,32 @@ class CharactersManager:
     def send_create_team(self, user_name):
         self.users[user_name].send_action(Action(1, {}))
 
-    def send_team_info(self, user_name, team_name):
-        self.users[user_name].send_action(Action(2, {
+    def create_team_info_action(self, team_name):
+        return Action(2, {
             "team_name" : team_name,
             # TODO: add team gold in special team table
             "team_gold" : 0,
             "members" : self.get_team_members(team_name)
-        }))
+        })
+
+    def create_invite_action(self, user_name, team_name):
+        return Action(3, {
+            "user_name" : user_name,
+            "team_name" : team_name,
+        })
+
+    def send_team_info_to_user(self, user_name, team_name):
+        self.users[user_name].send_action(self.create_team_info_action(team_name))
+
+    def send_team_info_to_members(self, team_name):
+        members = self.get_team_members(team_name)
+        action = self.create_team_info_action(team_name)
+        for member_name in members.keys():
+            if member_name in self.users.keys():
+                self.users[member_name].send_action(action)
+
+    def send_invite(self, invite_user_name, user_name, team_name):
+        self.users[invite_user_name].send_action(self.create_invite_action(user_name, team_name))
 
     def get_team_members(self, team_name):
         result = dict()
@@ -135,10 +156,40 @@ class CharactersManager:
         return result
 
     def promote_user(self, user_name, promote_user):
-        pass
+        if user_name != promote_user:
+            user_boss = self.get_character(user_name)
+            if user_boss.rank_in_team < 2:
+                user_for_promotion = self.get_character(promote_user)
+                if user_boss.team_name == user_for_promotion.team_name and user_for_promotion.rank_in_team > user_boss.rank_in_team:
+                    self.db.execute("update characters set rank_in_team=%s where name=%s", user_for_promotion.rank_in_team - 1, promote_user)
+                    self.send_team_info_to_members(user_for_promotion.team_name)
+                    self.send_info(promote_user)
 
     def demote_user(self, user_name, demote_user):
-        pass
+        if user_name != demote_user:
+            user_boss = self.get_character(user_name)
+            if user_boss.rank_in_team < 2:
+                user_for_demotion = self.get_character(demote_user)
+                if user_boss.team_name == user_for_demotion.team_name and user_for_demotion.rank_in_team > user_boss.rank_in_team and user_for_demotion.rank_in_team != 5:
+                    self.db.execute("update characters set rank_in_team=%s where name=%s", user_for_demotion.rank_in_team + 1, demote_user)
+                    self.send_team_info_to_members(user_for_demotion.team_name)
+                    self.send_info(demote_user)
 
     def remove_user_from_team(self, user_name, remove_user_name):
-        pass
+        if user_name != remove_user_name:
+            user_boss = self.get_character(user_name)
+            if user_boss.rank_in_team < 2:
+                user_for_removing = self.get_character(remove_user_name)
+                if user_boss.team_name == user_for_removing.team_name and user_for_removing.rank_in_team > user_boss.rank_in_team :
+                    self.db.execute("update characters set team_name=%s, rank_in_team=0 where name=%s", None, remove_user_name)
+                    self.send_team_info_to_members(user_boss.team_name)
+                    self.send_info(remove_user_name)
+                    self.send_create_team(remove_user_name)
+
+    def invite_user_to_team(self, user_name, invite_user_name):
+        user_boss = self.get_character(user_name)
+        if user_boss.rank_in_team < 2:
+            user_for_inviting = self.get_character(invite_user_name)
+            if not user_for_inviting.team_name:
+                self.send_invite(invite_user_name, user_name, user_boss.team_name)
+

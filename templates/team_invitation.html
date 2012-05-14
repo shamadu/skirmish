@@ -1,0 +1,7 @@
+{% comment user_name, team_name %}
+<div id="divInvitation" style="width: auto">
+    {{ _("User %(user_name)s has invited you to the team %(team_name)s") % {"user_name" : user_name, "team_name" : team_name } }}
+    <div class="divCenter">
+        <p style="margin: 0 0 0 0"><button id="confirmButton" style="margin:0 5px 0 0;">{{ _("Confirm") }}</button><button id="declineButton" style="margin:0 0 0 0;">{{ _("Decline") }}</button></p>
+    </div>
+</div>

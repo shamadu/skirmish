@@ -10,6 +10,15 @@ rest_time = 5
 registration_time = 5
 turn_time = 5
 
+team_ranks = {
+    0 : "Leader",
+    1 : "Officer",
+    2 : "Helper",
+    3 : "",
+    4 : "",
+    5 : ""
+}
+
 error_messages = [
     _("Team with this name already exists"),
     _("Character already has team"),

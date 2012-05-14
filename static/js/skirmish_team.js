@@ -9,6 +9,11 @@ var initialize_create_team = function () {
 };
 
 var initialize_team_info = function () {
+    $("#divOnlineUsers label").each(function(){
+        $("#inviteUserSelect").append("<option value=\"" + $(this).html() + "\">" + $(this).html() + "</option>")
+    });
+    $("#inviteUserButton").click(inviteUserFunc);
+
     $("#divTeam button[class=promoteButton]").click(promoteFunc);
     $("#divTeam button[class=demoteButton]").click(demoteFunc);
     $("#divTeam button[class=removeButton]").click(removeFunc);
@@ -35,5 +40,10 @@ var demoteFunc = function() {
 
 var removeFunc = function() {
     $.postJSON('/team', {"action" : "remove", "user_name" : $(this).attr("user_name")}, function(response) {
+    });
+};
+
+var inviteUserFunc = function() {
+    $.postJSON('/team', {"action" : "invite", "user_name" : $("#inviteUserSelect option:selected").html()}, function(response) {
     });
 };

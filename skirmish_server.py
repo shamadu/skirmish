@@ -181,6 +181,11 @@ class PollCharacterInfoHandler(BaseHandler):
                 team_name=action.args["team_name"],
                 team_gold=action.args["team_gold"],
                 members=action.args["members"])
+        elif action.type == 3:
+            result["type"] = action.type
+            result["invitation_div"] = self.render_string("team_invitation.html",
+                user_name=action.args["user_name"],
+                team_name=action.args["team_name"])
         else:
             result = action.args
 
@@ -294,6 +299,8 @@ class TeamHandler(BaseHandler):
             self.characters_manager.demote_user(self.current_user, self.get_argument("user_name"))
         elif self.get_argument("action") == "remove":
             self.characters_manager.remove_user_from_team(self.current_user, self.get_argument("user_name"))
+        elif self.get_argument("action") == "invite":
+            self.characters_manager.invite_user_to_team(self.current_user, self.get_argument("user_name"))
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

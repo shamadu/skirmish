@@ -20,9 +20,6 @@ var initialize_battle = function () {
         e.relatedTarget // previous tab
         window.alert("tab!");
     });
-    messager.poll();
-    onlineUsersUpdater.poll();
-    battleBotUpdater.poll();
 };
 
 var dropButtonClick = function () {
@@ -42,7 +39,7 @@ var leaveButtonClick = function () {
     });
 };
 
-var resize = function() {
+var resize_battle = function() {
     width = $("#characterInfoTable").width();
     $("#divChat").css('right', width + 15 + 'px');
 
@@ -105,133 +102,6 @@ var addTextTo = function(element_id, message) {
     element.scrollTop(element[0].scrollHeight - element.height());
 };
 
-var messager = {
-    errorSleepTime: 500,
-
-    poll: function() {
-        $.postJSON('/message/poll', {}, messager.onSuccess, messager.onError);
-    },
-
-    onSuccess: function(response) {
-        var message = $.parseJSON(response);
-        if(message.to == "all") {
-            addTextTo("#enTextArea", format_message(message))
-        }
-
-        messager.errorSleepTime = 500;
-        window.setTimeout(messager.poll, 0);
-    },
-
-    onError: function() {
-        messager.errorSleepTime *= 2;
-        window.setTimeout(messager.poll, messager.errorSleepTime);
-    }
-};
-
-var onlineUsersUpdater = {
-    errorSleepTime: 500,
-
-    poll: function() {
-        $.postJSON('/users/poll', {}, onlineUsersUpdater.onSuccess, onlineUsersUpdater.onError);
-    },
-
-    onSuccess: function(response) {
-        updateOnlineUsers(response);
-
-        onlineUsersUpdater.errorSleepTime = 500;
-        window.setTimeout(onlineUsersUpdater.poll, 0);
-    },
-
-    onError: function() {
-        onlineUsersUpdater.errorSleepTime *= 2;
-        window.setTimeout(onlineUsersUpdater.poll, onlineUsersUpdater.errorSleepTime);
-    }
-};
-
-var updateOnlineUsers = function(users) {
-    $("#divOnlineUsers").empty();
-    var online_users = String(users).split(',');
-    if (online_users.length != 0 && online_users[0].length != 0) {
-        for (i = 0; i < online_users.length; ++i) {
-            $("#divOnlineUsers").append("<label>" + online_users[i] + "</label>")
-        }
-    }
-
-    resize()
-};
-
-var battleBotUpdater = {
-    errorSleepTime: 500,
-
-    poll: function() {
-        $.postJSON('/bot/poll', {}, battleBotUpdater.onSuccess, battleBotUpdater.onError);
-    },
-
-    onSuccess: function(response) {
-        var action = $.parseJSON(response);
-        // update skirmish users
-        if(action.type == 0) {
-            updateSkirmishUsers(action.skirmish_users);
-        }
-        // can join
-        else if(action.type == 1) {
-            $("#joinButton").removeAttr('disabled');
-            $("#joinButton").show();
-            $("#leaveButton").hide();
-        }
-        // can leave
-        else if(action.type == 2) {
-            $("#leaveButton").show();
-            $("#leaveButton").removeAttr('disabled');
-            $("#joinButton").hide();
-        }
-        // can do turn
-        else if(action.type == 3) {
-            removeDivAction();
-            showDivAction(action.div_action);
-        }
-        // can cancel
-        else if(action.type == 4) {
-            disableDivAction(action.div_action, action.turn_info);
-        }
-        // wait for results
-        else if(action.type == 5) {
-            disableDivAction(action.div_action, action.turn_info);
-            $("#cancelButton").attr('disabled', true);
-            $("#joinButton").attr('disabled', true);
-            $("#leaveButton").attr('disabled', true);
-        }
-        // reset to initial
-        else if(action.type == 6) {
-            removeDivAction();
-            $("#joinButton").attr('disabled', true);
-            $("#leaveButton").attr('disabled', true);
-        }
-        // message action
-        else if(action.type == 7) {
-            message = {};
-            if(action.message_number == 2 || action.message_number == 3)
-            {
-                message["body"] = messages[action.message_number].f(action.round);
-            }
-            else
-            {
-                message["body"] = messages[action.message_number];
-            }
-            message["from"] = "bot";
-            addTextTo("#enTextArea", format_message(message))
-        }
-
-        battleBotUpdater.errorSleepTime = 500;
-        window.setTimeout(battleBotUpdater.poll, 0);
-    },
-
-    onError: function() {
-        battleBotUpdater.errorSleepTime *= 2;
-        window.setTimeout(battleBotUpdater.poll, battleBotUpdater.errorSleepTime);
-    }
-};
-
 var updateSkirmishUsers = function(skirmish_users) {
     $("#divSkirmishUsers").empty();
     skirmish_users = String(skirmish_users).split(',');
@@ -241,14 +111,14 @@ var updateSkirmishUsers = function(skirmish_users) {
         }
     }
 
-    resize()
+    resize_battle()
 };
 
 var showDivAction = function(divAction) {
 //    $("#divAction").remove();
     if($("#divAction").length == 0) {
         $("#divMain").append(divAction);
-        resize();
+        resize_battle();
 
         $("#cancelButton").attr('disabled', 'true');
 
@@ -319,7 +189,7 @@ var checkTurnSum = function(element) {
 
 var removeDivAction = function(divAction) {
     $("#divAction").remove();
-    resize()
+    resize_battle()
 };
 
 var doButtonClick = function() {
