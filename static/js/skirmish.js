@@ -139,9 +139,18 @@ var onlineUsersUpdater = {
     },
 
     onSuccess: function(response) {
-        updateOnlineUsers(response);
+        action = $.parseJSON(response)
+        if(action.type == 0) {
+            updateOnlineUsers(action.users);
+        }
+        else if(action.type == 1) {
+            addOnlineUser(action.user);
+        }
+        else if(action.type == 2) {
+            removeOnlineUser(action.user);
+        }
 
-        onlineUsersUpdater.errorSleepTime = 500;
+onlineUsersUpdater.errorSleepTime = 500;
         window.setTimeout(onlineUsersUpdater.poll, 0);
     },
 
@@ -224,16 +233,28 @@ var battleBotUpdater = {
 };
 
 var updateOnlineUsers = function(users) {
-    $("#divOnlineUsers").empty();
-    $("#inviteUserSelect").empty();
     var online_users = String(users).split(',');
-    if (online_users.length != 0 && online_users[0].length != 0) {
-        for (i = 0; i < online_users.length; ++i) {
-            $("#divOnlineUsers").append("<label>" + online_users[i] + "</label>")
-            $("#inviteUserSelect").append("<option value=\"" + online_users[i] + "\">" + online_users[i] + "</option>")
-        }
+    for (i = 0; i < online_users.length; ++i) {
+        $("#divOnlineUsers").append("<label value=\"" + online_users[i] + "\">" + online_users[i] + "</label>")
     }
+    $("#divOnlineUsers label").sort(sortTitle).appendTo("#divOnlineUsers");
+    resize_battle()
+};
+
+function sortTitle(a, b) {
+    return $(b).text() < $(a).text();
+}
+var removeOnlineUser = function(user) {
+    $("#divOnlineUsers label[value=\"" + user + "\"]").remove()
+    $("#inviteUserSelect option[value=\"" + user + "\"]").remove()
 
     resize_battle()
 };
 
+var addOnlineUser = function(user) {
+    $("#divOnlineUsers").append("<label value=\"" + user + "\">" + user + "</label>")
+    $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>")
+    $("#divOnlineUsers label").sort(sortTitle).appendTo("#divOnlineUsers");
+
+    resize_battle()
+};

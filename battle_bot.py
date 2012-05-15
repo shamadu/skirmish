@@ -83,6 +83,9 @@ class UserInfo:
         else:
             return False
 
+    def get_team_name(self):
+        return self.character.team_name
+
 class BattleBot(Thread):
     def __init__(self, characters_manager):
         Thread.__init__(self)
@@ -194,7 +197,8 @@ class BattleBot(Thread):
         self.users[user_name].set_callback(callback)
 
     def unsubscribe(self, user_name):
-        self.users[user_name].set_callback(None)
+        if user_name in self.users.keys():
+            self.users[user_name].set_callback(None)
 
     def get_skirmish_users(self):
         skirmish_users = list()
@@ -206,7 +210,12 @@ class BattleBot(Thread):
         return skirmish_users
 
     def create_skirmish_users_action(self):
-        return Action(0, {"skirmish_users" : ', '.join(self.get_skirmish_users())})
+        skirmish_users = list()
+        for user_name in self.users:
+            # 0 is unregistered user
+            if self.users[user_name].state != 0:
+                skirmish_users.append("%(user_name)s[%(team_name)s]" % {"user_name" : user_name, "team_name" : self.users[user_name].get_team_name()})
+        return Action(0, {"skirmish_users" : ','.join(skirmish_users)})
 
     def send_action_to_all(self, action):
         for user_name in self.users.keys():

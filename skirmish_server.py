@@ -96,6 +96,7 @@ class MainHandler(BaseHandler):
         else:
             self.battle_bot.user_enter(self.current_user, self.locale)
             self.characters_manager.user_enter(self.current_user, self.locale)
+            self.users_manager.user_enter(self.current_user)
             self.render("skirmish.html",
                 login=self.current_user,
                 substance=smarty.get_substance_name(character.classID, self.locale))
@@ -239,14 +240,14 @@ class PollUsersHandler(BaseHandler):
     def post(self, *args, **kwargs):
         self.users_manager.subscribe(self.current_user, self.on_users_changed)
 
-    def on_users_changed(self, users):
+    def on_users_changed(self, action):
         # Closed client connection
         if self.request.connection.stream.closed():
             return
 
         def finish_request():
             if not self.request.connection.stream.closed():
-                self.finish(users)
+                self.finish(action.args)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
