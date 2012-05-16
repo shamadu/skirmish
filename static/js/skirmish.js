@@ -234,16 +234,14 @@ var battleBotUpdater = {
 
 var updateOnlineUsers = function(users) {
     var online_users = String(users).split(',');
+    online_users.sort();
     for (i = 0; i < online_users.length; ++i) {
         $("#divOnlineUsers").append("<label value=\"" + online_users[i] + "\">" + online_users[i] + "</label>")
     }
-    $("#divOnlineUsers label").sort(sortTitle).appendTo("#divOnlineUsers");
+
     resize_battle()
 };
 
-function sortTitle(a, b) {
-    return $(b).text() < $(a).text();
-}
 var removeOnlineUser = function(user) {
     $("#divOnlineUsers label[value=\"" + user + "\"]").remove()
     $("#inviteUserSelect option[value=\"" + user + "\"]").remove()
@@ -252,9 +250,38 @@ var removeOnlineUser = function(user) {
 };
 
 var addOnlineUser = function(user) {
-    $("#divOnlineUsers").append("<label value=\"" + user + "\">" + user + "</label>")
-    $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>")
-    $("#divOnlineUsers label").sort(sortTitle).appendTo("#divOnlineUsers");
+    inserted = false
+    // insert after specified element
+    $("#divOnlineUsers label").each(function(){
+        if ($(this).text() > user) {
+            $(this).before("<label value=\"" + user + "\">" + user + "</label>")
+            inserted = true
+        }
+    });
+    if (!inserted) {
+        $("#divOnlineUsers").append("<label value=\"" + user + "\">" + user + "</label>");
+        $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>");
+    }
+    else{
+        $("#inviteUserSelect option").each(function(){
+            if ($(this).text() > user) {
+                $(this).before("<option value=\"" + user + "\">" + user + "</option>")
+            }
+        });
+    }
 
     resize_battle()
 };
+
+var updateSkirmishUsers = function(skirmish_users) {
+    $("#divSkirmishUsers").empty();
+    skirmish_users = String(skirmish_users).split(',');
+    if (skirmish_users.length != 0 && skirmish_users[0].length != 0) {
+        for (i = 0; i < skirmish_users.length; ++i) {
+            $("#divSkirmishUsers").append("<label>+" + skirmish_users[i] + "</label>")
+        }
+    }
+
+    resize_battle()
+};
+

@@ -102,18 +102,6 @@ var addTextTo = function(element_id, message) {
     element.scrollTop(element[0].scrollHeight - element.height());
 };
 
-var updateSkirmishUsers = function(skirmish_users) {
-    $("#divSkirmishUsers").empty();
-    skirmish_users = String(skirmish_users).split(',');
-    if (skirmish_users.length != 0 && skirmish_users[0].length != 0) {
-        for (i = 0; i < skirmish_users.length; ++i) {
-            $("#divSkirmishUsers").append("<label>+" + skirmish_users[i] + "</label>")
-        }
-    }
-
-    resize_battle()
-};
-
 var showDivAction = function(divAction) {
 //    $("#divAction").remove();
     if($("#divAction").length == 0) {

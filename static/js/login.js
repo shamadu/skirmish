@@ -7,7 +7,6 @@
 var initialize = function () {
     $("#loginButton").click(loginFunc);
     $("#passwordText").keypress(keyPress);
-    $("#locales").change(selectLocale);
 };
 
 var loginFunc = function () {
