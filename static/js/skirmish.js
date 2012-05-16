@@ -198,8 +198,6 @@ var battleBotUpdater = {
         else if(action.type == 5) {
             disableDivAction(action.div_action, action.turn_info);
             $("#cancelButton").attr('disabled', true);
-            $("#joinButton").attr('disabled', true);
-            $("#leaveButton").attr('disabled', true);
         }
         // reset to initial
         else if(action.type == 6) {

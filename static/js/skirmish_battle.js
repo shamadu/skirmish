@@ -130,7 +130,7 @@ var showDivAction = function(divAction) {
 
         $("#cancelButton").click(cancelButtonClick);
     }
-    $("#divAction *").removeAttr('disabled');
+    $("#divAction input,#divAction select,#divAction button").removeAttr('disabled');
     $("#cancelButton").attr('disabled', true);
 };
 
@@ -138,7 +138,7 @@ var disableDivAction = function(divAction, turn_info) {
     if($("#divAction").length == 0) {
         showDivAction(divAction);
     }
-    $("#divAction *").attr('disabled', true);
+    $("divAction input,#divAction select,#divAction button").attr('disabled', true);
     $("#cancelButton").removeAttr('disabled');
 };
 
