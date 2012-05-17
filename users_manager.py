@@ -78,6 +78,3 @@ class UsersManager(Thread):
     def on_user_offline(self, user_name):
         for online_user in self.online_users.values():
             online_user.send_user_action(Action(2, {"user" : user_name}))
-
-    def user_enter(self, user_name, locale):
-        self.online_users_holder.add_if_not_online(user_name, locale)

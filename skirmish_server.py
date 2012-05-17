@@ -77,6 +77,10 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.application.db_manager
 
     @property
+    def online_users_holder(self):
+        return self.application.online_users_holder
+
+    @property
     def users_manager(self):
         return self.application.users_manager
 
@@ -104,7 +108,7 @@ class MainHandler(BaseHandler):
         else:
             # this sequence is important!
             self.characters_manager.user_enter(self.current_user, self.locale)
-            self.users_manager.user_enter(self.current_user, self.locale)
+            self.online_users_holder.user_enter(self.current_user, self.locale)
             self.battle_bot.user_enter(self.current_user, self.locale)
 
             self.render("skirmish.html",

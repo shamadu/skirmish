@@ -118,3 +118,11 @@ class OnlineUsersHolder():
             self.users_manager.send_online_users_to(user_name)
         else:
             self.online_users[user_name].locale = locale
+
+    def user_enter(self, user_name, locale):
+        # remove callbacks
+        self.online_users[user_name].user_callback = None
+        self.online_users[user_name].skirmish_callback = None
+        self.online_users[user_name].character_callback = None
+        self.add_if_not_online(user_name, locale)
+        self.users_manager.send_online_users_to(user_name)
