@@ -5,6 +5,8 @@ import tornado.httpserver
 import tornado.database
 import tornado.locale
 from battle_bot import BattleBot
+from db_manager import DBManager
+from online_users_holder import OnlineUsersHolder
 from smarty import get_classes
 import smarty
 from users_manager import UsersManager
@@ -47,17 +49,19 @@ class SkirmishApplication(tornado.web.Application):
             host="127.0.0.1:3306", database="users",
             user="root", password="passw0rd")
 
-        self.characters_manager = CharactersManager(self.db)
+        self.db_manager = DBManager(self.db)
+        self.online_users_holder = OnlineUsersHolder(self.db_manager)
 
-        self.battle_bot = BattleBot(self.characters_manager)
-        self.battle_bot.start()
-
-        self.users_manager = UsersManager(self.db, self.battle_bot)
+        self.users_manager = UsersManager(self.db_manager, self.online_users_holder)
         self.users_manager.start()
 
-        self.messager = Messager()
+        self.online_users_holder.users_manager = self.users_manager
 
-        self.online_users = dict()
+        self.battle_bot = BattleBot(self.db_manager, self.online_users_holder)
+        self.battle_bot.start()
+
+        self.characters_manager = CharactersManager(self.db_manager, self.online_users_holder)
+        self.messager = Messager()
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -67,6 +71,10 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def characters_manager(self):
         return self.application.characters_manager
+
+    @property
+    def db_manager(self):
+        return self.application.db_manager
 
     @property
     def users_manager(self):
@@ -89,14 +97,16 @@ class BaseHandler(tornado.web.RequestHandler):
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        character = self.characters_manager.get_character(self.current_user)
+        character = self.db_manager.get_character(self.current_user)
         if not character:
         # no such user - redirect to creation
             self.redirect("/create")
         else:
-            self.battle_bot.user_enter(self.current_user, self.locale)
+            # this sequence is important!
             self.characters_manager.user_enter(self.current_user, self.locale)
-            self.users_manager.user_enter(self.current_user)
+            self.users_manager.user_enter(self.current_user, self.locale)
+            self.battle_bot.user_enter(self.current_user, self.locale)
+
             self.render("skirmish.html",
                 login=self.current_user,
                 substance=smarty.get_substance_name(character.classID, self.locale))
@@ -105,7 +115,7 @@ class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
         self.set_header("Content-Type", "text/javascript")
-        self.write(tornado.escape.xhtml_unescape(self.render_string("../static/js/locale.js")))
+        self.write(tornado.web.escape.xhtml_unescape(self.render_string("../static/js/locale.js")))
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -133,7 +143,7 @@ class LogoutHandler(BaseHandler):
 class CreateCharacterHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        character = self.characters_manager.get_character(self.current_user)
+        character = self.db_manager.get_character(self.current_user)
         if not character:
         # no character - redirect to creation
             self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
@@ -144,13 +154,13 @@ class CreateCharacterHandler(BaseHandler):
     def post(self, *args, **kwargs):
         classID = self.get_argument("classID")
         # insert the new character
-        self.characters_manager.create_character(self.current_user, classID)
+        self.db_manager.create_character(self.current_user, classID)
 
 class DropCharacterHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
         # remove the character from DB
-        self.characters_manager.remove_character(self.current_user)
+        self.db_manager.remove_character(self.current_user)
 
 class PollCharacterInfoHandler(BaseHandler):
     @tornado.web.authenticated
@@ -220,7 +230,8 @@ class PollBotHandler(BaseHandler):
             result = action.args
         elif action.type == 3 or action.type == 4 or action.type == 5:
             result["type"] = action.type
-            result["turn_info"] = action.args["turn_info"]
+            if "turn_info" in action.args.keys():
+                result["turn_info"] = action.args["turn_info"]
             result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
         else:
             result = action.args
@@ -238,7 +249,7 @@ class PollUsersHandler(BaseHandler):
     @tornado.web.authenticated
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
-        self.users_manager.subscribe(self.current_user, self.on_users_changed)
+        self.users_manager.subscribe(self.current_user, self.on_users_changed, self.locale)
 
     def on_users_changed(self, action):
         # Closed client connection
