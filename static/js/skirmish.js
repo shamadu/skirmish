@@ -139,9 +139,9 @@ var onlineUsersUpdater = {
     },
 
     onSuccess: function(response) {
-        action = $.parseJSON(response)
+        action = $.parseJSON(response);
         if(action.type == 0) {
-            updateOnlineUsers(action.users);
+            initialOnlineUsers(action.users);
         }
         else if(action.type == 1) {
             addOnlineUser(action.user);
@@ -150,7 +150,7 @@ var onlineUsersUpdater = {
             removeOnlineUser(action.user);
         }
 
-onlineUsersUpdater.errorSleepTime = 500;
+        onlineUsersUpdater.errorSleepTime = 500;
         window.setTimeout(onlineUsersUpdater.poll, 0);
     },
 
@@ -169,44 +169,52 @@ var battleBotUpdater = {
 
     onSuccess: function(response) {
         var action = $.parseJSON(response);
-        // update skirmish users
+        // initial skirmish users
         if(action.type == 0) {
-            updateSkirmishUsers(action.skirmish_users);
+            initialSkirmishUsers(action.skirmish_users);
+        }
+        // add skirmish user
+        else if(action.type == 1) {
+            addSkirmishUser(action.skirmish_user);
+        }
+        // remove skirmish user
+        else if(action.type == 2) {
+            removeSkirmishUser(action.skirmish_user);
         }
         // can join
-        else if(action.type == 1) {
+        else if(action.type == 3) {
             $("#joinButton").removeAttr('disabled');
             $("#joinButton").show();
             $("#leaveButton").hide();
         }
         // can leave
-        else if(action.type == 2) {
+        else if(action.type == 4) {
             $("#leaveButton").show();
             $("#leaveButton").removeAttr('disabled');
             $("#joinButton").hide();
         }
         // can do turn
-        else if(action.type == 3) {
+        else if(action.type == 5) {
             removeDivAction();
             showDivAction(action.div_action);
         }
         // can cancel
-        else if(action.type == 4) {
+        else if(action.type == 6) {
             disableDivAction(action.div_action, action.turn_info);
         }
         // wait for results
-        else if(action.type == 5) {
+        else if(action.type == 7) {
             disableDivAction(action.div_action, action.turn_info);
             $("#cancelButton").attr('disabled', true);
         }
         // reset to initial
-        else if(action.type == 6) {
+        else if(action.type == 8) {
             removeDivAction();
             $("#joinButton").attr('disabled', true);
             $("#leaveButton").attr('disabled', true);
         }
         // message action
-        else if(action.type == 7) {
+        else if(action.type == 9) {
             message = {};
             if(action.message_number == 2 || action.message_number == 3)
             {
@@ -230,30 +238,31 @@ var battleBotUpdater = {
     }
 };
 
-var updateOnlineUsers = function(users) {
+var initialOnlineUsers = function(users) {
     var online_users = String(users).split(',');
     online_users.sort();
+    $("#divOnlineUsers").empty();
     for (i = 0; i < online_users.length; ++i) {
         $("#divOnlineUsers").append("<label value=\"" + online_users[i] + "\">" + online_users[i] + "</label>")
     }
 
-    resize_battle()
+    resize_battle();
 };
 
 var removeOnlineUser = function(user) {
-    $("#divOnlineUsers label[value=\"" + user + "\"]").remove()
-    $("#inviteUserSelect option[value=\"" + user + "\"]").remove()
+    $("#divOnlineUsers label[value=\"" + user + "\"]").remove();
+    $("#inviteUserSelect option[value=\"" + user + "\"]").remove();
 
-    resize_battle()
+    resize_battle();
 };
 
 var addOnlineUser = function(user) {
-    inserted = false
+    inserted = false;
     // insert after specified element
     $("#divOnlineUsers label").each(function(){
-        if ($(this).text() > user) {
-            $(this).before("<label value=\"" + user + "\">" + user + "</label>")
-            inserted = true
+        if (!inserted && ($(this).text() > user)) {
+            $(this).before("<label value=\"" + user + "\">" + user + "</label>");
+            inserted = true;
         }
     });
     if (!inserted) {
@@ -263,23 +272,46 @@ var addOnlineUser = function(user) {
     else{
         $("#inviteUserSelect option").each(function(){
             if ($(this).text() > user) {
-                $(this).before("<option value=\"" + user + "\">" + user + "</option>")
+                $(this).before("<option value=\"" + user + "\">" + user + "</option>");
             }
         });
     }
 
-    resize_battle()
+    resize_battle();
 };
 
-var updateSkirmishUsers = function(skirmish_users) {
-    $("#divSkirmishUsers").empty();
-    skirmish_users = String(skirmish_users).split(',');
-    if (skirmish_users.length != 0 && skirmish_users[0].length != 0) {
+var initialSkirmishUsers = function(users) {
+    if (users) {
+        var skirmish_users = String(users).split(',');
+        skirmish_users.sort();
+        $("#divSkirmishUsers").empty();
         for (i = 0; i < skirmish_users.length; ++i) {
-            $("#divSkirmishUsers").append("<label>+" + skirmish_users[i] + "</label>")
+            $("#divSkirmishUsers").append("<label value=\"" + skirmish_users[i] + "\">" + skirmish_users[i] + "</label>")
         }
+
+        resize_battle();
+    }
+};
+
+var removeSkirmishUser = function(user) {
+    $("#divSkirmishUsers label[value=\"" + user + "\"]").remove();
+
+    resize_battle();
+};
+
+var addSkirmishUser = function(user) {
+    inserted = false;
+    // insert after specified element
+    $("#divSkirmishUsers label").each(function(){
+        if ($(this).text() > user) {
+            $(this).before("<label value=\"" + user + "\">" + user + "</label>");
+            inserted = true;
+        }
+    });
+    if (!inserted) {
+        $("#divSkirmishUsers").append("<label value=\"" + user + "\">" + user + "</label>");
     }
 
-    resize_battle()
+    resize_battle();
 };
 

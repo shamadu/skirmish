@@ -228,11 +228,7 @@ class PollBotHandler(BaseHandler):
             return
 
         result = {}
-        if action.type == 0:
-            result = action.args
-        elif action.type == 1 or action.type == 2:
-            result = action.args
-        elif action.type == 3 or action.type == 4 or action.type == 5:
+        if action.type == 5 or action.type == 6 or action.type == 7:
             result["type"] = action.type
             if "turn_info" in action.args.keys():
                 result["turn_info"] = action.args["turn_info"]
@@ -260,9 +256,11 @@ class PollUsersHandler(BaseHandler):
         if self.request.connection.stream.closed():
             return
 
+        result = action.args
+
         def finish_request():
             if not self.request.connection.stream.closed():
-                self.finish(action.args)
+                self.finish(result)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 

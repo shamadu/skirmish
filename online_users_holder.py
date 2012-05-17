@@ -72,18 +72,6 @@ class OnlineUserInfo():
         else:
             self.character_cache.append(action)
 
-    def create_div_args(self, users):
-        actions = OrderedDict()
-        actions[0] = self.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(self.character.classID, self.character.level)
-        actions[1] = self.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(self.character.classID, self.character.level)
-        actions[2] = smarty.get_ability_name(self.character.classID, self.locale) , smarty.get_spell_count(self.character.classID, self.character.level)
-        actions[3] = smarty.get_substance_name(self.character.classID, self.locale) , 0
-        return {
-            "actions" : actions,
-            "users" : users,
-            "spells" : smarty.get_spells(self.character.classID, self.character.level)
-        }
-
     def parse_turn_info(self, turn_info):
         self.turn_info_string = turn_info
         actions = self.turn_info_string.split(",")
