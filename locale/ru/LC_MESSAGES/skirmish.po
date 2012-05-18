@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-11 19:58+0300\n"
+"POT-Creation-Date: 2012-05-18 11:57+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,170 +16,282 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: skirmish.html:5
-msgid "Skirmish"
-msgstr "Схватка"
+#: smarty.py:23
+msgid "Team with this name already exists"
+msgstr "Команда с таким именем уже существует"
 
-#: skirmish.html:18
-msgid "Hello"
-msgstr "Здравствуй"
+#: smarty.py:24
+msgid "Character already has team"
+msgstr "Персонаж уже в команде"
 
-#: skirmish.html:19 create.html:32
-msgid "Logout"
-msgstr "Выйти"
+#: smarty.py:25
+msgid "Can't log in, wrong login or password"
+msgstr "Невозможно войти, неверный логин или пароль"
 
-#: skirmish.html:19
-msgid "Drop"
-msgstr "Удалить"
+#: smarty.py:26
+#, python-format
+msgid "You can't invite %(user_name)s. This user already has a team"
+msgstr "Вы не можете пригласить %(user_name)s. Этот персонаж уже в команде"
 
-#: skirmish.html:22 login.html:15 create.html:17
-msgid "Name"
-msgstr "Имя"
-
-#: skirmish.html:23 create.html:21
-msgid "Class"
-msgstr "Класс"
-
-#: skirmish.html:24
-msgid "Level"
-msgstr "Уровень"
-
-#: skirmish.html:25
-msgid "Health"
-msgstr "Здоровье"
-
-#: skirmish.html:27
-msgid "Strength"
-msgstr "Сила"
-
-#: skirmish.html:28
-msgid "Dexterity"
-msgstr "Ловкость"
-
-#: skirmish.html:29
-msgid "Intellect"
-msgstr "Интеллект"
-
-#: skirmish.html:30
-msgid "Wisdom"
-msgstr "Мудрость"
-
-#: skirmish.html:33
-msgid "Join"
-msgstr "Войти"
-
-#: skirmish.html:33
-msgid "Leave"
-msgstr "Покинуть"
-
-#: skirmish.html:57
-msgid "Send"
-msgstr "Отправить"
-
-#: login.html:5
-msgid "Login to Skirmish"
-msgstr "Войти в Схватку"
-
-#: login.html:19
-msgid "Password"
-msgstr "Пароль"
-
-#: login.html:23
-msgid "Language"
-msgstr "Язык"
-
-#: login.html:38
-msgid "Login"
-msgstr "Войти"
-
-#: div_action.html:33
-msgid "Do"
-msgstr "Ход"
-
-#: div_action.html:34
-msgid "Reset"
-msgstr "Сброс"
-
-#: div_action.html:35
-msgid "Cancel"
-msgstr "Отменить"
-
-#: static/locale.js:18
-msgid "Registration has been started"
-msgstr "Регистрация началась"
-
-#: static/locale.js:19
-msgid "Registration has been ended"
+#: smarty.py:27
+#, fuzzy
+msgid "Invitation has been sent"
 msgstr "Регистрация закончилась"
 
-#: static/locale.js:20
-msgid "Round {0} has been started"
-msgstr "Раунд {0} начался"
-
-#: static/locale.js:21
-msgid "Round {0} has been ended"
-msgstr "Раунд {0} закончился"
-
-#: smarty.py:13
+#: smarty.py:36
 msgid "Warrior"
 msgstr "Воин"
 
-#: smarty.py:14
+#: smarty.py:37
 msgid "Guardian"
 msgstr "Страж"
 
-#: smarty.py:15
+#: smarty.py:38
 msgid "Archer"
 msgstr "Лучник"
 
-#: smarty.py:16
+#: smarty.py:39
 msgid "Rogue"
 msgstr "Разбойник"
 
-#: smarty.py:17
+#: smarty.py:40
 msgid "Mage"
 msgstr "Маг"
 
-#: smarty.py:18
+#: smarty.py:41
 msgid "Priest"
 msgstr "Жрец"
 
-#: smarty.py:19
+#: smarty.py:42
 msgid "Warlock"
 msgstr "Колдун"
 
-#: smarty.py:20
+#: smarty.py:43
 msgid "Necromancer"
 msgstr "Некромант"
 
-#: smarty.py:24
+#: smarty.py:47
 msgid "Skill"
 msgstr "Способность"
 
-#: smarty.py:25
+#: smarty.py:48
 msgid "Spell"
 msgstr "Заклинание"
 
-#: smarty.py:30
+#: smarty.py:53
 msgid "Energy"
 msgstr "Энергия"
 
-#: smarty.py:31
+#: smarty.py:54
 msgid "Mana"
 msgstr "Мана"
 
-#: smarty.py:35
+#: smarty.py:58
 msgid "Attack"
 msgstr "Атака"
 
-#: smarty.py:36
+#: smarty.py:59
 msgid "Defence"
 msgstr "Защита"
 
-#: create.html:6
+#: static/js/locale.js:18
+msgid "Registration has been started"
+msgstr "Регистрация началась"
+
+#: static/js/locale.js:19
+msgid "Registration has been ended"
+msgstr "Регистрация закончилась"
+
+#: static/js/locale.js:20
+msgid "Round {0} has been started"
+msgstr "Раунд {0} начался"
+
+#: static/js/locale.js:21
+msgid "Round {0} has been ended"
+msgstr "Раунд {0} закончился"
+
+#: static/js/locale.js:22
+#, fuzzy
+msgid "Game has been ended"
+msgstr "Раунд {0} закончился"
+
+#: static/js/locale.js:23
+msgid "Game can't be started, not enough players"
+msgstr "Игра не может начаться, недостаточно игроков"
+
+#: templates/create_character.html:6
 msgid "Create new character"
 msgstr "Создать нового персонажа"
 
-#: create.html:32
+#: templates/create_character.html:17 templates/login.html:15
+#: templates/skirmish.html:43 templates/skirmish.html:83
+#: templates/team_info.html:5
+msgid "Name"
+msgstr "Имя"
+
+#: templates/create_character.html:21 templates/skirmish.html:44
+#: templates/skirmish.html:84
+msgid "Class"
+msgstr "Класс"
+
+#: templates/create_character.html:32 templates/create_team.html:8
 msgid "Create"
 msgstr "Создать"
+
+#: templates/create_character.html:32 templates/skirmish.html:40
+msgid "Logout"
+msgstr "Выйти"
+
+#: templates/create_team.html:5
+msgid "Create your own team"
+msgstr "Создать свою команду"
+
+#: templates/div_action.html:33
+msgid "Do"
+msgstr "Ход"
+
+#: templates/div_action.html:34
+msgid "Reset"
+msgstr "Сброс"
+
+#: templates/div_action.html:35
+msgid "Cancel"
+msgstr "Отменить"
+
+#: templates/login.html:5
+msgid "Login to Skirmish"
+msgstr "Войти в Схватку"
+
+#: templates/login.html:19
+msgid "Password"
+msgstr "Пароль"
+
+#: templates/login.html:23
+msgid "Language"
+msgstr "Язык"
+
+#: templates/login.html:38
+msgid "Login"
+msgstr "Войти"
+
+#: templates/skirmish.html:6
+msgid "Skirmish"
+msgstr "Схватка"
+
+#: templates/skirmish.html:25
+msgid "Battle"
+msgstr "Схватка"
+
+#: templates/skirmish.html:28
+#, fuzzy
+msgid "Character"
+msgstr "Создать"
+
+#: templates/skirmish.html:31 templates/skirmish.html:94
+msgid "Team"
+msgstr "Команда"
+
+#: templates/skirmish.html:39
+msgid "Hello"
+msgstr "Здравствуй"
+
+#: templates/skirmish.html:40
+msgid "Drop"
+msgstr "Удалить"
+
+#: templates/skirmish.html:45 templates/skirmish.html:85
+msgid "Level"
+msgstr "Уровень"
+
+#: templates/skirmish.html:46 templates/skirmish.html:86
+msgid "Health"
+msgstr "Здоровье"
+
+#: templates/skirmish.html:50
+msgid "Join"
+msgstr "Войти"
+
+#: templates/skirmish.html:50 templates/team_info.html:7
+msgid "Leave"
+msgstr "Покинуть"
+
+#: templates/skirmish.html:74
+msgid "Send"
+msgstr "Отправить"
+
+#: templates/skirmish.html:88
+msgid "Strength"
+msgstr "Сила"
+
+#: templates/skirmish.html:89
+msgid "Dexterity"
+msgstr "Ловкость"
+
+#: templates/skirmish.html:90
+msgid "Intellect"
+msgstr "Интеллект"
+
+#: templates/skirmish.html:91
+msgid "Wisdom"
+msgstr "Мудрость"
+
+#: templates/skirmish.html:92
+msgid "Experience"
+msgstr "Опыт"
+
+#: templates/skirmish.html:93 templates/team_info.html:6
+msgid "Gold"
+msgstr "Золото"
+
+#: templates/skirmish.html:95
+msgid "Rank"
+msgstr "Ранг"
+
+#: templates/team_info.html:3
+msgid "Team information"
+msgstr "Информация о команде"
+
+#: templates/team_info.html:9
+msgid "Team members"
+msgstr "Члены команды"
+
+#: templates/team_info.html:11
+msgid "Member's name"
+msgstr "Имя"
+
+#: templates/team_info.html:11
+msgid "Member's rank"
+msgstr "Ранг"
+
+#: templates/team_info.html:20
+msgid "Promote"
+msgstr "Повысить"
+
+#: templates/team_info.html:26
+msgid "Demote"
+msgstr "Понизить"
+
+#: templates/team_info.html:32
+msgid "Remove"
+msgstr "Удалить"
+
+#: templates/team_info.html:39
+msgid "Invite user to team"
+msgstr "Пригласить персонажа в команду"
+
+#: templates/team_info.html:44
+msgid "Invite"
+msgstr "Пригласить"
+
+#: templates/team_invitation.html:3
+#, python-format
+msgid "User %(user_name)s has invited you to the team %(team_name)s"
+msgstr "Пользователь %(user_name)s пригласил вас в команду %(team_name)s"
+
+#: templates/team_invitation.html:5
+msgid "Confirm"
+msgstr "Подтвердить"
+
+#: templates/team_invitation.html:5
+msgid "Decline"
+msgstr "Отказаться"
