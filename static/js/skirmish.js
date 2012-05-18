@@ -149,6 +149,18 @@ var onlineUsersUpdater = {
         else if(action.type == 2) {
             removeOnlineUser(action.user);
         }
+        // initial skirmish users
+        else if(action.type == 3) {
+            initialSkirmishUsers(action.skirmish_users);
+        }
+        // add skirmish user
+        else if(action.type == 4) {
+            addSkirmishUser(action.skirmish_user);
+        }
+        // remove skirmish user
+        else if(action.type == 5) {
+            removeSkirmishUser(action.skirmish_user);
+        }
 
         onlineUsersUpdater.errorSleepTime = 500;
         window.setTimeout(onlineUsersUpdater.poll, 0);
@@ -169,20 +181,8 @@ var battleBotUpdater = {
 
     onSuccess: function(response) {
         var action = $.parseJSON(response);
-        // initial skirmish users
-        if(action.type == 0) {
-            initialSkirmishUsers(action.skirmish_users);
-        }
-        // add skirmish user
-        else if(action.type == 1) {
-            addSkirmishUser(action.skirmish_user);
-        }
-        // remove skirmish user
-        else if(action.type == 2) {
-            removeSkirmishUser(action.skirmish_user);
-        }
         // can join
-        else if(action.type == 3) {
+        if(action.type == 3) {
             $("#joinButton").removeAttr('disabled');
             $("#joinButton").show();
             $("#leaveButton").hide();

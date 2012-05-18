@@ -97,6 +97,7 @@ class OnlineUsersHolder():
     def __init__(self, db_manager):
         self.db_manager = db_manager
         self.online_users = dict()
+        self.skirmish_users = dict()
         self.users_manager = None
 
     def add_if_not_online(self, user_name, locale):
@@ -114,3 +115,12 @@ class OnlineUsersHolder():
         self.online_users[user_name].character_callback = None
         self.add_if_not_online(user_name, locale)
         self.users_manager.send_online_users_to(user_name)
+        self.users_manager.send_skirmish_users_to(user_name)
+
+    def add_skirmish_user(self, user_name):
+        self.skirmish_users[user_name] = self.online_users[user_name]
+        self.users_manager.user_join_skirmish(user_name)
+
+    def remove_skirmish_user(self, user_name):
+        self.users_manager.user_leave_skirmish(user_name)
+        self.skirmish_users.pop(user_name)

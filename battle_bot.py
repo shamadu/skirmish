@@ -7,9 +7,6 @@ import smarty
 __author__ = 'Pavel Padinker'
 
 # types are:
-# 0 - show initial skirmish users
-# 1 - add skirmish users
-# 2 - remove skirmish users
 # 3 - can join
 # 4 - can leave
 # 5 - can do turn
@@ -20,18 +17,6 @@ __author__ = 'Pavel Padinker'
 class ActionManager:
     def __init__(self, skirmish_users):
         self.skirmish_users = skirmish_users
-
-    def create_skirmish_users_action(self):
-        skirmish_users = list()
-        for user_name in self.skirmish_users:
-            skirmish_users.append("%(user_name)s[%(team_name)s]" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()})
-        return Action(0, {"skirmish_users" : ','.join(skirmish_users)})
-
-    def create_add_skirmish_user_action(self, user_name):
-        return Action(1, {"skirmish_user" : "%(user_name)s[%(team_name)s]" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()}})
-
-    def create_remove_skirmish_user_action(self, user_name):
-        return Action(2, {"skirmish_user" : "%(user_name)s[%(team_name)s]" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()}})
 
     def create_can_join_action(self):
         return Action(3, {})
@@ -75,9 +60,8 @@ class ActionManager:
 class BattleBot(Thread):
     def __init__(self, db_manager, online_users_holder):
         Thread.__init__(self)
-        self.skirmish_users = dict()
-        self.action_manager = ActionManager(self.skirmish_users)
         self.online_users_holder = online_users_holder
+        self.action_manager = ActionManager(self.skirmish_users)
         self.db_manager = db_manager
         # phases:
         # -1 - none
@@ -89,6 +73,10 @@ class BattleBot(Thread):
     @property
     def online_users(self):
         return self.online_users_holder.online_users
+
+    @property
+    def skirmish_users(self):
+        return self.online_users_holder.skirmish_users
 
     def run(self):
         while 1:
@@ -147,8 +135,7 @@ class BattleBot(Thread):
 
     def remove_from_skirmish(self, user_name):
         self.send_action_to_user(user_name, self.action_manager.create_reset_to_initial_action())
-        self.send_action_to_all(self.action_manager.create_remove_skirmish_user_action(user_name))
-        self.skirmish_users.pop(user_name) #unregistered
+        self.online_users_holder.remove_skirmish_user(user_name)
 
     def subscribe(self, user_name, callback, locale):
         self.online_users_holder.add_if_not_online(user_name, locale)
@@ -160,15 +147,13 @@ class BattleBot(Thread):
 
     def user_join(self, user_name):
         if self.phase == 0:
-            self.skirmish_users[user_name] = self.online_users[user_name] # registered
-            self.send_action_to_all(self.action_manager.create_add_skirmish_user_action(user_name))
             self.send_action_to_user(user_name, self.action_manager.create_can_leave_action())
+            self.online_users_holder.add_skirmish_user(user_name)
 
     def user_leave(self, user_name):
         if self.phase == 0:
-            self.send_action_to_all(self.action_manager.create_remove_skirmish_user_action(user_name))
             self.send_action_to_user(user_name, self.action_manager.create_can_join_action())
-            self.skirmish_users.pop(user_name) #unregistered
+            self.online_users_holder.remove_skirmish_user(user_name)
 
     def user_turn(self, user_name, turn_info):
         if self.phase > 0:
@@ -190,8 +175,6 @@ class BattleBot(Thread):
             self.online_users[user_name].send_skirmish_action(action)
 
     def user_enter(self, user_name, locale):
-        # send skirmish users
-        self.send_action_to_user(user_name, self.action_manager.create_skirmish_users_action())
         # if registration is in progress
         if self.phase == 0:
             # and if user is not in skirmish, send "can join" action
