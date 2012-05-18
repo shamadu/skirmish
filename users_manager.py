@@ -33,7 +33,11 @@ class UsersManager(Thread):
                 online_user_non_skirmish.append(user_name)
         skirmish_users = list()
         for user_name in self.skirmish_users:
-            skirmish_users.append("%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()})
+            team_name = self.skirmish_users[user_name].get_team_name()
+            if not team_name:
+                skirmish_users.append(user_name)
+            else:
+                skirmish_users.append("%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()})
         return Action(0, {"online_users" : ','.join(online_user_non_skirmish), "skirmish_users" : ','.join(skirmish_users)})
 
     def create_user_online_action(self, user_name):

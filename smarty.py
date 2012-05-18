@@ -6,9 +6,9 @@ __author__ = 'Pavel Padinker'
 
 _ = lambda s: s
 
-rest_time = 5
+rest_time = 1
 registration_time = 5
-turn_time = 5
+turn_time = 25
 
 team_ranks = {
     0 : "Leader",

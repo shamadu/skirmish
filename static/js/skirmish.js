@@ -144,8 +144,8 @@ var onlineUsersUpdater = {
     onSuccess: function(response) {
         action = $.parseJSON(response);
         if(action.type == 0) {
-            initialOnlineUsers(onlineUsersUpdater.online_users, action.online_users);
-            initialSkirmishUsers(onlineUsersUpdater.online_users, action.skirmish_users);
+            initialOnlineUsers(action.online_users);
+            initialSkirmishUsers(action.skirmish_users);
         }
         else if(action.type == 1) {
             addOnlineUser(action.user, true);
@@ -176,12 +176,12 @@ var createOnlineUserLabel = function(user_name) {
     return "<label value=\"" + user_name + "\">" + user_name + "</label>";
 };
 
-var initialOnlineUsers = function(arrayToFill, users) {
+var initialOnlineUsers = function(users) {
     var online_users = String(users).split(',');
     online_users.sort();
     $("#divOnlineUsers").empty();
     for (i = 0; i < online_users.length; ++i) {
-        arrayToFill.push(online_users[i]);
+        onlineUsersUpdater.online_users.push(online_users[i]);
         $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]))
     }
 
@@ -191,6 +191,8 @@ var initialOnlineUsers = function(arrayToFill, users) {
 var removeOnlineUser = function(user, resize) {
     $("#divOnlineUsers label[value=\"" + user + "\"]").remove();
     $("#inviteUserSelect option[value=\"" + user + "\"]").remove();
+
+    onlineUsersUpdater.online_users.pop(user);
 
     if (resize) {
         resize_battle();
@@ -218,6 +220,8 @@ var addOnlineUser = function(user, resize) {
         });
     }
 
+    onlineUsersUpdater.online_users.push(user);
+
     if (resize) {
         resize_battle();
     }
@@ -232,14 +236,14 @@ var createSkirmishUserLabel = function(user_name, team_name) {
     }
 };
 
-var initialSkirmishUsers = function(arrayToFill, users) {
+var initialSkirmishUsers = function(users) {
     if (users) {
         var skirmish_users = String(users).split(',');
         skirmish_users.sort();
         $("#divSkirmishUsers").empty();
         for (i = 0; i < skirmish_users.length; ++i) {
             skirmish_user = skirmish_users[i].split(":");
-            arrayToFill.push(skirmish_user[0]);
+            onlineUsersUpdater.online_users.push(skirmish_user[0]);
             $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]))
         }
 
@@ -349,14 +353,14 @@ var disableDivAction = function(divAction, turn_info) {
         for (i = 0; i < divs.length; i++){
             turn_parts = turn_infos[i].split(":");
             if (turn_parts[1]) {
-                $("option [value=\"" + turn_parts[1] + "\"]", $("select .user_select", $(divs[i]))).attr("selected", "selected");
+                $(".user_select option[value=\"" + turn_parts[1] + "\"]", $(divs[i])).attr("selected", "selected");
             }
             if (turn_parts[2]) {
-                $("option [value=\"" + turn_parts[2] + "\"]", $("select .spell_select", $(divs[i]))).attr("selected", "selected");
+                $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(divs[i])).attr("selected", "selected");
             }
-            $("text", $(divs[i])).text(turn_parts[3]);
+            $("input", $(divs[i])).val(turn_parts[3]);
         }
     }
-    $("divAction input,#divAction select,#divAction button").attr('disabled', true);
+    $("#divAction input,#divAction select,#divAction button").attr('disabled', true);
     $("#cancelButton").removeAttr('disabled');
 };

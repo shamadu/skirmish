@@ -97,11 +97,11 @@ class BattleBot(Thread):
             elif self.phase > 0 and self.counter == 1:
                 self.send_action_to_all(self.action_manager.create_text_action(2, {"round" : self.phase})) # round has been started
                 for user_name in self.skirmish_users.keys():
-                    self.online_users[user_name].send_skirmish_action(self.action_manager.create_can_do_turn_action(user_name))
+                    self.skirmish_users[user_name].send_skirmish_action(self.action_manager.create_can_do_turn_action(user_name))
             elif self.phase > 0 and self.counter == smarty.turn_time:
                 self.send_action_to_all(self.action_manager.create_text_action(3, {"round" : self.phase})) # round has been ended
                 for user_name in self.skirmish_users.keys():
-                    self.online_users[user_name].send_skirmish_action(self.action_manager.create_wait_for_result_action(user_name))
+                    self.skirmish_users[user_name].send_skirmish_action(self.action_manager.create_wait_for_result_action(user_name))
                 self.counter = 0
                 self.phase += 1
                 self.process_round_result()
@@ -113,9 +113,9 @@ class BattleBot(Thread):
 
     def process_round_result(self):
         for user_name in self.skirmish_users.keys():
-            if self.online_users[user_name].is_turn_done(): # process user's turn
+            if self.skirmish_users[user_name].is_turn_done(): # process user's turn
                 # TODO:
-                self.online_users[user_name].reset_turn()
+                self.skirmish_users[user_name].reset_turn()
             else: # remove users from skirmish
                 self.remove_from_skirmish(user_name)
 
