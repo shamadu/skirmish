@@ -134,14 +134,6 @@ var showDivAction = function(divAction) {
     $("#cancelButton").attr('disabled', true);
 };
 
-var disableDivAction = function(divAction, turn_info) {
-    if($("#divAction").length == 0) {
-        showDivAction(divAction);
-    }
-    $("divAction input,#divAction select,#divAction button").attr('disabled', true);
-    $("#cancelButton").removeAttr('disabled');
-};
-
 /*
  Return true if all values (text inputs in div with id "divAction") are correct (integer), false otherwise
  */

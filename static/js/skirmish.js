@@ -170,6 +170,105 @@ var onlineUsersUpdater = {
     }
 };
 
+var createOnlineUserLabel = function(user_name) {
+    return "<label value=\"" + user_name + "\">" + user_name + "</label>";
+};
+
+var initialOnlineUsers = function(arrayToFill, users) {
+    var online_users = String(users).split(',');
+    online_users.sort();
+    $("#divOnlineUsers").empty();
+    for (i = 0; i < online_users.length; ++i) {
+        arrayToFill.push(online_users[i]);
+        $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]))
+    }
+
+    resize_battle();
+};
+
+var removeOnlineUser = function(user) {
+    $("#divOnlineUsers label[value=\"" + user + "\"]").remove();
+    $("#inviteUserSelect option[value=\"" + user + "\"]").remove();
+
+    resize_battle();
+};
+
+var addOnlineUser = function(user) {
+    inserted = false;
+    // insert after specified element
+    $("#divOnlineUsers label").each(function(){
+        if (!inserted && ($(this).text() > user)) {
+            $(this).before(createOnlineUserLabel(user));
+            inserted = true;
+        }
+    });
+    if (!inserted) {
+        $("#divOnlineUsers").append(createOnlineUserLabel(user));
+        $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>");
+    }
+    else{
+        $("#inviteUserSelect option").each(function(){
+            if ($(this).text() > user) {
+                $(this).before("<option value=\"" + user + "\">" + user + "</option>");
+            }
+        });
+    }
+
+    resize_battle();
+};
+
+var createSkirmishUserLabel = function(user_name, team_name) {
+    if (team_name) {
+        return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "[" + team_name + "]</label>";
+    }
+    else {
+        return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "</label>";
+    }
+};
+
+var initialSkirmishUsers = function(arrayToFill, users) {
+    if (users) {
+        var skirmish_users = String(users).split(',');
+        skirmish_users.sort();
+        $("#divSkirmishUsers").empty();
+        for (i = 0; i < skirmish_users.length; ++i) {
+            skirmish_user = skirmish_users[i].split(":");
+            arrayToFill.push(skirmish_user[0]);
+            $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]))
+        }
+
+        resize_battle();
+    }
+};
+
+var removeSkirmishUser = function(user) {
+    skirmish_user = user.split(":");
+    $("#divSkirmishUsers label[value=\"" + skirmish_user[0] + "\"]").remove();
+    if (-1 != $.inArray(skirmish_user[0], onlineUsersUpdater.online_users)){
+        addOnlineUser(skirmish_user[0]);
+    }
+
+    resize_battle();
+};
+
+var addSkirmishUser = function(user) {
+    skirmish_user = user.split(":");
+    removeOnlineUser(skirmish_user[0]);
+    inserted = false;
+    // insert after specified element
+    $("#divSkirmishUsers label").each(function(){
+        if ($(this).text() > user) {
+            $(this).before(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
+            inserted = true;
+        }
+    });
+    if (!inserted) {
+        $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
+    }
+
+    resize_battle();
+};
+
 var battleBotUpdater = {
     errorSleepTime: 500,
 
@@ -236,102 +335,22 @@ var battleBotUpdater = {
     }
 };
 
-var createOnlineUserLabel = function(user_name) {
-    return "<label value=\"" + user_name + "\">" + user_name + "</label>";
-};
-
-var initialOnlineUsers = function(arrayToFill, users) {
-    var online_users = String(users).split(',');
-    online_users.sort();
-    $("#divOnlineUsers").empty();
-    for (i = 0; i < online_users.length; ++i) {
-        arrayToFill.push(online_users[i]);
-        $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]))
-    }
-
-    resize_battle();
-};
-
-var removeOnlineUser = function(user) {
-    $("#divOnlineUsers label[value=\"" + user + "\"]").remove();
-    $("#inviteUserSelect option[value=\"" + user + "\"]").remove();
-
-    resize_battle();
-};
-
-var addOnlineUser = function(user) {
-    inserted = false;
-    // insert after specified element
-    $("#divOnlineUsers label").each(function(){
-        if (!inserted && ($(this).text() > user)) {
-            $(this).before(createOnlineUserLabel(user));
-            inserted = true;
-        }
-    });
-    if (!inserted) {
-        $("#divOnlineUsers").append(createOnlineUserLabel(user));
-        $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>");
-    }
-    else{
-        $("#inviteUserSelect option").each(function(){
-            if ($(this).text() > user) {
-                $(this).before("<option value=\"" + user + "\">" + user + "</option>");
+var disableDivAction = function(divAction, turn_info) {
+    if($("#divAction").length == 0) {
+        showDivAction(divAction);
+        turn_infos = turn_info.split(",");
+        divs = $("#divAction .action");
+        for (i = 0; i < divs.length; i++){
+            turn_parts = turn_infos[i].split(":");
+            if (turn_parts[1]) {
+                $("option [value=\"" + turn_parts[1] + "\"]", $("select .user_select", $(divs[i]))).attr("selected", "selected");
             }
-        });
-    }
-
-    resize_battle();
-};
-
-var createSkirmishUserLabel = function(user_name, team_name) {
-    if (team_name) {
-        return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "[" + team_name + "]</label>";
-    }
-    else {
-        return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "</label>";
-    }
-};
-
-var initialSkirmishUsers = function(arrayToFill, users) {
-    if (users) {
-        var skirmish_users = String(users).split(',');
-        skirmish_users.sort();
-        $("#divSkirmishUsers").empty();
-        for (i = 0; i < skirmish_users.length; ++i) {
-            skirmish_user = skirmish_users[i].split(":")
-            arrayToFill.push(skirmish_user[0]);
-            $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]))
+            if (turn_parts[2]) {
+                $("option [value=\"" + turn_parts[2] + "\"]", $("select .spell_select", $(divs[i]))).attr("selected", "selected");
+            }
+            $("text", $(divs[i])).text(turn_parts[3]);
         }
-
-        resize_battle();
     }
+    $("divAction input,#divAction select,#divAction button").attr('disabled', true);
+    $("#cancelButton").removeAttr('disabled');
 };
-
-var removeSkirmishUser = function(user) {
-    skirmish_user = user.split(":")
-    $("#divSkirmishUsers label[value=\"" + skirmish_user[0] + "\"]").remove();
-    if (-1 != $.inArray(skirmish_user[0], onlineUsersUpdater.online_users)){
-        addOnlineUser(skirmish_user[0]);
-    }
-
-    resize_battle();
-};
-
-var addSkirmishUser = function(user) {
-    skirmish_user = user.split(":")
-    removeOnlineUser(skirmish_user[0]);
-    inserted = false;
-    // insert after specified element
-    $("#divSkirmishUsers label").each(function(){
-        if ($(this).text() > user) {
-            $(this).before(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
-            inserted = true;
-        }
-    });
-    if (!inserted) {
-        $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
-    }
-
-    resize_battle();
-};
-
