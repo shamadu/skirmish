@@ -54,6 +54,9 @@ class CharactersManager:
     def send_info(self, name):
         # return character info
         character = self.db_manager.get_character(name)
+        team_name = character.team_name
+        if not team_name:
+            team_name = ""
         character_info = [
             character.name,
             smarty.get_class_name(self.online_users[name].locale, character.classID),
@@ -66,7 +69,7 @@ class CharactersManager:
             str(character.wisdom),
             str(character.exp),
             str(character.gold),
-            str(character.team_name),
+            team_name,
             str(character.rank_in_team)
         ]
         self.online_users[name].send_character_action(Action(0, {"character_info" : ":".join(character_info)}))

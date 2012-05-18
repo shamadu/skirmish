@@ -284,7 +284,12 @@ var addOnlineUser = function(user) {
 };
 
 var createSkirmishUserLabel = function(user_name, team_name) {
-    return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "[" + team_name + "]</label>";
+    if (team_name) {
+        return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "[" + team_name + "]</label>";
+    }
+    else {
+        return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "</label>";
+    }
 };
 
 var initialSkirmishUsers = function(arrayToFill, users) {
@@ -305,7 +310,7 @@ var initialSkirmishUsers = function(arrayToFill, users) {
 var removeSkirmishUser = function(user) {
     skirmish_user = user.split(":")
     $("#divSkirmishUsers label[value=\"" + skirmish_user[0] + "\"]").remove();
-    if ($.inArray(user, onlineUsersUpdater.online_users)){
+    if (-1 != $.inArray(skirmish_user[0], onlineUsersUpdater.online_users)){
         addOnlineUser(skirmish_user[0]);
     }
 

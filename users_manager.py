@@ -43,10 +43,16 @@ class UsersManager(Thread):
         return Action(2, {"user" : user_name})
 
     def create_add_skirmish_user_action(self, user_name):
-        return Action(3, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()}})
+        team_name = self.skirmish_users[user_name].get_team_name()
+        if not team_name:
+            return Action(3, {"skirmish_user" : user_name})
+        return Action(3, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : team_name}})
 
     def create_remove_skirmish_user_action(self, user_name):
-        return Action(4, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()}})
+        team_name = self.skirmish_users[user_name].get_team_name()
+        if not team_name:
+            return Action(4, {"skirmish_user" : user_name})
+        return Action(4, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : team_name}})
 
 
     def run(self):
