@@ -165,7 +165,7 @@ class CharactersManager:
             if user_boss.rank_in_team < 2:
                 user_for_removing = self.db_manager.get_character(remove_user_name)
                 if user_boss.team_name == user_for_removing.team_name and user_for_removing.rank_in_team > user_boss.rank_in_team :
-                    self.db_manager.change_user_team(remove_user_name, 0, None)
+                    self.db_manager.change_user_team(remove_user_name, None, 0)
                     self.send_team_info_to_members(user_boss.team_name)
                     self.send_info(remove_user_name)
                     self.send_create_team(remove_user_name)
@@ -180,10 +180,10 @@ class CharactersManager:
             user_for_inviting = self.db_manager.get_character(invite_user_name)
             if not user_for_inviting.team_name:
                 self.send_invite(invite_user_name, user_name, user_boss.team_name)
-                invite_response["msg"] = smarty.error_messages[4]
+                invite_response["msg"] = self.online_users[user_name].locale.translate(smarty.error_messages[4])
             else:
                 invite_response["error"] = "True"
-                invite_response["msg"] = smarty.error_messages[3] % {"user_name" : invite_user_name}
+                invite_response["msg"] = self.online_users[user_name].locale.translate(smarty.error_messages[3]) % {"user_name" : invite_user_name}
 
         return invite_response
 
@@ -192,7 +192,7 @@ class CharactersManager:
         if user_boss.rank_in_team < 2:
             user_for_join = self.db_manager.get_character(joined_user)
             if not user_for_join.team_name:
-                self.db_manager.change_user_team(joined_user, 5, team_name)
+                self.db_manager.change_user_team(joined_user, team_name, 5)
                 self.send_team_info_to_members(team_name)
                 self.send_info(joined_user)
 
@@ -205,11 +205,11 @@ class CharactersManager:
             if members.values().count(0) == 1:
                 # remove team
                 for member_name in members.keys():
-                    self.db_manager.change_user_team(member_name, 0, None)
+                    self.db_manager.change_user_team(member_name, None, 0)
                     self.send_info(member_name)
                     self.send_create_team(member_name)
                 return
-        self.db_manager.change_user_team(user_name, 0, None)
+        self.db_manager.change_user_team(user_name, None, 0)
         self.send_info(user_name)
         self.send_create_team(user_name)
         self.send_team_info_to_members(user.team_name)

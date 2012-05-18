@@ -34,9 +34,8 @@ msgid "You can't invite %(user_name)s. This user already has a team"
 msgstr "Вы не можете пригласить %(user_name)s. Этот персонаж уже в команде"
 
 #: smarty.py:27
-#, fuzzy
 msgid "Invitation has been sent"
-msgstr "Регистрация закончилась"
+msgstr "Приглашение отправлено"
 
 #: smarty.py:36
 msgid "Warrior"
@@ -111,9 +110,8 @@ msgid "Round {0} has been ended"
 msgstr "Раунд {0} закончился"
 
 #: static/js/locale.js:22
-#, fuzzy
 msgid "Game has been ended"
-msgstr "Раунд {0} закончился"
+msgstr "Игра закончилась"
 
 #: static/js/locale.js:23
 msgid "Game can't be started, not enough players"
@@ -183,9 +181,8 @@ msgid "Battle"
 msgstr "Схватка"
 
 #: templates/skirmish.html:28
-#, fuzzy
 msgid "Character"
-msgstr "Создать"
+msgstr "Персонаж"
 
 #: templates/skirmish.html:31 templates/skirmish.html:94
 msgid "Team"
