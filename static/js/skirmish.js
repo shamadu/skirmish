@@ -27,6 +27,7 @@ var showBattle = function() {
     $("#characterAnchor").parent().removeAttr("class");
     $("#teamDivContainer").hide();
     $("#teamAnchor").parent().removeAttr("class");
+    resize_battle();
 };
 
 var showCharacter = function() {
@@ -97,6 +98,7 @@ var characterInfoUpdater = {
             $("#divInvitationContent").append(action.invitation_div);
             initialize_team_invitation(action.user_name, action.team_name);
         }
+        resize_battle();
 
         characterInfoUpdater.errorSleepTime = 500;
         window.setTimeout(characterInfoUpdater.poll, 0);
@@ -146,10 +148,10 @@ var onlineUsersUpdater = {
             initialSkirmishUsers(onlineUsersUpdater.online_users, action.skirmish_users);
         }
         else if(action.type == 1) {
-            addOnlineUser(action.user);
+            addOnlineUser(action.user, true);
         }
         else if(action.type == 2) {
-            removeOnlineUser(action.user);
+            removeOnlineUser(action.user, true);
         }
         // add skirmish user
         else if(action.type == 3) {
@@ -186,14 +188,16 @@ var initialOnlineUsers = function(arrayToFill, users) {
     resize_battle();
 };
 
-var removeOnlineUser = function(user) {
+var removeOnlineUser = function(user, resize) {
     $("#divOnlineUsers label[value=\"" + user + "\"]").remove();
     $("#inviteUserSelect option[value=\"" + user + "\"]").remove();
 
-    resize_battle();
+    if (resize) {
+        resize_battle();
+    }
 };
 
-var addOnlineUser = function(user) {
+var addOnlineUser = function(user, resize) {
     inserted = false;
     // insert after specified element
     $("#divOnlineUsers label").each(function(){
@@ -214,7 +218,9 @@ var addOnlineUser = function(user) {
         });
     }
 
-    resize_battle();
+    if (resize) {
+        resize_battle();
+    }
 };
 
 var createSkirmishUserLabel = function(user_name, team_name) {
@@ -245,7 +251,7 @@ var removeSkirmishUser = function(user) {
     skirmish_user = user.split(":");
     $("#divSkirmishUsers label[value=\"" + skirmish_user[0] + "\"]").remove();
     if (-1 != $.inArray(skirmish_user[0], onlineUsersUpdater.online_users)){
-        addOnlineUser(skirmish_user[0]);
+        addOnlineUser(skirmish_user[0], false);
     }
 
     resize_battle();
@@ -253,7 +259,7 @@ var removeSkirmishUser = function(user) {
 
 var addSkirmishUser = function(user) {
     skirmish_user = user.split(":");
-    removeOnlineUser(skirmish_user[0]);
+    removeOnlineUser(skirmish_user[0], false);
     inserted = false;
     // insert after specified element
     $("#divSkirmishUsers label").each(function(){
