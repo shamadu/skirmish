@@ -6,12 +6,11 @@ import smarty
 __author__ = 'Pavel Padinker'
 
 # action types are:
-# 0 - show all online users
+# 0 - show all online and skirmish users
 # 1 - add new user
 # 2 - remove online user
-# 3 - show initial skirmish users
-# 4 - add skirmish users
-# 5 - remove skirmish users
+# 3 - add skirmish users
+# 4 - remove skirmish users
 
 class UsersManager(Thread):
     def __init__(self, db_manager, online_users_holder):
@@ -27,17 +26,27 @@ class UsersManager(Thread):
     def skirmish_users(self):
         return self.online_users_holder.skirmish_users
 
-    def create_skirmish_users_action(self):
+    def create_initial_users_action(self):
+        online_user_non_skirmish = list()
+        for user_name in self.online_users.keys():
+            if user_name not in self.skirmish_users.keys():
+                online_user_non_skirmish.append(user_name)
         skirmish_users = list()
         for user_name in self.skirmish_users:
-            skirmish_users.append("%(user_name)s[%(team_name)s]" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()})
-        return Action(3, {"skirmish_users" : ','.join(skirmish_users)})
+            skirmish_users.append("%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()})
+        return Action(0, {"online_users" : ','.join(online_user_non_skirmish), "skirmish_users" : ','.join(skirmish_users)})
+
+    def create_user_online_action(self, user_name):
+        return Action(1, {"user" : user_name})
+
+    def create_user_offline_action(self, user_name):
+        return Action(2, {"user" : user_name})
 
     def create_add_skirmish_user_action(self, user_name):
-        return Action(4, {"skirmish_user" : "%(user_name)s[%(team_name)s]" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()}})
+        return Action(3, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()}})
 
     def create_remove_skirmish_user_action(self, user_name):
-        return Action(5, {"skirmish_user" : "%(user_name)s[%(team_name)s]" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()}})
+        return Action(4, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()}})
 
 
     def run(self):
@@ -94,19 +103,15 @@ class UsersManager(Thread):
         if user_name in self.online_users:
             self.online_users[user_name].set_user_callback(None)
 
-    def send_online_users_to(self, user_name):
-        self.online_users[user_name].send_user_action(Action(0, {"users" : ','.join(self.online_users.keys())}))
-
-    def send_skirmish_users_to(self, user_name):
-        self.online_users[user_name].send_user_action(self.create_skirmish_users_action())
+    def send_initial_users_to(self, user_name):
+        self.online_users[user_name].send_user_action(self.create_initial_users_action())
 
     def send_action_to_all(self, action):
         for online_user in self.online_users.values():
             online_user.send_user_action(action)
 
     def on_user_online(self, user_name):
-        self.send_action_to_all(Action(1, {"user" : user_name}))
+        self.send_action_to_all(self.create_user_online_action(user_name))
 
     def on_user_offline(self, user_name):
-        for online_user in self.online_users.values():
-            online_user.send_user_action(Action(2, {"user" : user_name}))
+        self.send_action_to_all(self.create_user_offline_action(user_name))

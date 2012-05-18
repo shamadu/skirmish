@@ -104,7 +104,7 @@ class OnlineUsersHolder():
         if not user_name in self.online_users.keys():
             self.users_manager.on_user_online(user_name)
             self.online_users[user_name] = OnlineUserInfo(self.db_manager, user_name, locale)
-            self.users_manager.send_online_users_to(user_name)
+            self.users_manager.send_initial_users_to(user_name)
         else:
             self.online_users[user_name].locale = locale
 
@@ -114,8 +114,7 @@ class OnlineUsersHolder():
         self.online_users[user_name].skirmish_callback = None
         self.online_users[user_name].character_callback = None
         self.add_if_not_online(user_name, locale)
-        self.users_manager.send_online_users_to(user_name)
-        self.users_manager.send_skirmish_users_to(user_name)
+        self.users_manager.send_initial_users_to(user_name)
 
     def add_skirmish_user(self, user_name):
         self.skirmish_users[user_name] = self.online_users[user_name]

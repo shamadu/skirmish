@@ -133,6 +133,7 @@ var messager = {
 
 var onlineUsersUpdater = {
     errorSleepTime: 500,
+    online_users : new Array(),
 
     poll: function() {
         $.postJSON('/users/poll', {}, onlineUsersUpdater.onSuccess, onlineUsersUpdater.onError);
@@ -141,7 +142,8 @@ var onlineUsersUpdater = {
     onSuccess: function(response) {
         action = $.parseJSON(response);
         if(action.type == 0) {
-            initialOnlineUsers(action.users);
+            initialOnlineUsers(onlineUsersUpdater.online_users, action.online_users);
+            initialSkirmishUsers(onlineUsersUpdater.online_users, action.skirmish_users);
         }
         else if(action.type == 1) {
             addOnlineUser(action.user);
@@ -149,16 +151,12 @@ var onlineUsersUpdater = {
         else if(action.type == 2) {
             removeOnlineUser(action.user);
         }
-        // initial skirmish users
-        else if(action.type == 3) {
-            initialSkirmishUsers(action.skirmish_users);
-        }
         // add skirmish user
-        else if(action.type == 4) {
+        else if(action.type == 3) {
             addSkirmishUser(action.skirmish_user);
         }
         // remove skirmish user
-        else if(action.type == 5) {
+        else if(action.type == 4) {
             removeSkirmishUser(action.skirmish_user);
         }
 
@@ -238,12 +236,17 @@ var battleBotUpdater = {
     }
 };
 
-var initialOnlineUsers = function(users) {
+var createOnlineUserLabel = function(user_name) {
+    return "<label value=\"" + user_name + "\">" + user_name + "</label>";
+};
+
+var initialOnlineUsers = function(arrayToFill, users) {
     var online_users = String(users).split(',');
     online_users.sort();
     $("#divOnlineUsers").empty();
     for (i = 0; i < online_users.length; ++i) {
-        $("#divOnlineUsers").append("<label value=\"" + online_users[i] + "\">" + online_users[i] + "</label>")
+        arrayToFill.push(online_users[i]);
+        $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]))
     }
 
     resize_battle();
@@ -261,12 +264,12 @@ var addOnlineUser = function(user) {
     // insert after specified element
     $("#divOnlineUsers label").each(function(){
         if (!inserted && ($(this).text() > user)) {
-            $(this).before("<label value=\"" + user + "\">" + user + "</label>");
+            $(this).before(createOnlineUserLabel(user));
             inserted = true;
         }
     });
     if (!inserted) {
-        $("#divOnlineUsers").append("<label value=\"" + user + "\">" + user + "</label>");
+        $("#divOnlineUsers").append(createOnlineUserLabel(user));
         $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>");
     }
     else{
@@ -280,13 +283,19 @@ var addOnlineUser = function(user) {
     resize_battle();
 };
 
-var initialSkirmishUsers = function(users) {
+var createSkirmishUserLabel = function(user_name, team_name) {
+    return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "[" + team_name + "]</label>";
+};
+
+var initialSkirmishUsers = function(arrayToFill, users) {
     if (users) {
         var skirmish_users = String(users).split(',');
         skirmish_users.sort();
         $("#divSkirmishUsers").empty();
         for (i = 0; i < skirmish_users.length; ++i) {
-            $("#divSkirmishUsers").append("<label value=\"" + skirmish_users[i] + "\">" + skirmish_users[i] + "</label>")
+            skirmish_user = skirmish_users[i].split(":")
+            arrayToFill.push(skirmish_user[0]);
+            $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]))
         }
 
         resize_battle();
@@ -294,22 +303,28 @@ var initialSkirmishUsers = function(users) {
 };
 
 var removeSkirmishUser = function(user) {
-    $("#divSkirmishUsers label[value=\"" + user + "\"]").remove();
+    skirmish_user = user.split(":")
+    $("#divSkirmishUsers label[value=\"" + skirmish_user[0] + "\"]").remove();
+    if ($.inArray(user, onlineUsersUpdater.online_users)){
+        addOnlineUser(skirmish_user[0]);
+    }
 
     resize_battle();
 };
 
 var addSkirmishUser = function(user) {
+    skirmish_user = user.split(":")
+    removeOnlineUser(skirmish_user[0]);
     inserted = false;
     // insert after specified element
     $("#divSkirmishUsers label").each(function(){
         if ($(this).text() > user) {
-            $(this).before("<label value=\"" + user + "\">" + user + "</label>");
+            $(this).before(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
             inserted = true;
         }
     });
     if (!inserted) {
-        $("#divSkirmishUsers").append("<label value=\"" + user + "\">" + user + "</label>");
+        $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
     }
 
     resize_battle();
