@@ -124,8 +124,7 @@ class StaticJSHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
         if not self.current_user:
-            locales_dict = smarty.get_locales(self.locale)
-            self.render("login.html", locales=locales_dict, selected=self.get_cookie("locale"))
+            self.render("login.html", locales=smarty.locales, selected=self.get_cookie("locale"))
         else:
             self.redirect("/")
 

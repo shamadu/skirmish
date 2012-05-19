@@ -62,43 +62,42 @@ main_abilities = [
 spells = {
     # warrior
     0 : {
-        1 : {"Berserk Fury", "Disarmament"}
+        1 : {_("Berserk Fury"), _("Disarmament")}
     },
     # guardian
     1 : {
-        1 : {"Armor", "Shield Block"}
+        1 : {_("Armor"), _("Shield Block")}
     },
     # archer
     2 : {
-        1 : {"Evasion", "Berserk Fury"}
+        1 : {_("Evasion"), _("Berserk Fury")}
     },
     # rogue
     3 : {
-        1 : {"Evasion", "Trip"}
+        1 : {_("Evasion"), _("Trip")}
     },
     # mage
     4 : {
-        1 : {"Frost Needle", "Fire Spark"}
+        1 : {_("Frost Needle"), _("Fire Spark")}
     },
     # priest
     5 : {
-        1 : {"Prayer for Attack", "Prayer for Protection"}
+        1 : {_("Prayer for Attack"), _("Prayer for Protection")}
     },
     # warlock
     6 : {
-        1 : {"Curse of Weakness", "Leech Life"}
+        1 : {_("Curse of Weakness"), _("Leech Life")}
     },
     # necromancer
     7 : {
-        1 : {"Infection", "Stench"}
+        1 : {_("Infection"), _("Stench")}
     }
     }
 
-def get_locales(locale):
-    result = OrderedDict()
-    for locale_id in locales.keys():
-        result[locale_id] = locale.translate(locales[locale_id])
-    return result
+weapons = {
+    0 : {_("Knife"), 0.2, 0.3, "0,0,0,0", "0,0,0,0,0,0,0", 0, _("Knife is basic weapon, everybody has it")},
+    1 : {_("Stone"), 0.4, 0.5, "0,0,0,0", "1,0,0,0,0,0,0", 15, _("Sharpened stone is the weapon of real barbarian")}
+}
 
 def get_classes(locale):
     result = dict()
@@ -106,8 +105,8 @@ def get_classes(locale):
         result[class_id] = locale.translate(classes[class_id])
     return result
 
-def get_class_name(locale, classID):
-    return get_classes(locale)[classID]
+def get_class_name(classID, locale):
+    return locale.translate(classes[classID])
 
 def get_attack_count(classID, level):
     attack_count = 1
@@ -172,3 +171,18 @@ def get_substance_name(classID, locale):
         substance_name = locale.translate(substance_names[1])
 
     return substance_name
+
+def get_mp_count(character):
+    if character.classID < 4:
+        return character.dexterity*3
+    else:
+        return character.wisdom*3
+
+def get_hp_count(character):
+    return character.level + character.strength
+
+def get_weapon(id, locale):
+    weapon = weapons[id]
+    weapon[0] = locale.translate(weapons[id][0])
+    weapon[6] = locale.translate(weapons[id][6])
+    return weapon

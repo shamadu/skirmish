@@ -180,6 +180,7 @@ var initialOnlineUsers = function(users) {
     var online_users = String(users).split(',');
     online_users.sort();
     $("#divOnlineUsers").empty();
+    onlineUsersUpdater.online_users.length = 0;
     for (i = 0; i < online_users.length; ++i) {
         onlineUsersUpdater.online_users.push(online_users[i]);
         $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]))
@@ -188,18 +189,17 @@ var initialOnlineUsers = function(users) {
     resize_battle();
 };
 
-var removeOnlineUser = function(user, resize) {
+var removeOnlineUser = function(user, fromServer) {
     $("#divOnlineUsers label[value=\"" + user + "\"]").remove();
     $("#inviteUserSelect option[value=\"" + user + "\"]").remove();
 
-    onlineUsersUpdater.online_users.pop(user);
-
-    if (resize) {
+    if (fromServer) {
+        onlineUsersUpdater.online_users.pop(user);
         resize_battle();
     }
 };
 
-var addOnlineUser = function(user, resize) {
+var addOnlineUser = function(user, fromServer) {
     inserted = false;
     // insert after specified element
     $("#divOnlineUsers label").each(function(){
@@ -207,7 +207,7 @@ var addOnlineUser = function(user, resize) {
             $(this).before(createOnlineUserLabel(user));
             inserted = true;
         }
-    });
+    })
     if (!inserted) {
         $("#divOnlineUsers").append(createOnlineUserLabel(user));
         $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>");
@@ -220,9 +220,8 @@ var addOnlineUser = function(user, resize) {
         });
     }
 
-    onlineUsersUpdater.online_users.push(user);
-
-    if (resize) {
+    if (fromServer) {
+        onlineUsersUpdater.online_users.push(user);
         resize_battle();
     }
 };

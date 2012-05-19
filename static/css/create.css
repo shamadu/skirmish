@@ -1,3 +1,14 @@
 .createButton {
 	width: 50px;
 }
+
+.characterTable tr {
+    vertical-align : middle;
+    text-align: center;
+}
+
+.characterTable td {
+    vertical-align : middle;
+    text-align: center;
+    padding: 1px;
+}

@@ -3,11 +3,52 @@ __author__ = 'PavelP'
 class DBManager():
     def __init__(self, db):
         self.db = db
-        self.db.execute("create table if not exists characters (id integer(11) primary key not null auto_increment unique, "
-                        "name text, classID integer, level integer, hp integer, mp integer, strength integer, dexterity  integer, "
-                        "intellect  integer, wisdom  integer, exp bigint, gold integer, team_name text, rank_in_team int)")
-        self.db.execute("create table if not exists users (id integer(11) primary key not null auto_increment unique, "
-                        "login text, password text)")
+        self.db.execute('create table if not exists characters '
+                        '(id integer(11) primary key not null auto_increment unique, '
+                        'name text, '
+                        'classID integer, '
+                        'level integer default 1, '
+                        'strength integer default 1, '
+                        'dexterity  integer default 1, '
+                        'intellect  integer default 1, '
+                        'wisdom  integer default 1, '
+                        'exp bigint default 1, '
+                        'gold integer default 1, '
+                        'team_name text default null, '
+                        'rank_in_team int default 0, '
+        # weapon, shield and all clothes = comma-separated text, first is id of wearing thing, other - in backpack
+                        'weapon text, '
+                        'shield text, '
+                        'head text, '
+                        'body text, '
+                        'left_hand text, '
+                        'right_hand text, '
+                        'legs text, '
+                        'left_foot text, '
+                        'right_foot text, '
+                        'cloak text)')
+        self.db.execute("create table if not exists users "
+                        "(id integer(11) primary key not null auto_increment unique, "
+                        "login text, "
+                        "password text)")
+        self.db.execute("create table if not exists weapons "
+                        "(id integer(11) primary key not null auto_increment unique, "
+                        "name text, "
+                        "min_dmg float, "
+                        "max_dmg float, "
+        # required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
+                        "required_stats text not null, "
+        # bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
+                        "bonus_stats text not null, "
+                        "price integer, "
+                        "description text)")
+        self.db.execute("create table if not exists clothes "
+                        "(id integer(11) primary key not null auto_increment unique, "
+                        "name text, "
+                        "required_stats text not null, "
+                        "bonus_stats text not null, "
+                        "price integer, "
+                        "description text)")
 
     def get_user(self, login):
         return self.db.get("select * from users where login = %s", login)
@@ -20,8 +61,7 @@ class DBManager():
 
     def create_character(self, name, classID):
         if not self.get_character(name):
-            self.db.execute("insert into characters (name, classID, level, hp, mp, strength, dexterity, intellect, wisdom, exp, gold, team_name, rank_in_team) values "
-                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", name, classID, 1, 1, 1, 1, 1, 1, 1, 0, 1, None, 0)
+            self.db.execute("insert into characters (name, classID, weapon) values (%s, %s, %s)", name, classID, "0")
 
     def remove_character(self, name):
         self.db.execute("delete from characters where name = %s", name)

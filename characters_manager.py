@@ -59,10 +59,10 @@ class CharactersManager:
             team_name = ""
         character_info = [
             character.name,
-            smarty.get_class_name(self.online_users[name].locale, character.classID),
+            smarty.get_class_name(character.classID, self.online_users[name].locale),
             str(character.level),
-            str(character.hp),
-            str(character.mp),
+            str(smarty.get_hp_count(character)),
+            str(smarty.get_mp_count(character)),
             str(character.strength),
             str(character.dexterity),
             str(character.intellect),
@@ -71,6 +71,10 @@ class CharactersManager:
             str(character.gold),
             team_name,
             str(character.rank_in_team)
+        ]
+
+        character_stuff = [
+            character.weapon
         ]
         self.online_users[name].send_character_action(Action(0, {"character_info" : ":".join(character_info)}))
 

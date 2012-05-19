@@ -79,20 +79,40 @@
 
 
         <div id="characterDivContainer" class="contentDiv">
-            <table id="fullCharacterInfoTable" class="fullCharacterInfoTable">
-                <tr><td>{{ _("Name") }}</td><td><label id="nameLabel"></label></td></tr>
-                <tr><td>{{ _("Class") }}</td><td><label id="classLabel"></label></td></tr>
-                <tr><td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td></tr>
-                <tr><td>{{ _("Health") }}</td><td><label id="HPLabel"></label></td></tr>
-                <tr><td>{{ substance }}</td><td><label id="MPLabel"></label></td></tr>
-                <tr><td>{{ _("Strength") }}</td><td><label id="strengthLabel"></label></td></tr>
-                <tr><td>{{ _("Dexterity") }}</td><td><label id="dexterityLabel"></label></td></tr>
-                <tr><td>{{ _("Intellect") }}</td><td><label id="intellectLabel"></label></td></tr>
-                <tr><td>{{ _("Wisdom") }}</td><td><label id="wisdomLabel"></label></td></tr>
-                <tr><td>{{ _("Experience") }}</td><td><label id="expLabel"></label></td></tr>
-                <tr><td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td></tr>
-                <tr><td>{{ _("Team") }}</td><td><label id="teamLabel"></label></td></tr>
-                <tr><td>{{ _("Rank") }}</td><td><label id="rankLabel"></label></td></tr>
+            <table class="tableContentHolder">
+                <tr>
+                    <td>
+                        <table id="fullCharacterInfoTable" class="characterInfoTable">
+                            <tr><td>{{ _("Name") }}</td><td><label id="nameLabel"></label></td></tr>
+                            <tr><td>{{ _("Class") }}</td><td><label id="classLabel"></label></td></tr>
+                            <tr><td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td></tr>
+                            <tr><td>{{ _("Health") }}</td><td><label id="HPLabel"></label></td></tr>
+                            <tr><td>{{ substance }}</td><td><label id="MPLabel"></label></td></tr>
+                            <tr><td>{{ _("Strength") }}</td><td><label id="strengthLabel"></label></td></tr>
+                            <tr><td>{{ _("Dexterity") }}</td><td><label id="dexterityLabel"></label></td></tr>
+                            <tr><td>{{ _("Intellect") }}</td><td><label id="intellectLabel"></label></td></tr>
+                            <tr><td>{{ _("Wisdom") }}</td><td><label id="wisdomLabel"></label></td></tr>
+                            <tr><td>{{ _("Experience") }}</td><td><label id="expLabel"></label></td></tr>
+                            <tr><td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td></tr>
+                            <tr><td>{{ _("Team") }}</td><td><label id="teamLabel"></label></td></tr>
+                            <tr><td>{{ _("Rank") }}</td><td><label id="rankLabel"></label></td></tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table id="characterStuffTable" class="characterInfoTable">
+                            <tr><td>{{ _("Weapon") }}</td><td><select id="weapon" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Shield") }}</td><td><select id="shield" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Head") }}</td><td><select id="head" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Body") }}</td><td><select id="body" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Left hand") }}</td><td><select id="left_hand" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Right hand") }}</td><td><select id="right_hand" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Legs") }}</td><td><select id="legs" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Left foot") }}</td><td><select id="left_foot" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Right foot") }}</td><td><select id="right_foot" class="commonSelect"></select></td></tr>
+                            <tr><td>{{ _("Cloak") }}</td><td><select id="cloak" class="commonSelect"></select></td></tr>
+                        </table>
+                    </td>
+                </tr>
             </table>
         </div>
 

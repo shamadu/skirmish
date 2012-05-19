@@ -23,7 +23,6 @@ var initialize_battle = function () {
 };
 
 var dropButtonClick = function () {
-    leaveButtonClick();
     $.getJSON('/drop', {}, function() {
         window.location.href='/create';
     });

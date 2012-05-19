@@ -1,3 +1,8 @@
+.commonSelect {
+    margin: auto;
+    width: auto;
+}
+
 .errorLabel {
     margin: auto;
     color: red;
@@ -90,26 +95,23 @@
 }
 
 .characterInfoTable tr,
-.fullCharacterInfoTable tr,
 .teamInfoTable tr {
     vertical-align : middle;
     text-align: center;
 }
 
 .characterInfoTable td,
-.fullCharacterInfoTable td,
 .teamInfoTable td {
+    vertical-align : middle;
     padding: 1px;
 }
 
-.fullCharacterInfoTable,
 .teamInfoTable {
     width: auto;
     border : 0;
 }
 
 .characterInfoTable label,
-.fullCharacterInfoTable label,
 .teamInfoTable label {
     margin-bottom: 0;
     margin-top: 0;
@@ -132,4 +134,8 @@
 
 .divTeamCreation input {
     width: 150px
+}
+
+.tableContentHolder tr {
+    vertical-align : top;
 }
