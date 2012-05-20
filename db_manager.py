@@ -1,3 +1,5 @@
+import smarty
+
 __author__ = 'PavelP'
 
 class DBManager():
@@ -47,7 +49,19 @@ class DBManager():
 
     def create_character(self, name, classID):
         if not self.get_character(name):
-            self.db.execute("insert into characters (name, classID, weapon) values (%s, %s, %s)", name, classID, "0")
+            self.db.execute("insert into characters (name, classID, weapon, shield, head, body, left_hand, right_hand, "
+                            "legs, left_foot, right_foot, cloak) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                , name, classID
+                , str(smarty.build_id(0, 0))
+                , str(smarty.build_id(1, 0))
+                , str(smarty.build_id(2, 0))
+                , str(smarty.build_id(3, 0))
+                , str(smarty.build_id(4, 0))
+                , str(smarty.build_id(5, 0))
+                , str(smarty.build_id(6, 0))
+                , str(smarty.build_id(7, 0))
+                , str(smarty.build_id(8, 0))
+                , str(smarty.build_id(9, 0)))
 
     def remove_character(self, name):
         self.db.execute("delete from characters where name = %s", name)
@@ -65,4 +79,9 @@ class DBManager():
 
     def change_character_field(self, user_name, field_name, field_value):
         self.db.execute("update characters set {0}=%s where name=%s".format(field_name), field_value, user_name)
+        self.update_character(user_name)
+
+    def change_character_fields(self, user_name, bonuses):
+        fields = ", ".join("=".join([key, str(bonuses[key])]) for key in bonuses.keys())
+        self.db.execute("update characters set {0} where name=%s".format(fields), user_name)
         self.update_character(user_name)

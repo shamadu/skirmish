@@ -165,7 +165,8 @@ class CharacterHandler(BaseHandler):
         if self.get_argument("action") == 'drop':
             self.db_manager.remove_character(self.current_user)
         elif self.get_argument("action") == 'put_on':
-            self.characters_manager.put_on(self.current_user, self.get_argument("thing_id"))
+            if not self.characters_manager.put_on(self.current_user, self.get_argument("thing_id")):
+                self.write("false")
 
 class PollCharacterInfoHandler(BaseHandler):
     @tornado.web.authenticated

@@ -98,7 +98,16 @@ class CharactersManager:
 
         self.online_users[user_name].send_character_action(Action(1, {
                         # <id1>:<name1>,<id2>:<name2>:...
-            "weapon" : ",".join("%s" % ":".join({str(weapon[0]), weapon[1]}) for weapon in smarty.get_weapons(character, locale))
+            "weapon" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.weapon, locale)),
+            "shield" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.shield, locale)),
+            "head" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.head, locale)),
+            "body" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.body, locale)),
+            "left_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.left_hand, locale)),
+            "right_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.right_hand, locale)),
+            "legs" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.legs, locale)),
+            "left_foot" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.left_foot, locale)),
+            "right_foot" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.right_foot, locale)),
+            "cloak" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.cloak, locale))
         }))
 
     def user_enter(self, user_name, locale):
@@ -229,36 +238,36 @@ class CharactersManager:
         self.send_team_info_to_members(user.team_name)
 
     def put_on(self, user_name, thing_id):
+        result = False
         int_id = int(thing_id)
-        weapon_range = smarty.weapon_range
-        thing_type = ""
-        if int_id < weapon_range: # weapon
-            thing_type = "weapon"
-        elif int_id < weapon_range*2: # shield
-            pass
-        elif int_id < weapon_range*3: # head
-            pass
-        elif int_id < weapon_range*4: # body
-            pass
-        elif int_id < weapon_range*5: # left_hand
-            pass
-        elif int_id < weapon_range*6: # right_hand
-            pass
-        elif int_id < weapon_range*7: # legs
-            pass
-        elif int_id < weapon_range*8: # left_foot
-            pass
-        elif int_id < weapon_range*9: # right_foot
-            pass
-        elif int_id < weapon_range*10: # cloak
-            pass
-
-        things = self.online_users[user_name].character[thing_type].split(",")
-        if thing_id in things:
+        # get type of thing, e.g. weapon, shield, head, etc.
+        thing_type = smarty.get_thing_type(int_id)
+        character = self.online_users[user_name].character
+        things = character[thing_type].split(",")
+        # check if character has thing and can put it on
+        if thing_id in things and smarty.check_thing(character, int_id):
+            old_thing_id = things[0]
+            # put it on by changing its place with first one
             thing_pos = things.index(thing_id)
             things[0], things[thing_pos] = things[thing_pos], things[0]
+            self.db_manager.change_character_field(user_name, thing_type, ",".join(things))
+            self.send_stuff(user_name)
 
-        # TODO: count bonuses and change parameters here
+            # get bonuses of old thing to subtract them from character
+            old_bonuses = smarty.get_bonuses(int(old_thing_id))
+            # get bonuses of new thing to add them from character
+            bonuses = smarty.get_bonuses(int_id)
+            # add old bonuses not in new ones
+            for bonus_name in old_bonuses.keys():
+                if not bonus_name in bonuses:
+                    bonuses[bonus_name] = - old_bonuses[bonus_name]
+                else:
+                    bonuses[bonus_name] = bonuses[bonus_name] - old_bonuses[bonus_name]
+            # calculate new character stats
+            for bonus_name in bonuses.keys():
+                bonuses[bonus_name] = character[bonus_name] + bonuses[bonus_name]
+            self.db_manager.change_character_fields(user_name, bonuses)
+            self.send_info(user_name)
+            result = True
 
-        self.db_manager.change_character_field(user_name, thing_type, ",".join(things))
-        self.send_stuff(user_name)
+        return result

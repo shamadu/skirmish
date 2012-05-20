@@ -94,25 +94,52 @@ spells = {
     }
     }
 
-weapons = {
-#   id : [id, name, min_damage, max_damage, required_stats, bonus_stats, price, description]
-# required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
-# bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
-    0 : [0, _("Knife"), 0.2, 0.3, "0,0,0,0", "0,0,0,0,0,0,0", 0, _("Knife is basic weapon, everybody has it")],
-    1 : [1, _("Stone"), 0.4, 0.5, "0,0,0,0", "1,0,0,0,0,0,0", 15, _("Sharpened stone is the weapon of real barbarian")]
-}
-
-weapon_range = 100 # means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
+# means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
+build_id = lambda type, id: 100*type + id
 
 things = {
+    #   id : [id, name, required_stats, bonus_stats, price, description, min_damage, max_damage, ]
+    # required_stats is a list of stats in order:
+    # 0 - level,
+    # 1 - strength,
+    # 2 - dexterity,
+    # 3 - intellect,
+    # 4 - wisdom
+    # bonus_stats is a list of stats in order:
+    # 0 - strength,
+    # 1 - dexterity,
+    # 2 - intellect,
+    # 3 - wisdom,
+    # 4 - min_dmg,
+    # 5 - max_dmg,
+    # 6 - spell_dmg
+    #weapons
+    build_id(0, 0) : [build_id(0, 0), _("Knife"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("Knife is basic weapon, everybody has it"), 0.2, 0.3],
+    build_id(0, 1) : [build_id(0, 1), _("Stone"), [1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0], 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5],
     #   id : [id, name, required_stats, bonus_stats, price, description]
     # required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
     # bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
-    # shields
-    weapon_range*1 + 1 : [weapon_range*1 + 1, _("Basic shield"), "0,0,0,0", "1,0,0,0,0,0,0", 15, _("Just wooden shield with iron circle in center")],
-    # heads
-    weapon_range*2 + 1 : [weapon_range*2 + 1, _("Basic helmet"), "0,0,0,0", "0,1,0,0,0,0,0", 15, _("Wooden helmet is a better guard than your skull")]
-}
+    #shields
+    build_id(1, 0) : [build_id(1, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(1, 1) : [build_id(1, 1), _("Basic shield"), [2, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0], 15, _("Just wooden shield with iron circle in center")],
+    #heads
+    build_id(2, 0) : [build_id(2, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(2, 1) : [build_id(2, 1), _("Basic helmet"), [2,0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0], 15, _("Wooden helmet is a better guard than your skull")],
+    # body
+    build_id(3, 0) : [build_id(3, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    # left_hand
+    build_id(4, 0) : [build_id(4, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    # right_hand
+    build_id(5, 0) : [build_id(5, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    # legs
+    build_id(6, 0) : [build_id(6, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    # left_foot
+    build_id(7, 0) : [build_id(7, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    # right_foot
+    build_id(8, 0) : [build_id(8, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    # cloak
+    build_id(9, 0) : [build_id(9, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")]
+    }
 
 def get_classes(locale):
     result = dict()
@@ -196,16 +223,84 @@ def get_mp_count(character):
 def get_hp_count(character):
     return character.level + character.strength
 
-def get_weapon(id, locale):
-    weapon = weapons[id]
-    weapon[1] = locale.translate(weapons[id][1])
-    weapon[7] = locale.translate(weapons[id][7])
-    return weapon
+def get_thing(id, locale):
+    thing = things[id]
+    thing[1] = locale.translate(things[id][1])
+    thing[5] = locale.translate(things[id][5])
+    return thing
 
-def get_weapons(character, locale):
-    weapons = list()
-    weapon_ids = character.weapon.split(",")
-    for weapon_id in weapon_ids:
-        weapons.append(get_weapon(int(weapon_id), locale))
+def get_things(thing_ids_str, locale):
+    things = list()
+    thing_ids = thing_ids_str.split(",")
+    for thing_id in thing_ids:
+        things.append(get_thing(int(thing_id), locale))
 
-    return weapons
+    return things
+
+def get_thing_type(id):
+    thing_type = "undefined"
+    if id < build_id(1, 0):
+        thing_type = "weapon"
+    elif id < build_id(2, 0):
+        thing_type = "shield"
+    elif id < build_id(3, 0):
+        thing_type = "head"
+    elif id < build_id(4, 0):
+        thing_type = "body"
+    elif id < build_id(5, 0):
+        thing_type = "left_hand"
+    elif id < build_id(6, 0):
+        thing_type = "right_hand"
+    elif id < build_id(7, 0):
+        thing_type = "legs"
+    elif id < build_id(8, 0):
+        thing_type = "left_foot"
+    elif id < build_id(9, 0):
+        thing_type = "right_foot"
+    elif id < build_id(10, 0):
+        thing_type = "cloak"
+
+    return thing_type
+
+# 0 - level,
+# 1 - strength,
+# 2 - dexterity,
+# 3 - intellect,
+# 4 - wisdom
+def check_thing(character, thing_id):
+    result = False
+    thing = things[thing_id]
+    if (character.level >= thing[2][0]
+        and character.strength >= thing[2][1]
+        and character.dexterity>= thing[2][2]
+        and character.intellect >= thing[2][3]
+        and character.wisdom >= thing[2][4]):
+        result = True
+    return result
+
+# 0 - strength,
+# 1 - dexterity,
+# 2 - intellect,
+# 3 - wisdom,
+# 4 - min_dmg,
+# 5 - max_dmg,
+# 6 - spell_dmg
+def get_bonuses(thing_id):
+    thing = things[thing_id]
+    result = {}
+    if thing[3][0] != 0:
+        result["strength"] = thing[3][0]
+    if thing[3][1] != 0:
+        result["dexterity"] = thing[3][1]
+    if thing[3][2] != 0:
+        result["intellect"] = thing[3][2]
+    if thing[3][3] != 0:
+        result["wisdom"] = thing[3][3]
+    if thing[3][4] != 0:
+        result["min_dmg"] = thing[3][4]
+    if thing[3][5] != 0:
+        result["max_dmg"] = thing[3][5]
+    if thing[3][6] != 0:
+        result["spell_dmg"] = thing[3][6]
+
+    return result

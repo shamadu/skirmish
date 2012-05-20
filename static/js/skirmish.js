@@ -83,12 +83,36 @@ var characterInfoUpdater = {
         }
         // character stuff update
         if (action.type == 1) {
-            weapons = action.weapon.split(",");
-            $("#weaponSelect").empty();
-// not weapon! knife is default            $("#weaponSelect").append("<option value=\"\">Nothing</option>");
-            for (i = 0; i < weapons.length; i++) {
-                weapon = weapons[i].split(":"); // 0 is id, 1 is name
-                $("#weaponSelect").append("<option value=\"" + weapon[0] + "\">" + weapon[1] + "</option>");
+            if (action.weapon) {
+                $("#weaponSelect").empty();
+                addThings(action.weapon, $("#weaponSelect"));
+            }
+            if (action.shield) {
+                addThings(action.shield, $("#shieldSelect"));
+            }
+            if (action.head) {
+                addThings(action.head, $("#headSelect"));
+            }
+            if (action.body) {
+                addThings(action.body, $("#bodySelect"));
+            }
+            if (action.left_hand) {
+                addThings(action.left_hand, $("#left_handSelect"));
+            }
+            if (action.right_hand) {
+                addThings(action.right_hand, $("#right_handSelect"));
+            }
+            if (action.legs) {
+                addThings(action.legs, $("#legsSelect"));
+            }
+            if (action.left_foot) {
+                addThings(action.left_foot, $("#left_footSelect"));
+            }
+            if (action.right_foot) {
+                addThings(action.right_foot, $("#right_footSelect"));
+            }
+            if (action.cloak) {
+                addThings(action.cloak, $("#cloakSelect"));
             }
         }
         // show create team div
@@ -118,6 +142,15 @@ var characterInfoUpdater = {
     onError: function() {
         characterInfoUpdater.errorSleepTime *= 2;
         window.setTimeout(characterInfoUpdater.poll, characterInfoUpdater.errorSleepTime);
+    }
+};
+
+var addThings = function(things, select) {
+    select.empty();
+    arrThings = things.split(",");
+    for (i = 0; i < arrThings.length; i++) {
+        thing = arrThings[i].split(":"); // 0 is id, 1 is name
+        select.append("<option value=\"" + thing[0] + "\">" + thing[1] + "</option>");
     }
 };
 
@@ -194,7 +227,7 @@ var initialOnlineUsers = function(users) {
     onlineUsersUpdater.online_users.length = 0;
     for (i = 0; i < online_users.length; ++i) {
         onlineUsersUpdater.online_users.push(online_users[i]);
-        $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]))
+        $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]));
         $("#inviteUserSelect").append("<option value=\"" + online_users[i] + "\">" + online_users[i] + "</option>");
     }
 
@@ -219,7 +252,7 @@ var addOnlineUser = function(user, fromServer) {
             $(this).before(createOnlineUserLabel(user));
             inserted = true;
         }
-    })
+    });
     if (!inserted) {
         $("#divOnlineUsers").append(createOnlineUserLabel(user));
         $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>");
