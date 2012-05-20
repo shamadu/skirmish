@@ -95,8 +95,23 @@ spells = {
     }
 
 weapons = {
-    0 : {_("Knife"), 0.2, 0.3, "0,0,0,0", "0,0,0,0,0,0,0", 0, _("Knife is basic weapon, everybody has it")},
-    1 : {_("Stone"), 0.4, 0.5, "0,0,0,0", "1,0,0,0,0,0,0", 15, _("Sharpened stone is the weapon of real barbarian")}
+#   id : [id, name, min_damage, max_damage, required_stats, bonus_stats, price, description]
+# required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
+# bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
+    0 : [0, _("Knife"), 0.2, 0.3, "0,0,0,0", "0,0,0,0,0,0,0", 0, _("Knife is basic weapon, everybody has it")],
+    1 : [1, _("Stone"), 0.4, 0.5, "0,0,0,0", "1,0,0,0,0,0,0", 15, _("Sharpened stone is the weapon of real barbarian")]
+}
+
+weapon_range = 100 # means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
+
+things = {
+    #   id : [id, name, required_stats, bonus_stats, price, description]
+    # required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
+    # bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
+    # shields
+    weapon_range*1 + 1 : [weapon_range*1 + 1, _("Basic shield"), "0,0,0,0", "1,0,0,0,0,0,0", 15, _("Just wooden shield with iron circle in center")],
+    # heads
+    weapon_range*2 + 1 : [weapon_range*2 + 1, _("Basic helmet"), "0,0,0,0", "0,1,0,0,0,0,0", 15, _("Wooden helmet is a better guard than your skull")]
 }
 
 def get_classes(locale):
@@ -183,6 +198,14 @@ def get_hp_count(character):
 
 def get_weapon(id, locale):
     weapon = weapons[id]
-    weapon[0] = locale.translate(weapons[id][0])
-    weapon[6] = locale.translate(weapons[id][6])
+    weapon[1] = locale.translate(weapons[id][1])
+    weapon[7] = locale.translate(weapons[id][7])
     return weapon
+
+def get_weapons(character, locale):
+    weapons = list()
+    weapon_ids = character.weapon.split(",")
+    for weapon_id in weapon_ids:
+        weapons.append(get_weapon(int(weapon_id), locale))
+
+    return weapons

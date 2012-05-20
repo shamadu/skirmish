@@ -10,10 +10,9 @@ class Action:
         self.args["type"] = type
 
 class OnlineUserInfo():
-    def __init__(self, db_manager, name, locale):
+    def __init__(self, name, locale):
         self.counter = 10
-        self.db_manager = db_manager
-        self.character = db_manager.get_character(name)
+        self.character = "" # will be filled by db_manager
         self.turn_info = list()
         self.turn_info_string = ""
         self.user_callback = None

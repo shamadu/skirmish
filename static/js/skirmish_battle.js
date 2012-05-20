@@ -23,7 +23,7 @@ var initialize_battle = function () {
 };
 
 var dropButtonClick = function () {
-    $.getJSON('/drop', {}, function() {
+    $.postJSON('/character', {"action" : "drop"}, function() {
         window.location.href='/create';
     });
 };

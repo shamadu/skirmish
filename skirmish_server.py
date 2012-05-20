@@ -26,7 +26,6 @@ class SkirmishApplication(tornado.web.Application):
             (r'/login', LoginHandler,),
             (r'/logout', LogoutHandler,),
             (r'/create', CreateCharacterHandler,),
-            (r'/drop', DropCharacterHandler,),
             (r'/bot/battle', BattleBotHandler,),
             (r'/bot/poll', PollBotHandler,),
             (r'/users/poll', PollUsersHandler,),
@@ -34,6 +33,7 @@ class SkirmishApplication(tornado.web.Application):
             (r'/info/poll', PollCharacterInfoHandler,),
             (r'/message/new', NewMessageHandler,),
             (r'/team', TeamHandler,),
+            (r'/character', CharacterHandler,),
         ]
         settings = {
             "cookie_secret" : "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
@@ -159,11 +159,13 @@ class CreateCharacterHandler(BaseHandler):
         # insert the new character
         self.db_manager.create_character(self.current_user, classID)
 
-class DropCharacterHandler(BaseHandler):
+class CharacterHandler(BaseHandler):
     @tornado.web.authenticated
-    def get(self, *args, **kwargs):
-        # remove the character from DB
-        self.db_manager.remove_character(self.current_user)
+    def post(self, *args, **kwargs):
+        if self.get_argument("action") == 'drop':
+            self.db_manager.remove_character(self.current_user)
+        elif self.get_argument("action") == 'put_on':
+            self.characters_manager.put_on(self.current_user, self.get_argument("thing_id"))
 
 class PollCharacterInfoHandler(BaseHandler):
     @tornado.web.authenticated
@@ -176,17 +178,17 @@ class PollCharacterInfoHandler(BaseHandler):
             return
 
         result = {}
-        if action.type == 1:
+        if action.type == 2:
             result = action.args
             result["team_div"] = self.render_string("create_team.html")
-        elif action.type == 2:
+        elif action.type == 3:
             result["type"] = action.type
             result["team_div"] = self.render_string("team_info.html",
                 user_name=self.current_user,
                 team_name=action.args["team_name"],
                 team_gold=action.args["team_gold"],
                 members=action.args["members"])
-        elif action.type == 3:
+        elif action.type == 4:
             result = action.args
             result["invitation_div"] = self.render_string("team_invitation.html",
                 user_name=action.args["user_name"],

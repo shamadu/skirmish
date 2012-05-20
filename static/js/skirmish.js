@@ -6,6 +6,7 @@
 
 var initialize = function () {
     initialize_battle();
+    initialize_character();
     messager.poll();
     onlineUsersUpdater.poll();
     battleBotUpdater.poll();
@@ -80,20 +81,30 @@ var characterInfoUpdater = {
             $("#HPLabel_battle").text(characterInfo[3]);
             $("#MPLabel_battle").text(characterInfo[4]);
         }
+        // character stuff update
+        if (action.type == 1) {
+            weapons = action.weapon.split(",");
+            $("#weaponSelect").empty();
+// not weapon! knife is default            $("#weaponSelect").append("<option value=\"\">Nothing</option>");
+            for (i = 0; i < weapons.length; i++) {
+                weapon = weapons[i].split(":"); // 0 is id, 1 is name
+                $("#weaponSelect").append("<option value=\"" + weapon[0] + "\">" + weapon[1] + "</option>");
+            }
+        }
         // show create team div
-        else if (action.type == 1) {
+        else if (action.type == 2) {
             $("#teamDivContainer").empty();
             $("#teamDivContainer").append(action.team_div);
             initialize_create_team();
         }
         // show team info div
-        else if (action.type == 2) {
+        else if (action.type == 3) {
             $("#teamDivContainer").empty();
             $("#teamDivContainer").append(action.team_div);
             initialize_team_info();
         }
         // add invitation
-        else if (action.type == 3) {
+        else if (action.type == 4) {
             $("#divInvitationContent").empty();
             $("#divInvitationContent").append(action.invitation_div);
             initialize_team_invitation(action.user_name, action.team_name);
@@ -184,6 +195,7 @@ var initialOnlineUsers = function(users) {
     for (i = 0; i < online_users.length; ++i) {
         onlineUsersUpdater.online_users.push(online_users[i]);
         $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]))
+        $("#inviteUserSelect").append("<option value=\"" + online_users[i] + "\">" + online_users[i] + "</option>");
     }
 
     resize_battle();

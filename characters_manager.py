@@ -51,15 +51,32 @@ class CharactersManager:
         if user_name in self.online_users:
             self.online_users[user_name].set_character_callback(None)
 
+    def send_create_team(self, user_name):
+        self.online_users[user_name].send_character_action(Action(2, {}))
+
+    def create_team_info_action(self, team_name):
+        return Action(3, {
+            "team_name" : team_name,
+            # TODO: add team gold in special team table
+            "team_gold" : 0,
+            "members" : self.get_team_members(team_name)
+        })
+
+    def create_invite_action(self, user_name, team_name):
+        return Action(4, {
+            "user_name" : user_name,
+            "team_name" : team_name,
+            })
+
     def send_info(self, name):
-        # return character info
         character = self.db_manager.get_character(name)
         team_name = character.team_name
         if not team_name:
             team_name = ""
+        locale = self.online_users[name].locale
         character_info = [
             character.name,
-            smarty.get_class_name(character.classID, self.online_users[name].locale),
+            smarty.get_class_name(character.classID, locale),
             str(character.level),
             str(smarty.get_hp_count(character)),
             str(smarty.get_mp_count(character)),
@@ -73,14 +90,21 @@ class CharactersManager:
             str(character.rank_in_team)
         ]
 
-        character_stuff = [
-            character.weapon
-        ]
         self.online_users[name].send_character_action(Action(0, {"character_info" : ":".join(character_info)}))
+
+    def send_stuff(self, name):
+        character = self.db_manager.get_character(name)
+        locale = self.online_users[name].locale
+
+        self.online_users[name].send_character_action(Action(1, {
+                        # <id1>:<name1>,<id2>:<name2>:...
+            "weapon" : ",".join("%s" % ":".join({str(weapon[0]), weapon[1]}) for weapon in smarty.get_weapons(character, locale))
+        }))
 
     def user_enter(self, user_name, locale):
         self.online_users_holder.add_if_not_online(user_name, locale)
         self.send_info(user_name)
+        self.send_stuff(user_name)
         character = self.db_manager.get_character(user_name)
         if character.team_name:
             # character is in team
@@ -107,23 +131,6 @@ class CharactersManager:
             create_response["msg"] = self.online_users[user_name].locale.translate(smarty.error_messages[1])
 
         return create_response
-
-    def send_create_team(self, user_name):
-        self.online_users[user_name].send_character_action(Action(1, {}))
-
-    def create_team_info_action(self, team_name):
-        return Action(2, {
-            "team_name" : team_name,
-            # TODO: add team gold in special team table
-            "team_gold" : 0,
-            "members" : self.get_team_members(team_name)
-        })
-
-    def create_invite_action(self, user_name, team_name):
-        return Action(3, {
-            "user_name" : user_name,
-            "team_name" : team_name,
-        })
 
     def send_team_info_to_user(self, user_name, team_name):
         self.online_users[user_name].send_character_action(self.create_team_info_action(team_name))
@@ -221,5 +228,37 @@ class CharactersManager:
         self.send_create_team(user_name)
         self.send_team_info_to_members(user.team_name)
 
+    def put_on(self, user_name, thing_id):
+        int_id = int(thing_id)
+        weapon_range = smarty.weapon_range
+        thing_type = ""
+        if int_id < weapon_range: # weapon
+            thing_type = "weapon"
+        elif int_id < weapon_range*2: # shield
+            pass
+        elif int_id < weapon_range*3: # head
+            pass
+        elif int_id < weapon_range*4: # body
+            pass
+        elif int_id < weapon_range*5: # left_hand
+            pass
+        elif int_id < weapon_range*6: # right_hand
+            pass
+        elif int_id < weapon_range*7: # legs
+            pass
+        elif int_id < weapon_range*8: # left_foot
+            pass
+        elif int_id < weapon_range*9: # right_foot
+            pass
+        elif int_id < weapon_range*10: # cloak
+            pass
 
+        things = self.online_users[user_name].character[thing_type].split(",")
+        if thing_id in things:
+            thing_pos = things.index(thing_id)
+            things[0], things[thing_pos] = things[thing_pos], things[0]
 
+        # TODO: count bonuses and change parameters here
+
+        self.db_manager.change_character_field(user_name, thing_type, ",".join(things))
+        self.send_stuff(user_name)

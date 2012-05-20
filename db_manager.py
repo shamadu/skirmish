@@ -31,24 +31,6 @@ class DBManager():
                         "(id integer(11) primary key not null auto_increment unique, "
                         "login text, "
                         "password text)")
-        self.db.execute("create table if not exists weapons "
-                        "(id integer(11) primary key not null auto_increment unique, "
-                        "name text, "
-                        "min_dmg float, "
-                        "max_dmg float, "
-        # required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
-                        "required_stats text not null, "
-        # bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
-                        "bonus_stats text not null, "
-                        "price integer, "
-                        "description text)")
-        self.db.execute("create table if not exists clothes "
-                        "(id integer(11) primary key not null auto_increment unique, "
-                        "name text, "
-                        "required_stats text not null, "
-                        "bonus_stats text not null, "
-                        "price integer, "
-                        "description text)")
 
     def get_user(self, login):
         return self.db.get("select * from users where login = %s", login)
@@ -73,7 +55,10 @@ class DBManager():
         return self.db.query("select * from characters where team_name = %s", team_name)
 
     def change_team_rank(self, user_name, new_rank):
-        self.db.execute("update characters set rank_in_team=%s where name=%s", new_rank, user_name)
+        self.change_character_field(user_name, "rank_in_team", new_rank)
 
     def change_user_team(self, user_name, team_name, team_rank):
         self.db.execute("update characters set team_name=%s, rank_in_team=%s where name=%s", team_name, team_rank, user_name)
+
+    def change_character_field(self, user_name, field_name, field_value):
+        self.db.execute("update characters set {0}=%s where name=%s".format(field_name), field_value, user_name)
