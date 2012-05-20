@@ -44,7 +44,7 @@ class CharactersManager:
         return self.online_users_holder.online_users
 
     def subscribe(self, user_name, callback, locale):
-        self.online_users_holder.add_if_not_online(user_name, locale)
+        self.online_users_holder.add_if_not_online(user_name, self.db_manager, locale)
         self.online_users[user_name].set_character_callback(callback)
 
     def unsubscribe(self, user_name):
@@ -68,12 +68,12 @@ class CharactersManager:
             "team_name" : team_name,
             })
 
-    def send_info(self, name):
-        character = self.db_manager.get_character(name)
+    def send_info(self, user_name):
+        character = self.online_users[user_name].character
         team_name = character.team_name
         if not team_name:
             team_name = ""
-        locale = self.online_users[name].locale
+        locale = self.online_users[user_name].locale
         character_info = [
             character.name,
             smarty.get_class_name(character.classID, locale),
@@ -90,22 +90,22 @@ class CharactersManager:
             str(character.rank_in_team)
         ]
 
-        self.online_users[name].send_character_action(Action(0, {"character_info" : ":".join(character_info)}))
+        self.online_users[user_name].send_character_action(Action(0, {"character_info" : ":".join(character_info)}))
 
-    def send_stuff(self, name):
-        character = self.db_manager.get_character(name)
-        locale = self.online_users[name].locale
+    def send_stuff(self, user_name):
+        character = self.online_users[user_name].character
+        locale = self.online_users[user_name].locale
 
-        self.online_users[name].send_character_action(Action(1, {
+        self.online_users[user_name].send_character_action(Action(1, {
                         # <id1>:<name1>,<id2>:<name2>:...
             "weapon" : ",".join("%s" % ":".join({str(weapon[0]), weapon[1]}) for weapon in smarty.get_weapons(character, locale))
         }))
 
     def user_enter(self, user_name, locale):
-        self.online_users_holder.add_if_not_online(user_name, locale)
+        self.online_users_holder.add_if_not_online(user_name, self.db_manager, locale)
         self.send_info(user_name)
         self.send_stuff(user_name)
-        character = self.db_manager.get_character(user_name)
+        character = self.online_users[user_name].character
         if character.team_name:
             # character is in team
             self.send_team_info_to_user(user_name, character.team_name)
@@ -118,7 +118,7 @@ class CharactersManager:
             "error" : "False",
             "msg" : ""
         }
-        if not self.db_manager.get_character(user_name).team_name:
+        if not self.online_users[user_name].character.team_name:
             if len(self.get_team_members(team_name)) == 0:
                 self.db_manager.create_team(user_name, team_name)
                 self.send_team_info_to_user(user_name, team_name)
@@ -155,29 +155,29 @@ class CharactersManager:
 
     def promote_user(self, user_name, promote_user):
         if user_name != promote_user:
-            user_boss = self.db_manager.get_character(user_name)
+            user_boss = self.online_users[user_name].character
             if user_boss.rank_in_team < 2:
-                user_for_promotion = self.db_manager.get_character(promote_user)
+                user_for_promotion = self.online_users[promote_user].character
                 if user_boss.team_name == user_for_promotion.team_name and user_for_promotion.rank_in_team > user_boss.rank_in_team:
-                    self.db_manager.change_team_rank(promote_user, user_for_promotion.rank_in_team - 1)
+                    self.db_manager.change_character_field(promote_user, "rank_in_team", user_for_promotion.rank_in_team - 1)
                     self.send_team_info_to_members(user_for_promotion.team_name)
                     self.send_info(promote_user)
 
     def demote_user(self, user_name, demote_user):
         if user_name != demote_user:
-            user_boss = self.db_manager.get_character(user_name)
+            user_boss = self.online_users[user_name].character
             if user_boss.rank_in_team < 2:
-                user_for_demotion = self.db_manager.get_character(demote_user)
+                user_for_demotion = self.online_users[demote_user].character
                 if user_boss.team_name == user_for_demotion.team_name and user_for_demotion.rank_in_team > user_boss.rank_in_team and user_for_demotion.rank_in_team != 5:
-                    self.db_manager.change_team_rank(demote_user, user_for_demotion.rank_in_team + 1)
+                    self.db_manager.change_character_field(demote_user, "rank_in_team", user_for_demotion.rank_in_team + 1)
                     self.send_team_info_to_members(user_for_demotion.team_name)
                     self.send_info(demote_user)
 
     def remove_user_from_team(self, user_name, remove_user_name):
         if user_name != remove_user_name:
-            user_boss = self.db_manager.get_character(user_name)
+            user_boss = self.online_users[user_name].character
             if user_boss.rank_in_team < 2:
-                user_for_removing = self.db_manager.get_character(remove_user_name)
+                user_for_removing = self.online_users[remove_user_name].character
                 if user_boss.team_name == user_for_removing.team_name and user_for_removing.rank_in_team > user_boss.rank_in_team :
                     self.db_manager.change_user_team(remove_user_name, None, 0)
                     self.send_team_info_to_members(user_boss.team_name)
@@ -189,9 +189,9 @@ class CharactersManager:
             "error" : "False",
             "msg" : ""
         }
-        user_boss = self.db_manager.get_character(user_name)
+        user_boss = self.online_users[user_name].character
         if user_boss.rank_in_team < 2:
-            user_for_inviting = self.db_manager.get_character(invite_user_name)
+            user_for_inviting = self.online_users[invite_user_name].character
             if not user_for_inviting.team_name:
                 self.send_invite(invite_user_name, user_name, user_boss.team_name)
                 invite_response["msg"] = self.online_users[user_name].locale.translate(smarty.error_messages[4])
@@ -202,16 +202,16 @@ class CharactersManager:
         return invite_response
 
     def user_join_team(self, joined_user, invited_user, team_name):
-        user_boss = self.db_manager.get_character(invited_user)
+        user_boss = self.online_users[invited_user].character
         if user_boss.rank_in_team < 2:
-            user_for_join = self.db_manager.get_character(joined_user)
+            user_for_join = self.online_users[joined_user].character
             if not user_for_join.team_name:
                 self.db_manager.change_user_team(joined_user, team_name, 5)
                 self.send_team_info_to_members(team_name)
                 self.send_info(joined_user)
 
     def user_leave_team(self, user_name):
-        user = self.db_manager.get_character(user_name)
+        user = self.online_users[user_name].character
         # if user is leader
         if user.rank_in_team == 0:
             members = self.get_team_members(user.team_name)

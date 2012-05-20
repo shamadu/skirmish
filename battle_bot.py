@@ -138,7 +138,7 @@ class BattleBot(Thread):
         self.online_users_holder.remove_skirmish_user(user_name)
 
     def subscribe(self, user_name, callback, locale):
-        self.online_users_holder.add_if_not_online(user_name, locale)
+        self.online_users_holder.add_if_not_online(user_name, self.db_manager, locale)
         self.online_users[user_name].set_skirmish_callback(callback)
 
     def unsubscribe(self, user_name):

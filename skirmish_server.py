@@ -49,8 +49,8 @@ class SkirmishApplication(tornado.web.Application):
             host="127.0.0.1:3306", database="users",
             user="root", password="passw0rd")
 
-        self.db_manager = DBManager(self.db)
-        self.online_users_holder = OnlineUsersHolder(self.db_manager)
+        self.online_users_holder = OnlineUsersHolder()
+        self.db_manager = DBManager(self.db, self.online_users_holder.online_users)
 
         self.users_manager = UsersManager(self.db_manager, self.online_users_holder)
         self.users_manager.start()
@@ -108,7 +108,7 @@ class MainHandler(BaseHandler):
         else:
             # this sequence is important!
             self.characters_manager.user_enter(self.current_user, self.locale)
-            self.online_users_holder.user_enter(self.current_user, self.locale)
+            self.online_users_holder.user_enter(self.current_user, self.db_manager, self.locale)
             self.battle_bot.user_enter(self.current_user, self.locale)
 
             self.render("skirmish.html",

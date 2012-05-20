@@ -1,8 +1,9 @@
 __author__ = 'PavelP'
 
 class DBManager():
-    def __init__(self, db):
+    def __init__(self, db, online_users):
         self.db = db
+        self.online_users = online_users
         self.db.execute('create table if not exists characters '
                         '(id integer(11) primary key not null auto_increment unique, '
                         'name text, '
@@ -32,6 +33,9 @@ class DBManager():
                         "login text, "
                         "password text)")
 
+    def update_character(self, user_name):
+        self.online_users[user_name].character = self.get_character(user_name)
+
     def get_user(self, login):
         return self.db.get("select * from users where login = %s", login)
 
@@ -48,17 +52,17 @@ class DBManager():
     def remove_character(self, name):
         self.db.execute("delete from characters where name = %s", name)
 
-    def create_team(self, user_name, team_name):
-        self.db.execute("update characters set team_name=%s, rank_in_team=0 where name=%s", team_name, user_name)
-
     def get_team_members(self, team_name):
         return self.db.query("select * from characters where team_name = %s", team_name)
 
-    def change_team_rank(self, user_name, new_rank):
-        self.change_character_field(user_name, "rank_in_team", new_rank)
+    def create_team(self, user_name, team_name):
+        self.db.execute("update characters set team_name=%s, rank_in_team=0 where name=%s", team_name, user_name)
+        self.update_character(user_name)
 
     def change_user_team(self, user_name, team_name, team_rank):
         self.db.execute("update characters set team_name=%s, rank_in_team=%s where name=%s", team_name, team_rank, user_name)
+        self.update_character(user_name)
 
     def change_character_field(self, user_name, field_name, field_value):
         self.db.execute("update characters set {0}=%s where name=%s".format(field_name), field_value, user_name)
+        self.update_character(user_name)

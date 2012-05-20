@@ -33,11 +33,10 @@ class UsersManager(Thread):
                 online_user_non_skirmish.append(user_name)
         skirmish_users = list()
         for user_name in self.skirmish_users:
-            team_name = self.skirmish_users[user_name].get_team_name()
-            if not team_name:
+            if not self.skirmish_users[user_name].team_name:
                 skirmish_users.append(user_name)
             else:
-                skirmish_users.append("%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.skirmish_users[user_name].get_team_name()})
+                skirmish_users.append("%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.online_users[user_name].team_name})
         return Action(0, {"online_users" : ','.join(online_user_non_skirmish), "skirmish_users" : ','.join(skirmish_users)})
 
     def create_user_online_action(self, user_name):
@@ -47,16 +46,14 @@ class UsersManager(Thread):
         return Action(2, {"user" : user_name})
 
     def create_add_skirmish_user_action(self, user_name):
-        team_name = self.skirmish_users[user_name].get_team_name()
-        if not team_name:
+        if not self.online_users[user_name].character.team_name:
             return Action(3, {"skirmish_user" : user_name})
-        return Action(3, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : team_name}})
+        return Action(3, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.online_users[user_name].character.team_name}})
 
     def create_remove_skirmish_user_action(self, user_name):
-        team_name = self.skirmish_users[user_name].get_team_name()
-        if not team_name:
+        if not self.online_users[user_name].character.team_name:
             return Action(4, {"skirmish_user" : user_name})
-        return Action(4, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : team_name}})
+        return Action(4, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : self.online_users[user_name].character.team_name}})
 
 
     def run(self):
@@ -106,7 +103,7 @@ class UsersManager(Thread):
         self.send_action_to_all(self.create_remove_skirmish_user_action(user_name))
 
     def subscribe(self, user_name, callback, locale):
-        self.online_users_holder.add_if_not_online(user_name, locale)
+        self.online_users_holder.add_if_not_online(user_name, self.db_manager, locale)
         self.online_users[user_name].set_user_callback(callback)
 
     def unsubscribe(self, user_name):

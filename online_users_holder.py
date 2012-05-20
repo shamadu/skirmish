@@ -1,5 +1,4 @@
-from collections import deque, OrderedDict
-import smarty
+from collections import deque
 
 __author__ = 'PavelP'
 
@@ -10,9 +9,9 @@ class Action:
         self.args["type"] = type
 
 class OnlineUserInfo():
-    def __init__(self, name, locale):
+    def __init__(self, locale):
         self.counter = 10
-        self.character = "" # will be filled by db_manager
+        self.character = {} # will be filled by db_manager
         self.turn_info = list()
         self.turn_info_string = ""
         self.user_callback = None
@@ -89,30 +88,27 @@ class OnlineUserInfo():
         else:
             return False
 
-    def get_team_name(self): # return always current team name
-        return self.db_manager.get_character(self.character.name).team_name
-
 class OnlineUsersHolder():
-    def __init__(self, db_manager):
-        self.db_manager = db_manager
+    def __init__(self):
         self.online_users = dict()
         self.skirmish_users = dict()
         self.users_manager = None
 
-    def add_if_not_online(self, user_name, locale):
+    def add_if_not_online(self, user_name, db_manager, locale):
         if not user_name in self.online_users.keys():
             self.users_manager.on_user_online(user_name)
-            self.online_users[user_name] = OnlineUserInfo(self.db_manager, user_name, locale)
+            self.online_users[user_name] = OnlineUserInfo(locale)
+            db_manager.update_character(user_name)
             self.users_manager.send_initial_users_to(user_name)
         else:
             self.online_users[user_name].locale = locale
 
-    def user_enter(self, user_name, locale):
+    def user_enter(self, user_name, db_manager, locale):
         # remove callbacks
         self.online_users[user_name].user_callback = None
         self.online_users[user_name].skirmish_callback = None
         self.online_users[user_name].character_callback = None
-        self.add_if_not_online(user_name, locale)
+        self.add_if_not_online(user_name, db_manager, locale)
         self.users_manager.send_initial_users_to(user_name)
 
     def add_skirmish_user(self, user_name):
