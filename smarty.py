@@ -102,9 +102,8 @@ item_types = {
     4 : _("Left hand"),
     5 : _("Right hand"),
     6 : _("Legs"),
-    7 : _("Left foot"),
-    8 : _("Right foot"),
-    9 : _("Cloak"),
+    7 : _("Feet"),
+    8 : _("Cloak"),
 }
 
 # means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
@@ -129,7 +128,6 @@ items = {
     #weapons
     build_id(0, 0) : [build_id(0, 0), _("Knife"), 0, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("Knife is basic weapon, everybody has it"), 0.2, 0.3],
     build_id(0, 1) : [build_id(0, 1), _("Stone"), 0, [1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0], 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5],
-    build_id(0, 2) : [build_id(0, 2), _("QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ"), 0, [1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0], 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5],
     #   id : [id, name, required_stats, bonus_stats, price, description]
     # required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
     # bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
@@ -147,12 +145,10 @@ items = {
     build_id(5, 0) : [build_id(5, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
     # legs
     build_id(6, 0) : [build_id(6, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
-    # left_foot
+    # feet
     build_id(7, 0) : [build_id(7, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
-    # right_foot
-    build_id(8, 0) : [build_id(8, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
     # cloak
-    build_id(9, 0) : [build_id(9, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")]
+    build_id(8, 0) : [build_id(8, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")]
     }
 
 def get_shop(locale):
@@ -277,10 +273,8 @@ def get_item_type(id):
     elif items[id][2] == 6 or (items[id][2] == -1 and id == build_id(6, 0)):
         item_type = "legs"
     elif items[id][2] == 7 or (items[id][2] == -1 and id == build_id(7, 0)):
-        item_type = "left_foot"
+        item_type = "feet"
     elif items[id][2] == 8 or (items[id][2] == -1 and id == build_id(8, 0)):
-        item_type = "right_foot"
-    elif items[id][2] == 9 or (items[id][2] == -1 and id == build_id(9, 0)):
         item_type = "cloak"
 
     return item_type

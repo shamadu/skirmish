@@ -27,8 +27,7 @@ class DBManager():
                         'left_hand text, '
                         'right_hand text, '
                         'legs text, '
-                        'left_foot text, '
-                        'right_foot text, '
+                        'feet text, '
                         'cloak text)')
         self.db.execute("create table if not exists users "
                         "(id integer(11) primary key not null auto_increment unique, "
@@ -50,7 +49,7 @@ class DBManager():
     def create_character(self, name, classID):
         if not self.get_character(name):
             self.db.execute("insert into characters (name, classID, weapon, shield, head, body, left_hand, right_hand, "
-                            "legs, left_foot, right_foot, cloak) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                            "legs, feet, cloak) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 , name, classID
                 , str(smarty.build_id(0, 0))
                 , str(smarty.build_id(1, 0))
@@ -60,8 +59,7 @@ class DBManager():
                 , str(smarty.build_id(5, 0))
                 , str(smarty.build_id(6, 0))
                 , str(smarty.build_id(7, 0))
-                , str(smarty.build_id(8, 0))
-                , str(smarty.build_id(9, 0)))
+                , str(smarty.build_id(8, 0)))
 
     def remove_character(self, name):
         self.db.execute("delete from characters where name = %s", name)

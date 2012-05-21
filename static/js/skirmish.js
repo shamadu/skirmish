@@ -124,11 +124,8 @@ var characterInfoUpdater = {
             if (action.legs) {
                 addThings(action.legs, $("#legsSelect"));
             }
-            if (action.left_foot) {
-                addThings(action.left_foot, $("#left_footSelect"));
-            }
-            if (action.right_foot) {
-                addThings(action.right_foot, $("#right_footSelect"));
+            if (action.feet) {
+                addThings(action.feet, $("#feetSelect"));
             }
             if (action.cloak) {
                 addThings(action.cloak, $("#cloakSelect"));

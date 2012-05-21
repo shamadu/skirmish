@@ -105,8 +105,7 @@ class CharactersManager:
             "left_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.left_hand, locale)),
             "right_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.right_hand, locale)),
             "legs" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.legs, locale)),
-            "left_foot" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.left_foot, locale)),
-            "right_foot" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.right_foot, locale)),
+            "feet" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.feet, locale)),
             "cloak" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.cloak, locale))
         }))
 
