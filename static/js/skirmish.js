@@ -7,6 +7,7 @@
 var initialize = function () {
     initialize_battle();
     initialize_character();
+    initialize_shop();
     messager.poll();
     onlineUsersUpdater.poll();
     battleBotUpdater.poll();

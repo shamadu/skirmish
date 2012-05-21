@@ -129,6 +129,7 @@ items = {
     #weapons
     build_id(0, 0) : [build_id(0, 0), _("Knife"), 0, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("Knife is basic weapon, everybody has it"), 0.2, 0.3],
     build_id(0, 1) : [build_id(0, 1), _("Stone"), 0, [1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0], 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5],
+    build_id(0, 2) : [build_id(0, 2), _("QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ"), 0, [1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0], 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5],
     #   id : [id, name, required_stats, bonus_stats, price, description]
     # required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
     # bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg

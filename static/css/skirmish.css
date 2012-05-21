@@ -148,14 +148,16 @@
 #shopMenu li{
     list-style: none;
     position: relative;
-    width:80px;
+    width: 0px;
     height: 20px;
     padding:0 10px;
     line-height: 20px;
     cursor:pointer;
+    text-align:center
 }
 
 #shopMenu li a{
+    white-space: nowrap;
     text-decoration:none;
 }
 
