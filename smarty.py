@@ -62,35 +62,35 @@ main_abilities = [
 spells = {
     # warrior
     0 : {
-        1 : {_("Berserk Fury"), _("Disarmament")}
+        1 : [_("Berserk Fury"), _("Disarmament")]
     },
     # guardian
     1 : {
-        1 : {_("Armor"), _("Shield Block")}
+        1 : [_("Armor"), _("Shield Block")]
     },
     # archer
     2 : {
-        1 : {_("Evasion"), _("Berserk Fury")}
+        1 : [_("Evasion"), _("Berserk Fury")]
     },
     # rogue
     3 : {
-        1 : {_("Evasion"), _("Trip")}
+        1 : [_("Evasion"), _("Trip")]
     },
     # mage
     4 : {
-        1 : {_("Frost Needle"), _("Fire Spark")}
+        1 : [_("Frost Needle"), _("Fire Spark")]
     },
     # priest
     5 : {
-        1 : {_("Prayer for Attack"), _("Prayer for Protection")}
+        1 : [_("Prayer for Attack"), _("Prayer for Protection")]
     },
     # warlock
     6 : {
-        1 : {_("Curse of Weakness"), _("Leech Life")}
+        1 : [_("Curse of Weakness"), _("Leech Life")]
     },
     # necromancer
     7 : {
-        1 : {_("Infection"), _("Stench")}
+        1 : [_("Infection"), _("Stench")]
     }
     }
 
@@ -157,7 +157,7 @@ def get_shop(locale):
         shop[locale.translate(item_types[id])] = OrderedDict()
     for item in items.values():
         if item[2] != -1:
-            shop[locale.translate(item_types[item[2]])][locale.translate(item[0])] = item[1]
+            shop[locale.translate(item_types[item[2]])][item[0]] = locale.translate(item[1])
     return shop
 
 def get_classes(locale):
@@ -209,10 +209,13 @@ def get_spell_count(classID, level):
 
     return spell_count
 
-def get_spells(classID, level):
+def get_spells(character, locale):
     result = list()
-    for enough_level in range(level):
-        result += spells[classID][enough_level + 1]
+    for enough_level in range(character.level):
+        level_spells = spells[character.classID][enough_level + 1]
+        for i in range(len(level_spells)):
+            result += locale.translate(level_spells[i])
+
     return result
 
 def get_ability_name(classID, locale):

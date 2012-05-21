@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-18 11:57+0300\n"
+"POT-Creation-Date: 2012-05-21 21:57+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,6 +93,140 @@ msgstr "Атака"
 msgid "Defence"
 msgstr "Защита"
 
+#: smarty.py:65 smarty.py:73
+msgid "Berserk Fury"
+msgstr "Ярость"
+
+#: smarty.py:65
+msgid "Disarmament"
+msgstr "Обезоруживание"
+
+#: smarty.py:69
+msgid "Armor"
+msgstr "Броня"
+
+#: smarty.py:69
+msgid "Shield Block"
+msgstr "Блок щитом"
+
+#: smarty.py:73 smarty.py:77
+msgid "Evasion"
+msgstr "Уклонение"
+
+#: smarty.py:77
+msgid "Trip"
+msgstr "Подножка"
+
+#: smarty.py:81
+msgid "Frost Needle"
+msgstr "Ледяная стрела"
+
+#: smarty.py:81
+msgid "Fire Spark"
+msgstr "Огненная искра"
+
+#: smarty.py:85
+msgid "Prayer for Attack"
+msgstr "Молитва о нападении"
+
+#: smarty.py:85
+msgid "Prayer for Protection"
+msgstr "Молитва о защите"
+
+#: smarty.py:89
+msgid "Curse of Weakness"
+msgstr "Проклятье слабости"
+
+#: smarty.py:89
+msgid "Leech Life"
+msgstr "Высасывание жизни"
+
+#: smarty.py:93
+msgid "Infection"
+msgstr "Инфекция"
+
+#: smarty.py:93
+msgid "Stench"
+msgstr "Вонь"
+
+#: smarty.py:98 templates/skirmish.html:107
+msgid "Weapon"
+msgstr "Оружие"
+
+#: smarty.py:99 templates/skirmish.html:108
+msgid "Shield"
+msgstr "Щит"
+
+#: smarty.py:100 templates/skirmish.html:109
+msgid "Head"
+msgstr "Голова"
+
+#: smarty.py:101 templates/skirmish.html:110
+msgid "Body"
+msgstr "Тело"
+
+#: smarty.py:102 templates/skirmish.html:111
+msgid "Left hand"
+msgstr "Левая рука"
+
+#: smarty.py:103 templates/skirmish.html:112
+msgid "Right hand"
+msgstr "Правая рука"
+
+#: smarty.py:104 templates/skirmish.html:113
+msgid "Legs"
+msgstr "Ноги"
+
+#: smarty.py:105 templates/skirmish.html:114
+msgid "Feet"
+msgstr "Ступни"
+
+#: smarty.py:106 templates/skirmish.html:115
+msgid "Cloak"
+msgstr "Плащ"
+
+#: smarty.py:129
+msgid "Knife"
+msgstr "Нож"
+
+#: smarty.py:129
+msgid "Knife is basic weapon, everybody has it"
+msgstr "Нож это основное оружние, оно есть у каждого"
+
+#: smarty.py:130
+msgid "Stone"
+msgstr "Камень"
+
+#: smarty.py:130
+msgid "Sharpened stone is the weapon of real barbarian"
+msgstr "Заостренный камень это оружие настоящего варвара"
+
+#: smarty.py:135 smarty.py:138 smarty.py:141 smarty.py:143 smarty.py:145
+#: smarty.py:147 smarty.py:149 smarty.py:151
+msgid "Nothing"
+msgstr "Ничего"
+
+#: smarty.py:135 smarty.py:138 smarty.py:141 smarty.py:143 smarty.py:145
+#: smarty.py:147 smarty.py:149 smarty.py:151
+msgid "You don't wear anything"
+msgstr "Вы ничего не надели"
+
+#: smarty.py:136
+msgid "Basic shield"
+msgstr "Простой щит"
+
+#: smarty.py:136
+msgid "Just wooden shield with iron circle in center"
+msgstr "Простой деревянный щит с железным кругом в центре"
+
+#: smarty.py:139
+msgid "Basic helmet"
+msgstr "Простой шлем"
+
+#: smarty.py:139
+msgid "Wooden helmet is a better guard than your skull"
+msgstr "Деревянный шлем защитит лучше голого черепа"
+
 #: static/js/locale.js:18
 msgid "Registration has been started"
 msgstr "Регистрация началась"
@@ -122,13 +256,13 @@ msgid "Create new character"
 msgstr "Создать нового персонажа"
 
 #: templates/create_character.html:17 templates/login.html:15
-#: templates/skirmish.html:43 templates/skirmish.html:83
+#: templates/skirmish.html:47 templates/skirmish.html:90
 #: templates/team_info.html:5
 msgid "Name"
 msgstr "Имя"
 
-#: templates/create_character.html:21 templates/skirmish.html:44
-#: templates/skirmish.html:84
+#: templates/create_character.html:21 templates/skirmish.html:48
+#: templates/skirmish.html:91
 msgid "Class"
 msgstr "Класс"
 
@@ -136,7 +270,7 @@ msgstr "Класс"
 msgid "Create"
 msgstr "Создать"
 
-#: templates/create_character.html:32 templates/skirmish.html:40
+#: templates/create_character.html:32 templates/skirmish.html:44
 msgid "Logout"
 msgstr "Выйти"
 
@@ -176,71 +310,75 @@ msgstr "Войти"
 msgid "Skirmish"
 msgstr "Схватка"
 
-#: templates/skirmish.html:25
+#: templates/skirmish.html:26
 msgid "Battle"
 msgstr "Схватка"
 
-#: templates/skirmish.html:28
+#: templates/skirmish.html:29
 msgid "Character"
 msgstr "Персонаж"
 
-#: templates/skirmish.html:31 templates/skirmish.html:94
+#: templates/skirmish.html:32 templates/skirmish.html:101
 msgid "Team"
 msgstr "Команда"
 
-#: templates/skirmish.html:39
+#: templates/skirmish.html:35
+msgid "Shop"
+msgstr "Магазин"
+
+#: templates/skirmish.html:43
 msgid "Hello"
 msgstr "Здравствуй"
 
-#: templates/skirmish.html:40
+#: templates/skirmish.html:44
 msgid "Drop"
 msgstr "Удалить"
 
-#: templates/skirmish.html:45 templates/skirmish.html:85
+#: templates/skirmish.html:49 templates/skirmish.html:92
 msgid "Level"
 msgstr "Уровень"
 
-#: templates/skirmish.html:46 templates/skirmish.html:86
+#: templates/skirmish.html:50 templates/skirmish.html:93
 msgid "Health"
 msgstr "Здоровье"
 
-#: templates/skirmish.html:50
+#: templates/skirmish.html:54
 msgid "Join"
 msgstr "Войти"
 
-#: templates/skirmish.html:50 templates/team_info.html:7
+#: templates/skirmish.html:54 templates/team_info.html:7
 msgid "Leave"
 msgstr "Покинуть"
 
-#: templates/skirmish.html:74
+#: templates/skirmish.html:78
 msgid "Send"
 msgstr "Отправить"
 
-#: templates/skirmish.html:88
+#: templates/skirmish.html:95
 msgid "Strength"
 msgstr "Сила"
 
-#: templates/skirmish.html:89
+#: templates/skirmish.html:96
 msgid "Dexterity"
 msgstr "Ловкость"
 
-#: templates/skirmish.html:90
+#: templates/skirmish.html:97
 msgid "Intellect"
 msgstr "Интеллект"
 
-#: templates/skirmish.html:91
+#: templates/skirmish.html:98
 msgid "Wisdom"
 msgstr "Мудрость"
 
-#: templates/skirmish.html:92
+#: templates/skirmish.html:99
 msgid "Experience"
 msgstr "Опыт"
 
-#: templates/skirmish.html:93 templates/team_info.html:6
+#: templates/skirmish.html:100 templates/team_info.html:6
 msgid "Gold"
 msgstr "Золото"
 
-#: templates/skirmish.html:95
+#: templates/skirmish.html:102
 msgid "Rank"
 msgstr "Ранг"
 

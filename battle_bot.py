@@ -53,7 +53,7 @@ class ActionManager:
         return {
             "actions" : actions,
             "users" : self.skirmish_users.keys(),
-            "spells" : smarty.get_spells(user.character.classID, user.character.level),
+            "spells" : smarty.get_spells(user.character, user.locale),
             "turn_info" : user.get_turn_info()
         }
 
