@@ -139,3 +139,41 @@
 .tableContentHolder tr {
     vertical-align : top;
 }
+
+#shopMenu, #shopMenu ul, #shopMenu li{
+    padding:0;
+    margin:0;
+}
+
+#shopMenu li{
+    list-style: none;
+    position: relative;
+    width:80px;
+    height: 20px;
+    padding:0 10px;
+    line-height: 20px;
+    cursor:pointer;
+}
+
+#shopMenu li a{
+    text-decoration:none;
+}
+
+#shopMenu li:hover{
+    background-color:#08C;
+}
+
+#shopMenu li:hover>a {
+    color: #ffffff;
+}
+
+#shopMenu ul ul{
+    position: absolute;
+    top:0;
+    left:100px;
+    visibility:hidden;
+}
+
+#shopMenu ul li:hover ul{
+    visibility:visible;
+}

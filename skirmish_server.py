@@ -113,7 +113,8 @@ class MainHandler(BaseHandler):
 
             self.render("skirmish.html",
                 login=self.current_user,
-                substance=smarty.get_substance_name(character.classID, self.locale))
+                substance=smarty.get_substance_name(character.classID, self.locale),
+                shop=smarty.get_shop(self.locale))
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated

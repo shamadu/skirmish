@@ -94,11 +94,24 @@ spells = {
     }
     }
 
+thing_types = {
+    0 : _("Weapon"),
+    1 : _("Shield"),
+    2 : _("Head"),
+    3 : _("Body"),
+    4 : _("Left hand"),
+    5 : _("Right hand"),
+    6 : _("Legs"),
+    7 : _("Left foot"),
+    8 : _("Right foot"),
+    9 : _("Cloak"),
+}
+
 # means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
 build_id = lambda type, id: 100*type + id
 
 things = {
-    #   id : [id, name, required_stats, bonus_stats, price, description, min_damage, max_damage, ]
+    #   id : [id, name, type, required_stats, bonus_stats, price, description, min_damage, max_damage, ]
     # required_stats is a list of stats in order:
     # 0 - level,
     # 1 - strength,
@@ -114,32 +127,41 @@ things = {
     # 5 - max_dmg,
     # 6 - spell_dmg
     #weapons
-    build_id(0, 0) : [build_id(0, 0), _("Knife"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("Knife is basic weapon, everybody has it"), 0.2, 0.3],
-    build_id(0, 1) : [build_id(0, 1), _("Stone"), [1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0], 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5],
+    build_id(0, 0) : [build_id(0, 0), _("Knife"), 0, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("Knife is basic weapon, everybody has it"), 0.2, 0.3],
+    build_id(0, 1) : [build_id(0, 1), _("Stone"), 0, [1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0], 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5],
     #   id : [id, name, required_stats, bonus_stats, price, description]
     # required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
     # bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
     #shields
-    build_id(1, 0) : [build_id(1, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
-    build_id(1, 1) : [build_id(1, 1), _("Basic shield"), [2, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0], 15, _("Just wooden shield with iron circle in center")],
+    build_id(1, 0) : [build_id(1, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(1, 1) : [build_id(1, 1), _("Basic shield"), 1, [2, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0], 15, _("Just wooden shield with iron circle in center")],
     #heads
-    build_id(2, 0) : [build_id(2, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
-    build_id(2, 1) : [build_id(2, 1), _("Basic helmet"), [2,0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0], 15, _("Wooden helmet is a better guard than your skull")],
+    build_id(2, 0) : [build_id(2, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(2, 1) : [build_id(2, 1), _("Basic helmet"), 2, [2,0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0], 15, _("Wooden helmet is a better guard than your skull")],
     # body
-    build_id(3, 0) : [build_id(3, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(3, 0) : [build_id(3, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
     # left_hand
-    build_id(4, 0) : [build_id(4, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(4, 0) : [build_id(4, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
     # right_hand
-    build_id(5, 0) : [build_id(5, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(5, 0) : [build_id(5, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
     # legs
-    build_id(6, 0) : [build_id(6, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(6, 0) : [build_id(6, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
     # left_foot
-    build_id(7, 0) : [build_id(7, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(7, 0) : [build_id(7, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
     # right_foot
-    build_id(8, 0) : [build_id(8, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
+    build_id(8, 0) : [build_id(8, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")],
     # cloak
-    build_id(9, 0) : [build_id(9, 0), _("Nothing"), [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")]
+    build_id(9, 0) : [build_id(9, 0), _("Nothing"), -1, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("You don't wear anything")]
     }
+
+def get_shop(locale):
+    shop = OrderedDict()
+    for id in thing_types.keys():
+        shop[locale.translate(thing_types[id])] = OrderedDict()
+    for thing in things.values():
+        if thing[2] != -1:
+            shop[locale.translate(thing_types[thing[2]])][locale.translate(thing[0])] = thing[1]
+    return shop
 
 def get_classes(locale):
     result = dict()
@@ -226,7 +248,7 @@ def get_hp_count(character):
 def get_thing(id, locale):
     thing = things[id]
     thing[1] = locale.translate(things[id][1])
-    thing[5] = locale.translate(things[id][5])
+    thing[6] = locale.translate(things[id][6])
     return thing
 
 def get_things(thing_ids_str, locale):
@@ -239,25 +261,25 @@ def get_things(thing_ids_str, locale):
 
 def get_thing_type(id):
     thing_type = "undefined"
-    if id < build_id(1, 0):
+    if things[id][2] == 0:
         thing_type = "weapon"
-    elif id < build_id(2, 0):
+    elif things[id][2] == 1 or (things[id][2] == -1 and id == build_id(1, 0)):
         thing_type = "shield"
-    elif id < build_id(3, 0):
+    elif things[id][2] == 2 or (things[id][2] == -1 and id == build_id(2, 0)):
         thing_type = "head"
-    elif id < build_id(4, 0):
+    elif things[id][2] == 3 or (things[id][2] == -1 and id == build_id(3, 0)):
         thing_type = "body"
-    elif id < build_id(5, 0):
+    elif things[id][2] == 4 or (things[id][2] == -1 and id == build_id(4, 0)):
         thing_type = "left_hand"
-    elif id < build_id(6, 0):
+    elif things[id][2] == 5 or (things[id][2] == -1 and id == build_id(5, 0)):
         thing_type = "right_hand"
-    elif id < build_id(7, 0):
+    elif things[id][2] == 6 or (things[id][2] == -1 and id == build_id(6, 0)):
         thing_type = "legs"
-    elif id < build_id(8, 0):
+    elif things[id][2] == 7 or (things[id][2] == -1 and id == build_id(7, 0)):
         thing_type = "left_foot"
-    elif id < build_id(9, 0):
+    elif things[id][2] == 8 or (things[id][2] == -1 and id == build_id(8, 0)):
         thing_type = "right_foot"
-    elif id < build_id(10, 0):
+    elif things[id][2] == 9 or (things[id][2] == -1 and id == build_id(9, 0)):
         thing_type = "cloak"
 
     return thing_type
@@ -270,11 +292,11 @@ def get_thing_type(id):
 def check_thing(character, thing_id):
     result = False
     thing = things[thing_id]
-    if (character.level >= thing[2][0]
-        and character.strength >= thing[2][1]
-        and character.dexterity>= thing[2][2]
-        and character.intellect >= thing[2][3]
-        and character.wisdom >= thing[2][4]):
+    if (character.level >= thing[3][0]
+        and character.strength >= thing[3][1]
+        and character.dexterity>= thing[3][2]
+        and character.intellect >= thing[3][3]
+        and character.wisdom >= thing[3][4]):
         result = True
     return result
 
@@ -288,19 +310,19 @@ def check_thing(character, thing_id):
 def get_bonuses(thing_id):
     thing = things[thing_id]
     result = {}
-    if thing[3][0] != 0:
-        result["strength"] = thing[3][0]
-    if thing[3][1] != 0:
-        result["dexterity"] = thing[3][1]
-    if thing[3][2] != 0:
-        result["intellect"] = thing[3][2]
-    if thing[3][3] != 0:
-        result["wisdom"] = thing[3][3]
-    if thing[3][4] != 0:
-        result["min_dmg"] = thing[3][4]
-    if thing[3][5] != 0:
-        result["max_dmg"] = thing[3][5]
-    if thing[3][6] != 0:
-        result["spell_dmg"] = thing[3][6]
+    if thing[4][0] != 0:
+        result["strength"] = thing[4][0]
+    if thing[4][1] != 0:
+        result["dexterity"] = thing[4][1]
+    if thing[4][2] != 0:
+        result["intellect"] = thing[4][2]
+    if thing[4][3] != 0:
+        result["wisdom"] = thing[4][3]
+    if thing[4][4] != 0:
+        result["min_dmg"] = thing[4][4]
+    if thing[4][5] != 0:
+        result["max_dmg"] = thing[4][5]
+    if thing[4][6] != 0:
+        result["spell_dmg"] = thing[4][6]
 
     return result

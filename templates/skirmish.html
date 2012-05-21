@@ -1,4 +1,4 @@
-{% comment login = string user name, sunstance = string substance name %}
+{% comment login = string user name, sunstance = string substance name, shop = shop content ordereddict(section_name, ordereddict(id, name)) %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -29,6 +29,9 @@
             </li>
             <li>
                 <a id="teamAnchor" class="mouse_pointer">{{ _("Team") }}</a>
+            </li>
+            <li>
+                <a id="shopAnchor" class="mouse_pointer">{{ _("Shop") }}</a>
             </li>
         </ul>
     </div>
@@ -118,6 +121,23 @@
 
 
         <div id="teamDivContainer" class="contentDiv">
+        </div>
+
+
+        <div id="shopDivContainer" class="contentDiv">
+            <div id="shopMenu">
+                <ul>
+                    {% for item_group_name in shop.keys() %}
+                    <li><a href="javascript:void(0)">{{ item_group_name }}</a>
+                        <ul>
+                            {% for item_id in shop[item_group_name].keys() %}
+                            <li><a href="javascript:void(0)" value="{{ item_id }}">{{ shop[item_group_name][item_id] }}</a></li>
+                            {% end %}
+                        </ul>
+                    </li>
+                    {% end %}
+                </ul>
+            </div>
         </div>
     </div>
     <script type="text/javascript">initialize();</script>

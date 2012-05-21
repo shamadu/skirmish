@@ -19,6 +19,7 @@ var initialize = function () {
     $("#battleAnchor").click(showBattle);
     $("#characterAnchor").click(showCharacter);
     $("#teamAnchor").click(showTeam);
+    $("#shopAnchor").click(showShop);
 };
 
 var showBattle = function() {
@@ -28,6 +29,8 @@ var showBattle = function() {
     $("#characterAnchor").parent().removeAttr("class");
     $("#teamDivContainer").hide();
     $("#teamAnchor").parent().removeAttr("class");
+    $("#shopDivContainer").hide();
+    $("#shopAnchor").parent().removeAttr("class");
     resize_battle();
 };
 
@@ -38,11 +41,26 @@ var showCharacter = function() {
     $("#battleAnchor").parent().removeAttr("class");
     $("#teamDivContainer").hide();
     $("#teamAnchor").parent().removeAttr("class");
+    $("#shopDivContainer").hide();
+    $("#shopAnchor").parent().removeAttr("class");
 };
 
 var showTeam = function() {
     $("#teamDivContainer").show();
     $("#teamAnchor").parent().attr("class", "active");
+    $("#battleDivContainer").hide();
+    $("#battleAnchor").parent().removeAttr("class");
+    $("#characterDivContainer").hide();
+    $("#characterAnchor").parent().removeAttr("class");
+    $("#shopDivContainer").hide();
+    $("#shopAnchor").parent().removeAttr("class");
+};
+
+var showShop = function() {
+    $("#shopDivContainer").show();
+    $("#shopAnchor").parent().attr("class", "active");
+    $("#teamDivContainer").hide();
+    $("#teamAnchor").parent().removeAttr("class");
     $("#battleDivContainer").hide();
     $("#battleAnchor").parent().removeAttr("class");
     $("#characterDivContainer").hide();
