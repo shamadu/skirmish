@@ -98,16 +98,16 @@ class CharactersManager:
 
         self.online_users[user_name].send_character_action(Action(1, {
                         # <id1>:<name1>,<id2>:<name2>:...
-            "weapon" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.weapon, locale)),
-            "shield" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.shield, locale)),
-            "head" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.head, locale)),
-            "body" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.body, locale)),
-            "left_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.left_hand, locale)),
-            "right_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.right_hand, locale)),
-            "legs" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.legs, locale)),
-            "left_foot" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.left_foot, locale)),
-            "right_foot" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.right_foot, locale)),
-            "cloak" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_things(character.cloak, locale))
+            "weapon" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.weapon, locale)),
+            "shield" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.shield, locale)),
+            "head" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.head, locale)),
+            "body" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.body, locale)),
+            "left_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.left_hand, locale)),
+            "right_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.right_hand, locale)),
+            "legs" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.legs, locale)),
+            "left_foot" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.left_foot, locale)),
+            "right_foot" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.right_foot, locale)),
+            "cloak" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.cloak, locale))
         }))
 
     def user_enter(self, user_name, locale):
@@ -241,11 +241,11 @@ class CharactersManager:
         result = False
         int_id = int(thing_id)
         # get type of thing, e.g. weapon, shield, head, etc.
-        thing_type = smarty.get_thing_type(int_id)
+        thing_type = smarty.get_item_type(int_id)
         character = self.online_users[user_name].character
         things = character[thing_type].split(",")
         # check if character has thing and can put it on
-        if thing_id in things and smarty.check_thing(character, int_id):
+        if thing_id in things and smarty.check_item(character, int_id):
             old_thing_id = things[0]
             # put it on by changing its place with first one
             thing_pos = things.index(thing_id)

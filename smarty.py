@@ -94,7 +94,7 @@ spells = {
     }
     }
 
-thing_types = {
+item_types = {
     0 : _("Weapon"),
     1 : _("Shield"),
     2 : _("Head"),
@@ -110,7 +110,7 @@ thing_types = {
 # means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
 build_id = lambda type, id: 100*type + id
 
-things = {
+items = {
     #   id : [id, name, type, required_stats, bonus_stats, price, description, min_damage, max_damage, ]
     # required_stats is a list of stats in order:
     # 0 - level,
@@ -156,11 +156,11 @@ things = {
 
 def get_shop(locale):
     shop = OrderedDict()
-    for id in thing_types.keys():
-        shop[locale.translate(thing_types[id])] = OrderedDict()
-    for thing in things.values():
-        if thing[2] != -1:
-            shop[locale.translate(thing_types[thing[2]])][locale.translate(thing[0])] = thing[1]
+    for id in item_types.keys():
+        shop[locale.translate(item_types[id])] = OrderedDict()
+    for item in items.values():
+        if item[2] != -1:
+            shop[locale.translate(item_types[item[2]])][locale.translate(item[0])] = item[1]
     return shop
 
 def get_classes(locale):
@@ -245,58 +245,58 @@ def get_mp_count(character):
 def get_hp_count(character):
     return character.level + character.strength
 
-def get_thing(id, locale):
-    thing = things[id]
-    thing[1] = locale.translate(things[id][1])
-    thing[6] = locale.translate(things[id][6])
-    return thing
+def get_item(id, locale):
+    item = items[id]
+    item[1] = locale.translate(items[id][1])
+    item[6] = locale.translate(items[id][6])
+    return item
 
-def get_things(thing_ids_str, locale):
-    things = list()
-    thing_ids = thing_ids_str.split(",")
-    for thing_id in thing_ids:
-        things.append(get_thing(int(thing_id), locale))
+def get_items(item_ids_str, locale):
+    items = list()
+    item_ids = item_ids_str.split(",")
+    for item_id in item_ids:
+        items.append(get_item(int(item_id), locale))
 
-    return things
+    return items
 
-def get_thing_type(id):
-    thing_type = "undefined"
-    if things[id][2] == 0:
-        thing_type = "weapon"
-    elif things[id][2] == 1 or (things[id][2] == -1 and id == build_id(1, 0)):
-        thing_type = "shield"
-    elif things[id][2] == 2 or (things[id][2] == -1 and id == build_id(2, 0)):
-        thing_type = "head"
-    elif things[id][2] == 3 or (things[id][2] == -1 and id == build_id(3, 0)):
-        thing_type = "body"
-    elif things[id][2] == 4 or (things[id][2] == -1 and id == build_id(4, 0)):
-        thing_type = "left_hand"
-    elif things[id][2] == 5 or (things[id][2] == -1 and id == build_id(5, 0)):
-        thing_type = "right_hand"
-    elif things[id][2] == 6 or (things[id][2] == -1 and id == build_id(6, 0)):
-        thing_type = "legs"
-    elif things[id][2] == 7 or (things[id][2] == -1 and id == build_id(7, 0)):
-        thing_type = "left_foot"
-    elif things[id][2] == 8 or (things[id][2] == -1 and id == build_id(8, 0)):
-        thing_type = "right_foot"
-    elif things[id][2] == 9 or (things[id][2] == -1 and id == build_id(9, 0)):
-        thing_type = "cloak"
+def get_item_type(id):
+    item_type = "undefined"
+    if items[id][2] == 0:
+        item_type = "weapon"
+    elif items[id][2] == 1 or (items[id][2] == -1 and id == build_id(1, 0)):
+        item_type = "shield"
+    elif items[id][2] == 2 or (items[id][2] == -1 and id == build_id(2, 0)):
+        item_type = "head"
+    elif items[id][2] == 3 or (items[id][2] == -1 and id == build_id(3, 0)):
+        item_type = "body"
+    elif items[id][2] == 4 or (items[id][2] == -1 and id == build_id(4, 0)):
+        item_type = "left_hand"
+    elif items[id][2] == 5 or (items[id][2] == -1 and id == build_id(5, 0)):
+        item_type = "right_hand"
+    elif items[id][2] == 6 or (items[id][2] == -1 and id == build_id(6, 0)):
+        item_type = "legs"
+    elif items[id][2] == 7 or (items[id][2] == -1 and id == build_id(7, 0)):
+        item_type = "left_foot"
+    elif items[id][2] == 8 or (items[id][2] == -1 and id == build_id(8, 0)):
+        item_type = "right_foot"
+    elif items[id][2] == 9 or (items[id][2] == -1 and id == build_id(9, 0)):
+        item_type = "cloak"
 
-    return thing_type
+    return item_type
 
 # 0 - level,
 # 1 - strength,
 # 2 - dexterity,
 # 3 - intellect,
 # 4 - wisdom
-def check_thing(character, thing_id):
+def check_item(character, item_id):
     result = False
-    thing = things[thing_id]
-    if (character.level >= thing[3][0]
-        and character.strength >= thing[3][1]
-        and character.dexterity>= thing[3][2]
-        and character.intellect >= thing[3][3]
-        and character.wisdom >= thing[3][4]):
+    item = items[item_id]
+    if (character.level >= item[3][0]
+        and character.strength >= item[3][1]
+        and character.dexterity>= item[3][2]
+        and character.intellect >= item[3][3]
+        and character.wisdom >= item[3][4]):
         result = True
     return result
 
@@ -307,22 +307,22 @@ def check_thing(character, thing_id):
 # 4 - min_dmg,
 # 5 - max_dmg,
 # 6 - spell_dmg
-def get_bonuses(thing_id):
-    thing = things[thing_id]
+def get_bonuses(item_id):
+    item = items[item_id]
     result = {}
-    if thing[4][0] != 0:
-        result["strength"] = thing[4][0]
-    if thing[4][1] != 0:
-        result["dexterity"] = thing[4][1]
-    if thing[4][2] != 0:
-        result["intellect"] = thing[4][2]
-    if thing[4][3] != 0:
-        result["wisdom"] = thing[4][3]
-    if thing[4][4] != 0:
-        result["min_dmg"] = thing[4][4]
-    if thing[4][5] != 0:
-        result["max_dmg"] = thing[4][5]
-    if thing[4][6] != 0:
-        result["spell_dmg"] = thing[4][6]
+    if item[4][0] != 0:
+        result["strength"] = item[4][0]
+    if item[4][1] != 0:
+        result["dexterity"] = item[4][1]
+    if item[4][2] != 0:
+        result["intellect"] = item[4][2]
+    if item[4][3] != 0:
+        result["wisdom"] = item[4][3]
+    if item[4][4] != 0:
+        result["min_dmg"] = item[4][4]
+    if item[4][5] != 0:
+        result["max_dmg"] = item[4][5]
+    if item[4][6] != 0:
+        result["spell_dmg"] = item[4][6]
 
     return result
