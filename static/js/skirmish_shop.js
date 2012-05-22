@@ -44,9 +44,15 @@ var getItemFunc = function() {
         $("#itemDescriptions").append(response);
         $("#itemDescriptions >div:last").width($("#itemDescriptions >div:last >table").width());
         $("#itemDescriptions >div:last >button.close").click(closeDescription);
+        $("#itemDescriptions >div:last button#buyButton").click(buyItem);
     });
 };
 
 var closeDescription = function() {
     $(this).parent().remove();
+}
+
+var buyItem = function() {
+    $.postJSON('/shop', {"action" : "buy_item", "item_id" : $(this).attr('item_id')}, function(response) {
+    });
 }

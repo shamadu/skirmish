@@ -99,6 +99,8 @@ var characterInfoUpdater = {
             $("#levelLabel_battle").text(characterInfo[2]);
             $("#HPLabel_battle").text(characterInfo[3]);
             $("#MPLabel_battle").text(characterInfo[4]);
+
+            $("#shopGoldLabel").text(characterInfo[10]);
         }
         // character stuff update
         if (action.type == 1) {

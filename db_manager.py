@@ -1,4 +1,4 @@
-import smarty
+from items_manager import build_id
 
 __author__ = 'PavelP'
 
@@ -51,15 +51,15 @@ class DBManager():
             self.db.execute("insert into characters (name, classID, weapon, shield, head, body, left_hand, right_hand, "
                             "legs, feet, cloak) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 , name, classID
-                , str(smarty.build_id(0, 0))
-                , str(smarty.build_id(1, 0))
-                , str(smarty.build_id(2, 0))
-                , str(smarty.build_id(3, 0))
-                , str(smarty.build_id(4, 0))
-                , str(smarty.build_id(5, 0))
-                , str(smarty.build_id(6, 0))
-                , str(smarty.build_id(7, 0))
-                , str(smarty.build_id(8, 0)))
+                , str(build_id(0, 0))
+                , str(build_id(1, 0))
+                , str(build_id(2, 0))
+                , str(build_id(3, 0))
+                , str(build_id(4, 0))
+                , str(build_id(5, 0))
+                , str(build_id(6, 0))
+                , str(build_id(7, 0))
+                , str(build_id(8, 0)))
 
     def remove_character(self, name):
         self.db.execute("delete from characters where name = %s", name)
@@ -79,7 +79,8 @@ class DBManager():
         self.db.execute("update characters set {0}=%s where name=%s".format(field_name), field_value, user_name)
         self.update_character(user_name)
 
-    def change_character_fields(self, user_name, bonuses):
-        fields = ", ".join("=".join([key, str(bonuses[key])]) for key in bonuses.keys())
-        self.db.execute("update characters set {0} where name=%s".format(fields), user_name)
-        self.update_character(user_name)
+    def change_character_fields(self, user_name, fields):
+        if len(fields) > 0:
+            fields_str = ", ".join("{0}='{1}'".format(key, str(fields[key])) for key in fields.keys())
+            self.db.execute("update characters set {0} where name=%s".format(fields_str), user_name)
+            self.update_character(user_name)

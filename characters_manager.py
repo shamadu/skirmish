@@ -1,4 +1,5 @@
 from collections import deque
+import items_manager
 from online_users_holder import Action
 import smarty
 
@@ -98,15 +99,15 @@ class CharactersManager:
 
         self.online_users[user_name].send_character_action(Action(1, {
                         # <id1>:<name1>,<id2>:<name2>:...
-            "weapon" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.weapon, locale)),
-            "shield" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.shield, locale)),
-            "head" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.head, locale)),
-            "body" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.body, locale)),
-            "left_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.left_hand, locale)),
-            "right_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.right_hand, locale)),
-            "legs" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.legs, locale)),
-            "feet" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.feet, locale)),
-            "cloak" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in smarty.get_items(character.cloak, locale))
+            "weapon" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.weapon, locale)),
+            "shield" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.shield, locale)),
+            "head" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.head, locale)),
+            "body" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.body, locale)),
+            "left_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.left_hand, locale)),
+            "right_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.right_hand, locale)),
+            "legs" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.legs, locale)),
+            "feet" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.feet, locale)),
+            "cloak" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.cloak, locale))
         }))
 
     def user_enter(self, user_name, locale):
@@ -236,15 +237,15 @@ class CharactersManager:
         self.send_create_team(user_name)
         self.send_team_info_to_members(user.team_name)
 
-    def put_on(self, user_name, thing_id):
+    def put_on_item(self, user_name, thing_id):
         result = False
         int_id = int(thing_id)
         # get type of thing, e.g. weapon, shield, head, etc.
-        thing_type = smarty.get_item_type(int_id)
+        thing_type = items_manager.get_item_type(int_id)
         character = self.online_users[user_name].character
         things = character[thing_type].split(",")
         # check if character has thing and can put it on
-        if thing_id in things and smarty.check_item(character, int_id):
+        if thing_id in things and items_manager.check_item(character, int_id):
             old_thing_id = things[0]
             # put it on by changing its place with first one
             thing_pos = things.index(thing_id)
@@ -253,9 +254,9 @@ class CharactersManager:
             self.send_stuff(user_name)
 
             # get bonuses of old thing to subtract them from character
-            old_bonuses = smarty.get_bonuses(int(old_thing_id))
+            old_bonuses = items_manager.get_bonuses(int(old_thing_id))
             # get bonuses of new thing to add them from character
-            bonuses = smarty.get_bonuses(int_id)
+            bonuses = items_manager.get_bonuses(int_id)
             # add old bonuses not in new ones
             for bonus_name in old_bonuses.keys():
                 if not bonus_name in bonuses:
@@ -270,3 +271,15 @@ class CharactersManager:
             result = True
 
         return result
+
+    def buy_item(self, user_name, item_id):
+        character = self.online_users[user_name].character
+        item = items_manager.items[int(item_id)]
+        if character.gold >= item[5]: # if character can buy it
+            update_fields = dict()
+            update_fields["gold"] = character.gold - item[5]
+            item_type = items_manager.get_item_type(item[0])
+            update_fields[item_type] = ",".join([character[item_type], item_id])
+            self.db_manager.change_character_fields(user_name, update_fields)
+            self.send_info(user_name)
+            self.send_stuff(user_name)

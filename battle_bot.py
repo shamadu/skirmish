@@ -146,7 +146,7 @@ class BattleBot(Thread):
             self.online_users[user_name].set_skirmish_callback(None)
 
     def user_join(self, user_name):
-        if self.phase == 0:
+        if self.phase == 0 and user_name not in self.skirmish_users.keys():
             self.send_action_to_user(user_name, self.action_manager.create_can_leave_action())
             self.online_users_holder.add_skirmish_user(user_name)
 

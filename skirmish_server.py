@@ -6,6 +6,7 @@ import tornado.database
 import tornado.locale
 from battle_bot import BattleBot
 from db_manager import DBManager
+import items_manager
 from online_users_holder import OnlineUsersHolder
 from smarty import get_classes
 import smarty
@@ -114,7 +115,7 @@ class MainHandler(BaseHandler):
             self.render("skirmish.html",
                 login=self.current_user,
                 substance=smarty.get_substance_name(character.classID, self.locale),
-                shop=smarty.get_shop(self.locale))
+                shop=items_manager.get_shop(self.locale))
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated
@@ -166,7 +167,7 @@ class CharacterHandler(BaseHandler):
         if self.get_argument("action") == 'drop':
             self.db_manager.remove_character(self.current_user)
         elif self.get_argument("action") == 'put_on':
-            if not self.characters_manager.put_on(self.current_user, self.get_argument("thing_id")):
+            if not self.characters_manager.put_on_item(self.current_user, self.get_argument("thing_id")):
                 self.write("false")
         elif self.get_argument("action") == "create_team":
             self.write(self.characters_manager.create_team(self.current_user, self.get_argument("team_name")))
@@ -321,10 +322,13 @@ class ShopHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'get_item':
-            item = smarty.get_item(int(self.get_argument("item_id")), self.locale)
+            item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
             self.write(self.render_string("item_description.html",
                 item=item,
-                group_name=smarty.get_item_group_name(item[2], self.locale)))
+                group_name=items_manager.get_item_group_name(item[2], self.locale),
+                can_buy=(self.online_users_holder.online_users[self.current_user].character.gold >= item[5])))
+        elif self.get_argument("action") == 'buy_item':
+            self.characters_manager.buy_item(self.current_user, self.get_argument("item_id"))
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

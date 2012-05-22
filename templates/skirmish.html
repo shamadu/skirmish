@@ -125,6 +125,9 @@
 
 
         <div id="shopDivContainer" class="contentDiv">
+            <div id="goldDiv" class="divCenter">
+                {{ _("Gold") }} <label id="shopGoldLabel" style="width: 100px; display: inline;"></label>
+            </div>
             <div id="shopMenu" class="shopMenu">
                 <ul>
                     {% for item_group_name in shop.keys() %}
