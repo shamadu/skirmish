@@ -40,19 +40,21 @@ var initialize_shop = function() {
 };
 
 var getItemFunc = function() {
-    $.postJSON('/shop', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
-        $("#itemDescriptions").append(response);
-        $("#itemDescriptions >div:last").width($("#itemDescriptions >div:last >table").width());
-        $("#itemDescriptions >div:last >button.close").click(closeDescription);
-        $("#itemDescriptions >div:last button#buyButton").click(buyItem);
-    });
+    if ($("#item_description_" + $(">a", this).attr('item_id')).length == 0) {
+        $.postJSON('/shop', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
+            $("#itemDescriptions").append(response);
+            $("#itemDescriptions >div:last").width($("#itemDescriptions >div:last >table").width());
+            $("#itemDescriptions >div:last >button.close").click(closeDescription);
+            $("#itemDescriptions >div:last button#buyButton").click(buyItem);
+        });
+    }
 };
 
 var closeDescription = function() {
     $(this).parent().remove();
-}
+};
 
 var buyItem = function() {
     $.postJSON('/shop', {"action" : "buy_item", "item_id" : $(this).attr('item_id')}, function(response) {
     });
-}
+};
