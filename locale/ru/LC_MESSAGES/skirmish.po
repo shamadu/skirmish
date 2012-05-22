@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-22 17:44+0300\n"
+"POT-Creation-Date: 2012-05-22 17:47+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -252,6 +252,14 @@ msgstr "Игра закончилась"
 #: static/js/locale.js:23
 msgid "Game can't be started, not enough players"
 msgstr "Игра не может начаться, недостаточно игроков"
+
+#: templates/item_description.html:6
+msgid "{0} gold"
+msgstr "{0} золота"
+
+#: templates/item_description.html:13
+msgid "Buy"
+msgstr "Купить"
 
 #: templates/create_character.html:6
 msgid "Create new character"
