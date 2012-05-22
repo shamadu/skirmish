@@ -180,8 +180,15 @@
     visibility:visible;
 }
 
-.itemDescriptionTable {
+.itemDescriptionDiv {
     width: auto;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.itemDescriptionTable {
+    width: 400px;
 }
 
 .itemDescriptionTable td {

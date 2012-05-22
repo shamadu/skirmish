@@ -1,8 +1,8 @@
 {% comment item - list of item properties - id, name, type, required_stats, bonus_stats, price, description ; group_name (text name of group) %}
-{% import smarty %}
-<div id="item_description_{{ item[0] }}" style="width: auto">
+<div id="item_description_{{ item[0] }}" class="well itemDescriptionDiv">
+    <button class="close">&times;</button>
     <table class="characterInfoTable itemDescriptionTable">
         <tr><td>{{ item[1] }}</td><td>{{ group_name }}</td><td>{{ _("{0} gold").format(item[5]) }}</td></tr>
+        <tr><td colspan="3">{{ item[6] }}</td></tr>
     </table>
-    {{ item[6] }}
 </div>

@@ -37,10 +37,16 @@ var initialize_shop = function() {
             $(this).click(getItemFunc);
         });
     }
-}
+};
 
 var getItemFunc = function() {
     $.postJSON('/shop', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
         $("#itemDescriptions").append(response);
+        $("#itemDescriptions >div:last").width($("#itemDescriptions >div:last >table").width());
+        $("#itemDescriptions >div:last >button.close").click(closeDescription);
     });
+};
+
+var closeDescription = function() {
+    $(this).parent().remove();
 }
