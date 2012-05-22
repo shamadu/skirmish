@@ -40,7 +40,7 @@
 
 .divUsers {
     position: absolute;
-    right: 0px;
+    right: 0;
     width: auto;
 }
 
@@ -140,12 +140,12 @@
     vertical-align : top;
 }
 
-#shopMenu, #shopMenu ul, #shopMenu li{
+.shopMenu, .shopMenu ul, .shopMenu li{
     padding:0;
     margin:0;
 }
 
-#shopMenu li{
+.shopMenu li{
     list-style: none;
     position: relative;
     width: 0;
@@ -156,26 +156,35 @@
     text-align:center
 }
 
-#shopMenu li a{
+.shopMenu li a{
     white-space: nowrap;
     text-decoration:none;
 }
 
-#shopMenu li:hover{
+.shopMenu li:hover{
     background-color:#08C;
 }
 
-#shopMenu li:hover>a {
+.shopMenu li:hover>a {
     color: #ffffff;
 }
 
-#shopMenu ul ul{
+.shopMenu ul ul{
     position: absolute;
     top:0;
     left:0;
     visibility:hidden;
 }
 
-#shopMenu ul li:hover ul{
+.shopMenu ul li:hover ul{
     visibility:visible;
+}
+
+.itemDescriptionTable {
+    width: auto;
+}
+
+.itemDescriptionTable td {
+    padding-left: 10px;
+    padding-right: 10px;
 }

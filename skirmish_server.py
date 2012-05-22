@@ -32,8 +32,8 @@ class SkirmishApplication(tornado.web.Application):
             (r'/message/poll', PollMessageHandler,),
             (r'/info/poll', PollCharacterInfoHandler,),
             (r'/message/new', NewMessageHandler,),
-            (r'/team', TeamHandler,),
             (r'/character', CharacterHandler,),
+            (r'/shop', ShopHandler,),
         ]
         settings = {
             "cookie_secret" : "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
@@ -168,6 +168,23 @@ class CharacterHandler(BaseHandler):
         elif self.get_argument("action") == 'put_on':
             if not self.characters_manager.put_on(self.current_user, self.get_argument("thing_id")):
                 self.write("false")
+        elif self.get_argument("action") == "create_team":
+            self.write(self.characters_manager.create_team(self.current_user, self.get_argument("team_name")))
+        elif self.get_argument("action") == "promote_team":
+            self.characters_manager.promote_user(self.current_user, self.get_argument("user_name"))
+        elif self.get_argument("action") == "demote_team":
+            self.characters_manager.demote_user(self.current_user, self.get_argument("user_name"))
+        elif self.get_argument("action") == "remove_team":
+            self.characters_manager.remove_user_from_team(self.current_user, self.get_argument("user_name"))
+        elif self.get_argument("action") == "invite_team":
+            self.write(self.characters_manager.invite_user_to_team(self.current_user, self.get_argument("user_name")))
+        elif self.get_argument("action") == "confirm_team":
+            self.characters_manager.user_join_team(self.current_user, self.get_argument("user_name"), self.get_argument("team_name"))
+        elif self.get_argument("action") == "decline_team":
+            pass
+        elif self.get_argument("action") == "leave_team":
+            self.characters_manager.user_leave_team(self.current_user)
+
 
 class PollCharacterInfoHandler(BaseHandler):
     @tornado.web.authenticated
@@ -300,25 +317,14 @@ class NewMessageHandler(BaseHandler):
             }
         self.messager.new_message(message)
 
-class TeamHandler(BaseHandler):
+class ShopHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self, *args, **kwargs):
-        if self.get_argument("action") == "create":
-            self.write(self.characters_manager.create_team(self.current_user, self.get_argument("team_name")))
-        elif self.get_argument("action") == "promote":
-            self.characters_manager.promote_user(self.current_user, self.get_argument("user_name"))
-        elif self.get_argument("action") == "demote":
-            self.characters_manager.demote_user(self.current_user, self.get_argument("user_name"))
-        elif self.get_argument("action") == "remove":
-            self.characters_manager.remove_user_from_team(self.current_user, self.get_argument("user_name"))
-        elif self.get_argument("action") == "invite":
-            self.write(self.characters_manager.invite_user_to_team(self.current_user, self.get_argument("user_name")))
-        elif self.get_argument("action") == "confirm":
-            self.characters_manager.user_join_team(self.current_user, self.get_argument("user_name"), self.get_argument("team_name"))
-        elif self.get_argument("action") == "decline":
-            pass
-        elif self.get_argument("action") == "leave":
-            self.characters_manager.user_leave_team(self.current_user)
+        if self.get_argument("action") == 'get_item':
+            item = smarty.get_item(int(self.get_argument("item_id")), self.locale)
+            self.write(self.render_string("item_description.html",
+                item=item,
+                group_name=smarty.get_item_group_name(item[2], self.locale)))
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

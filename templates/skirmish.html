@@ -125,21 +125,20 @@
 
 
         <div id="shopDivContainer" class="contentDiv">
-            <div id="shopMenu">
+            <div id="shopMenu" class="shopMenu">
                 <ul>
                     {% for item_group_name in shop.keys() %}
                     <li><a href="javascript:void(0)">{{ item_group_name }}</a>
                         <ul>
                             {% for item_id in shop[item_group_name].keys() %}
-                            <li><a href="javascript:void(0)" value="{{ item_id }}">{{ shop[item_group_name][item_id] }}</a></li>
+                            <li><a href="javascript:void(0)" item_id="{{ item_id }}">{{ shop[item_group_name][item_id] }}</a></li>
                             {% end %}
                         </ul>
                     </li>
                     {% end %}
                 </ul>
             </div>
-            <div id="itemDescription">
-                Item Description
+            <div id="itemDescriptions">
             </div>
         </div>
     </div>

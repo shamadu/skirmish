@@ -27,7 +27,7 @@ var initialize_team_invitation = function(user_name, team_name) {
 };
 
 var createTeamFunc = function() {
-    $.postJSON('/team', {"action" : "create", "team_name" : $("#teamName").val()}, function(response) {
+    $.postJSON('/character', {"action" : "create_team", "team_name" : $("#teamName").val()}, function(response) {
         var res = $.parseJSON(response);
         if(res.error) {
             $("#errorLabel").html(res.msg)
@@ -36,35 +36,35 @@ var createTeamFunc = function() {
 };
 
 var promoteFunc = function() {
-    $.postJSON('/team', {"action" : "promote", "user_name" : $(this).attr("user_name")}, function() {
+    $.postJSON('/character', {"action" : "promote_team", "user_name" : $(this).attr("user_name")}, function() {
     });
 };
 
 var demoteFunc = function() {
-    $.postJSON('/team', {"action" : "demote", "user_name" : $(this).attr("user_name")}, function() {
+    $.postJSON('/character', {"action" : "demote_team", "user_name" : $(this).attr("user_name")}, function() {
     });
 };
 
 var removeFunc = function() {
-    $.postJSON('/team', {"action" : "remove", "user_name" : $(this).attr("user_name")}, function() {
+    $.postJSON('/character', {"action" : "remove_team", "user_name" : $(this).attr("user_name")}, function() {
     });
 };
 
 var inviteUserFunc = function() {
-    $.postJSON('/team', {"action" : "invite", "user_name" : $("#inviteUserSelect option:selected").html()}, function(response) {
+    $.postJSON('/character', {"action" : "invite_team", "user_name" : $("#inviteUserSelect option:selected").html()}, function(response) {
         var res = $.parseJSON(response);
         window.alert(res.msg);
     });
 };
 
 var confirmFunc = function() {
-    $.postJSON('/team', {"action" : "confirm", "user_name" : $("#divInvitation").data("invitation").user_name, "team_name" : $("#divInvitation").data("invitation").team_name}, function(response) {
+    $.postJSON('/character', {"action" : "confirm_team", "user_name" : $("#divInvitation").data("invitation").user_name, "team_name" : $("#divInvitation").data("invitation").team_name}, function(response) {
         hideInvitation();
     });
 };
 
 var declineFunc = function() {
-    $.postJSON('/team', {"action" : "decline", "user_name" : $("#divInvitation").data("invitation").user_name, "team_name" : $("#divInvitation").data("invitation").team_name}, function(response) {
+    $.postJSON('/character', {"action" : "decline_team", "user_name" : $("#divInvitation").data("invitation").user_name, "team_name" : $("#divInvitation").data("invitation").team_name}, function(response) {
         hideInvitation();
     });
 };
@@ -74,6 +74,6 @@ var hideInvitation = function() {
 };
 
 var leaveTeamFunc = function() {
-    $.postJSON('/team', {"action" : "leave"}, function(response) {
+    $.postJSON('/character', {"action" : "leave_team"}, function(response) {
     });
 };

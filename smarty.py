@@ -94,7 +94,7 @@ spells = {
     }
     }
 
-item_types = {
+item_groups = {
     0 : _("Weapon"),
     1 : _("Shield"),
     2 : _("Head"),
@@ -128,7 +128,7 @@ items = {
     #weapons
     build_id(0, 0) : [build_id(0, 0), _("Knife"), 0, [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], 0, _("Knife is basic weapon, everybody has it"), 0.2, 0.3],
     build_id(0, 1) : [build_id(0, 1), _("Stone"), 0, [1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0], 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5],
-    #   id : [id, name, required_stats, bonus_stats, price, description]
+    #   id : [id, name, type, required_stats, bonus_stats, price, description]
     # required_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,level
     # bonus_stats are comma-separated stats in order: strength,dexterity,intellect,wisdom,min_dmg,max_dmg,spell_dmg
     #shields
@@ -153,12 +153,15 @@ items = {
 
 def get_shop(locale):
     shop = OrderedDict()
-    for id in item_types.keys():
-        shop[locale.translate(item_types[id])] = OrderedDict()
+    for id in item_groups.keys():
+        shop[locale.translate(item_groups[id])] = OrderedDict()
     for item in items.values():
         if item[2] != -1:
-            shop[locale.translate(item_types[item[2]])][item[0]] = locale.translate(item[1])
+            shop[locale.translate(item_groups[item[2]])][item[0]] = locale.translate(item[1])
     return shop
+
+def get_item_group_name(type, locale):
+    return locale.translate(item_groups[type])
 
 def get_classes(locale):
     result = dict()

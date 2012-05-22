@@ -34,6 +34,13 @@ var initialize_shop = function() {
 
         $(">ul>li", li_first_level[i]).each(function(){
             $(this).width(max_width2);
+            $(this).click(getItemFunc);
         });
     }
+}
+
+var getItemFunc = function() {
+    $.postJSON('/shop', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
+        $("#itemDescriptions").append(response);
+    });
 }
