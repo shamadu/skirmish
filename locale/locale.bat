@@ -1,3 +1,3 @@
-"C:\Program Files (x86)\GnuWin32\bin\xgettext.exe" -L Python -d skirmish smarty.py static/js/locale.js templates/create_character.html templates/create_team.html templates/div_action.html templates/login.html templates/skirmish.html templates/team_info.html templates/team_invitation.html
+"C:\Program Files (x86)\GnuWin32\bin\xgettext.exe" -L Python -d skirmish smarty.py items_manager.py static/js/locale.js templates/create_character.html templates/create_team.html templates/div_action.html templates/login.html templates/skirmish.html templates/team_info.html templates/team_invitation.html
 "C:\Program Files (x86)\GnuWin32\bin\msgmerge.exe" locale/ru/LC_MESSAGES/skirmish.po skirmish.po > locale/ru/LC_MESSAGES/skirmish_new.po
 "C:\Program Files (x86)\GnuWin32\bin\msgfmt.exe" locale/ru/LC_MESSAGES/skirmish.po -o locale/ru/LC_MESSAGES/skirmish.mo

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-21 21:57+0300\n"
+"POT-Creation-Date: 2012-05-22 17:44+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,81 +149,83 @@ msgstr "Инфекция"
 msgid "Stench"
 msgstr "Вонь"
 
-#: smarty.py:98 templates/skirmish.html:107
+#: items_manager.py:8 templates/skirmish.html:107
 msgid "Weapon"
 msgstr "Оружие"
 
-#: smarty.py:99 templates/skirmish.html:108
+#: items_manager.py:9 templates/skirmish.html:108
 msgid "Shield"
 msgstr "Щит"
 
-#: smarty.py:100 templates/skirmish.html:109
+#: items_manager.py:10 templates/skirmish.html:109
 msgid "Head"
 msgstr "Голова"
 
-#: smarty.py:101 templates/skirmish.html:110
+#: items_manager.py:11 templates/skirmish.html:110
 msgid "Body"
 msgstr "Тело"
 
-#: smarty.py:102 templates/skirmish.html:111
+#: items_manager.py:12 templates/skirmish.html:111
 msgid "Left hand"
 msgstr "Левая рука"
 
-#: smarty.py:103 templates/skirmish.html:112
+#: items_manager.py:13 templates/skirmish.html:112
 msgid "Right hand"
 msgstr "Правая рука"
 
-#: smarty.py:104 templates/skirmish.html:113
+#: items_manager.py:14 templates/skirmish.html:113
 msgid "Legs"
 msgstr "Ноги"
 
-#: smarty.py:105 templates/skirmish.html:114
+#: items_manager.py:15 templates/skirmish.html:114
 msgid "Feet"
 msgstr "Ступни"
 
-#: smarty.py:106 templates/skirmish.html:115
+#: items_manager.py:16 templates/skirmish.html:115
 msgid "Cloak"
 msgstr "Плащ"
 
-#: smarty.py:129
+#: items_manager.py:39
 msgid "Knife"
 msgstr "Нож"
 
-#: smarty.py:129
+#: items_manager.py:39
 msgid "Knife is basic weapon, everybody has it"
 msgstr "Нож это основное оружние, оно есть у каждого"
 
-#: smarty.py:130
+#: items_manager.py:40
 msgid "Stone"
 msgstr "Камень"
 
-#: smarty.py:130
+#: items_manager.py:40
 msgid "Sharpened stone is the weapon of real barbarian"
 msgstr "Заостренный камень это оружие настоящего варвара"
 
-#: smarty.py:135 smarty.py:138 smarty.py:141 smarty.py:143 smarty.py:145
-#: smarty.py:147 smarty.py:149 smarty.py:151
+#: items_manager.py:45 items_manager.py:48 items_manager.py:51
+#: items_manager.py:53 items_manager.py:55 items_manager.py:57
+#: items_manager.py:59 items_manager.py:61
 msgid "Nothing"
 msgstr "Ничего"
 
-#: smarty.py:135 smarty.py:138 smarty.py:141 smarty.py:143 smarty.py:145
-#: smarty.py:147 smarty.py:149 smarty.py:151
+#: items_manager.py:45 items_manager.py:48 items_manager.py:51
+#: items_manager.py:53 items_manager.py:55 items_manager.py:57
+#: items_manager.py:59 items_manager.py:61
 msgid "You don't wear anything"
 msgstr "Вы ничего не надели"
 
-#: smarty.py:136
+#: items_manager.py:46
 msgid "Basic shield"
 msgstr "Простой щит"
 
-#: smarty.py:136
+#: items_manager.py:46
 msgid "Just wooden shield with iron circle in center"
 msgstr "Простой деревянный щит с железным кругом в центре"
 
-#: smarty.py:139
+#: items_manager.py:49
 msgid "Basic helmet"
 msgstr "Простой шлем"
 
-#: smarty.py:139
+#: items_manager.py:49
 msgid "Wooden helmet is a better guard than your skull"
 msgstr "Деревянный шлем защитит лучше голого черепа"
 
@@ -374,7 +376,8 @@ msgstr "Мудрость"
 msgid "Experience"
 msgstr "Опыт"
 
-#: templates/skirmish.html:100 templates/team_info.html:6
+#: templates/skirmish.html:100 templates/skirmish.html:129
+#: templates/team_info.html:6
 msgid "Gold"
 msgstr "Золото"
 
