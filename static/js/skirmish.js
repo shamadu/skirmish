@@ -206,6 +206,7 @@ var onlineUsersUpdater = {
     onSuccess: function(response) {
         action = $.parseJSON(response);
         if(action.type == 0) {
+            onlineUsersUpdater.online_users.length = 0;
             initialOnlineUsers(action.online_users);
             initialSkirmishUsers(action.skirmish_users);
         }
@@ -239,10 +240,9 @@ var createOnlineUserLabel = function(user_name) {
 };
 
 var initialOnlineUsers = function(users) {
+    $("#divOnlineUsers").empty();
     var online_users = String(users).split(',');
     online_users.sort();
-    $("#divOnlineUsers").empty();
-    onlineUsersUpdater.online_users.length = 0;
     for (i = 0; i < online_users.length; ++i) {
         onlineUsersUpdater.online_users.push(online_users[i]);
         $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]));
@@ -299,10 +299,10 @@ var createSkirmishUserLabel = function(user_name, team_name) {
 };
 
 var initialSkirmishUsers = function(users) {
+    $("#divSkirmishUsers").empty();
     if (users) {
         var skirmish_users = String(users).split(',');
         skirmish_users.sort();
-        $("#divSkirmishUsers").empty();
         for (i = 0; i < skirmish_users.length; ++i) {
             skirmish_user = skirmish_users[i].split(":");
             onlineUsersUpdater.online_users.push(skirmish_user[0]);

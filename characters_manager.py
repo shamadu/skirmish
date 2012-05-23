@@ -45,7 +45,6 @@ class CharactersManager:
         return self.online_users_holder.online_users
 
     def subscribe(self, user_name, callback, locale):
-        self.online_users_holder.add_if_not_online(user_name, self.db_manager, locale)
         self.online_users[user_name].set_character_callback(callback)
 
     def unsubscribe(self, user_name):
@@ -111,7 +110,6 @@ class CharactersManager:
         }))
 
     def user_enter(self, user_name, locale):
-        self.online_users_holder.add_if_not_online(user_name, self.db_manager, locale)
         self.send_info(user_name)
         self.send_stuff(user_name)
         character = self.online_users[user_name].character
@@ -241,20 +239,20 @@ class CharactersManager:
         result = False
         int_id = int(thing_id)
         # get type of thing, e.g. weapon, shield, head, etc.
-        thing_type = items_manager.get_item_type(int_id)
+        item_type = items_manager.get_item_type(int_id)
         character = self.online_users[user_name].character
-        things = character[thing_type].split(",")
+        items = character[item_type].split(",")
         # check if character has thing and can put it on
-        if thing_id in things and items_manager.check_item(character, int_id):
-            old_thing_id = things[0]
+        if thing_id in items and items_manager.check_item(character, int_id):
+            old_item_id = items[0]
             # put it on by changing its place with first one
-            thing_pos = things.index(thing_id)
-            things[0], things[thing_pos] = things[thing_pos], things[0]
-            self.db_manager.change_character_field(user_name, thing_type, ",".join(things))
+            thing_pos = items.index(thing_id)
+            items[0], items[thing_pos] = items[thing_pos], items[0]
+            self.db_manager.change_character_field(user_name, item_type, ",".join(items))
             self.send_stuff(user_name)
 
             # get bonuses of old thing to subtract them from character
-            old_bonuses = items_manager.get_bonuses(int(old_thing_id))
+            old_bonuses = items_manager.get_bonuses(int(old_item_id))
             # get bonuses of new thing to add them from character
             bonuses = items_manager.get_bonuses(int_id)
             # add old bonuses not in new ones

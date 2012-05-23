@@ -94,21 +94,18 @@ class OnlineUsersHolder():
         self.skirmish_users = dict()
         self.users_manager = None
 
-    def add_if_not_online(self, user_name, db_manager, locale):
-        if not user_name in self.online_users.keys():
-            self.users_manager.on_user_online(user_name)
-            self.online_users[user_name] = OnlineUserInfo(locale)
-            db_manager.update_character(user_name)
-            self.users_manager.send_initial_users_to(user_name)
-        else:
-            self.online_users[user_name].locale = locale
+    def add_online_user(self, user_name, locale):
+        self.users_manager.on_user_online(user_name)
+        self.online_users[user_name] = OnlineUserInfo(locale)
+
+    def remove_online_user(self, user_name):
+        self.online_users.pop(user_name)
 
     def user_enter(self, user_name, db_manager, locale):
         # remove callbacks
-        self.online_users[user_name].user_callback = None
-        self.online_users[user_name].skirmish_callback = None
-        self.online_users[user_name].character_callback = None
-        self.add_if_not_online(user_name, db_manager, locale)
+#        self.online_users[user_name].user_callback = None
+#        self.online_users[user_name].skirmish_callback = None
+#        self.online_users[user_name].character_callback = None
         self.users_manager.send_initial_users_to(user_name)
 
     def add_skirmish_user(self, user_name):

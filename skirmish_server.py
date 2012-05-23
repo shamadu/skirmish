@@ -1,3 +1,4 @@
+import functools
 from tornado import web
 import tornado.ioloop
 import tornado.web
@@ -99,8 +100,24 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_user_locale(self):
         return tornado.locale.get(self.get_cookie("locale"))
 
+def user_online(method):
+    """Decorate methods with this to check if user online and add if not"""
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.current_user in self.online_users_holder.online_users.keys():
+            self.online_users_holder.add_online_user(self.current_user, self.locale)
+            self.db_manager.update_character(self.current_user)
+            self.redirect("/")
+            return
+        else:
+            self.online_users_holder.online_users[self.current_user].locale = self.locale
+
+        return method(self, *args, **kwargs)
+    return wrapper
+
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     def get(self, *args, **kwargs):
         character = self.db_manager.get_character(self.current_user)
         if not character:
@@ -119,6 +136,7 @@ class MainHandler(BaseHandler):
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     def get(self, *args, **kwargs):
         self.set_header("Content-Type", "text/javascript")
         self.write(tornado.web.escape.xhtml_unescape(self.render_string("../static/js/locale.js")))
@@ -141,12 +159,14 @@ class LoginHandler(BaseHandler):
 
 class LogoutHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     def post(self, *args, **kwargs):
         self.users_manager.user_logout(self.current_user)
         self.clear_cookie("login")
 
 class CreateCharacterHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     def get(self, *args, **kwargs):
         character = self.db_manager.get_character(self.current_user)
         if not character:
@@ -156,6 +176,7 @@ class CreateCharacterHandler(BaseHandler):
             self.redirect("/")
 
     @tornado.web.authenticated
+    @user_online
     def post(self, *args, **kwargs):
         classID = self.get_argument("classID")
         # insert the new character
@@ -163,6 +184,7 @@ class CreateCharacterHandler(BaseHandler):
 
 class CharacterHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'drop':
             self.db_manager.remove_character(self.current_user)
@@ -190,6 +212,7 @@ class CharacterHandler(BaseHandler):
 class PollCharacterInfoHandler(BaseHandler):
     @tornado.web.authenticated
     @tornado.web.asynchronous
+    @user_online
     def post(self, *args, **kwargs):
         self.characters_manager.subscribe(self.current_user, self.on_action, self.locale)
 
@@ -227,6 +250,7 @@ class PollCharacterInfoHandler(BaseHandler):
 
 class BattleBotHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'join':
             self.battle_bot.user_join(self.current_user)
@@ -239,6 +263,7 @@ class BattleBotHandler(BaseHandler):
 
 class PollBotHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
         self.battle_bot.subscribe(self.current_user, self.on_action, self.locale)
@@ -268,6 +293,7 @@ class PollBotHandler(BaseHandler):
 
 class PollUsersHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
         self.users_manager.subscribe(self.current_user, self.on_users_changed, self.locale)
@@ -290,6 +316,7 @@ class PollUsersHandler(BaseHandler):
 
 class PollMessageHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
         self.messager.subscribe(self.current_user, self.on_new_message)
@@ -310,6 +337,7 @@ class PollMessageHandler(BaseHandler):
 
 class NewMessageHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     def post(self, *args, **kwargs):
         message = {
             "from": self.current_user,
@@ -320,6 +348,7 @@ class NewMessageHandler(BaseHandler):
 
 class ShopHandler(BaseHandler):
     @tornado.web.authenticated
+    @user_online
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'get_item':
             item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
