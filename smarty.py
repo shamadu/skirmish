@@ -178,3 +178,24 @@ def get_mp_count(character):
 
 def get_hp_count(character):
     return character.level + character.strength
+
+# return default parameters : str, dex, int, wis, con
+def get_default_parameters(classID):
+    parameters = []
+    if classID == 0: # Warrior
+        parameters = [8, 4, 3, 3, 5]
+    elif classID == 1: # Guardian
+        parameters = [5, 3, 3, 3, 8]
+    elif classID == 3: # Archer
+        parameters = [5, 7, 3, 3, 5]
+    elif classID == 4: # Rogue
+        parameters = [6, 6, 3, 3, 5]
+    elif classID == 5: # Mage
+        parameters = [3, 3, 8, 5, 4]
+    elif classID == 6: # Priest
+        parameters = [3, 3, 5, 8, 4]
+    elif classID == 7: # Warlock
+        parameters = [3, 3, 7, 6, 4]
+    elif classID == 8: # Necromancer
+        parameters = [3, 3, 6, 7, 4]
+    return parameters

@@ -84,7 +84,8 @@ class CharactersManager:
             str(character.dexterity),
             str(character.intellect),
             str(character.wisdom),
-            str(character.exp),
+            str(character.constitution),
+            str(character.experience),
             str(character.gold),
             team_name,
             str(character.rank_in_team)

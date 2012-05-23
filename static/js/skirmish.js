@@ -89,10 +89,11 @@ var characterInfoUpdater = {
             $("#dexterityLabel").text(characterInfo[6]);
             $("#intellectLabel").text(characterInfo[7]);
             $("#wisdomLabel").text(characterInfo[8]);
-            $("#expLabel").text(characterInfo[9]);
-            $("#goldLabel").text(characterInfo[10]);
-            $("#teamLabel").text(characterInfo[11]);
-            $("#rankLabel").text(characterInfo[12]);
+            $("#constitutionLabel").text(characterInfo[9]);
+            $("#experienceLabel").text(characterInfo[10]);
+            $("#goldLabel").text(characterInfo[11]);
+            $("#teamLabel").text(characterInfo[12]);
+            $("#rankLabel").text(characterInfo[13]);
 
             $("#nameLabel_battle").text(characterInfo[0]);
             $("#classLabel_battle").text(characterInfo[1]);
@@ -100,7 +101,7 @@ var characterInfoUpdater = {
             $("#HPLabel_battle").text(characterInfo[3]);
             $("#MPLabel_battle").text(characterInfo[4]);
 
-            $("#shopGoldLabel").text(characterInfo[10]);
+            $("#shopGoldLabel").text(characterInfo[11]);
         }
         // character stuff update
         if (action.type == 1) {

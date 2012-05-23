@@ -1,4 +1,5 @@
-from items_manager import build_id
+import items_manager
+import smarty
 
 __author__ = 'PavelP'
 
@@ -12,10 +13,11 @@ class DBManager():
                         'classID integer, '
                         'level integer default 1, '
                         'strength integer default 1, '
-                        'dexterity  integer default 1, '
-                        'intellect  integer default 1, '
-                        'wisdom  integer default 1, '
-                        'exp bigint default 1, '
+                        'dexterity integer default 1, '
+                        'intellect integer default 1, '
+                        'wisdom integer default 1, '
+                        'constitution integer default 1, '
+                        'experience bigint default 1, '
                         'gold integer default 1, '
                         'team_name text default null, '
                         'rank_in_team int default 0, '
@@ -48,18 +50,27 @@ class DBManager():
 
     def create_character(self, name, classID):
         if not self.get_character(name):
-            self.db.execute("insert into characters (name, classID, weapon, shield, head, body, left_hand, right_hand, "
-                            "legs, feet, cloak) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                , name, classID
-                , str(build_id(0, 0))
-                , str(build_id(1, 0))
-                , str(build_id(2, 0))
-                , str(build_id(3, 0))
-                , str(build_id(4, 0))
-                , str(build_id(5, 0))
-                , str(build_id(6, 0))
-                , str(build_id(7, 0))
-                , str(build_id(8, 0)))
+            default_parameters = smarty.get_default_parameters(int(classID))
+            default_stuff = items_manager.get_default_stuff(int(classID))
+            self.db.execute("insert into characters (name, classID, strength, dexterity, intellect, wisdom, constitution, "
+                            "weapon, shield, head, body, left_hand, right_hand, legs, feet, cloak) values "
+                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                , name
+                , classID
+                , str(default_parameters[0])
+                , str(default_parameters[1])
+                , str(default_parameters[2])
+                , str(default_parameters[3])
+                , str(default_parameters[4])
+                , default_stuff[0]
+                , default_stuff[1]
+                , default_stuff[2]
+                , default_stuff[3]
+                , default_stuff[4]
+                , default_stuff[5]
+                , default_stuff[6]
+                , default_stuff[7]
+                , default_stuff[8])
 
     def remove_character(self, name):
         self.db.execute("delete from characters where name = %s", name)

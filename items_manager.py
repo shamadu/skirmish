@@ -152,3 +152,31 @@ def get_bonuses(item_id):
         result["spell_dmg"] = item[4][6]
 
     return result
+
+# return default stuff
+def get_default_stuff(classID):
+    stuff = []
+    if classID < 4: # non casters
+        stuff = [
+              str(build_id(0, 0))
+            , str(build_id(1, 0))
+            , str(build_id(2, 0))
+            , str(build_id(3, 0))
+            , str(build_id(4, 0))
+            , str(build_id(5, 0))
+            , str(build_id(6, 0))
+            , str(build_id(7, 0))
+            , str(build_id(8, 0))]
+    else: # casters
+        stuff = [
+              str(build_id(0, 0))
+            , str(build_id(1, 0))
+            , str(build_id(2, 0))
+            , str(build_id(3, 0))
+            , str(build_id(4, 0))
+            , str(build_id(5, 0))
+            , str(build_id(6, 0))
+            , str(build_id(7, 0))
+            , str(build_id(8, 0))]
+
+    return stuff
