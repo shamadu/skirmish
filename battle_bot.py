@@ -137,7 +137,7 @@ class BattleBot(Thread):
         self.send_action_to_user(user_name, self.action_manager.create_reset_to_initial_action())
         self.online_users_holder.remove_skirmish_user(user_name)
 
-    def subscribe(self, user_name, callback, locale):
+    def subscribe(self, user_name, callback):
         self.online_users[user_name].set_skirmish_callback(callback)
 
     def unsubscribe(self, user_name):
@@ -173,7 +173,7 @@ class BattleBot(Thread):
         if user_name in self.online_users.keys():
             self.online_users[user_name].send_skirmish_action(action)
 
-    def user_enter(self, user_name, locale):
+    def user_enter(self, user_name):
         # if registration is in progress
         if self.phase == 0:
             # and if user is not in skirmish, send "can join" action

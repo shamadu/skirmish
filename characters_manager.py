@@ -44,7 +44,7 @@ class CharactersManager:
     def online_users(self):
         return self.online_users_holder.online_users
 
-    def subscribe(self, user_name, callback, locale):
+    def subscribe(self, user_name, callback):
         self.online_users[user_name].set_character_callback(callback)
 
     def unsubscribe(self, user_name):
@@ -109,7 +109,7 @@ class CharactersManager:
             "cloak" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.cloak, locale))
         }))
 
-    def user_enter(self, user_name, locale):
+    def user_enter(self, user_name):
         self.send_info(user_name)
         self.send_stuff(user_name)
         character = self.online_users[user_name].character

@@ -187,9 +187,11 @@ var messager = {
 
         messager.errorSleepTime = 500;
         window.setTimeout(messager.poll, 0);
+        $("#serverStatus").html("Connected");
     },
 
     onError: function() {
+        $("#serverStatus").html("Disconnected");
         messager.errorSleepTime *= 2;
         window.setTimeout(messager.poll, messager.errorSleepTime);
     }

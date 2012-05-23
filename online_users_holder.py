@@ -101,13 +101,6 @@ class OnlineUsersHolder():
     def remove_online_user(self, user_name):
         self.online_users.pop(user_name)
 
-    def user_enter(self, user_name, db_manager, locale):
-        # remove callbacks
-#        self.online_users[user_name].user_callback = None
-#        self.online_users[user_name].skirmish_callback = None
-#        self.online_users[user_name].character_callback = None
-        self.users_manager.send_initial_users_to(user_name)
-
     def add_skirmish_user(self, user_name):
         self.skirmish_users[user_name] = self.online_users[user_name]
         self.users_manager.user_join_skirmish(user_name)
@@ -115,3 +108,8 @@ class OnlineUsersHolder():
     def remove_skirmish_user(self, user_name):
         self.users_manager.user_leave_skirmish(user_name)
         self.skirmish_users.pop(user_name)
+
+    def user_enter(self, user_name):
+        self.online_users[user_name].user_cache = deque()
+        self.online_users[user_name].skirmish_cache = deque()
+        self.online_users[user_name].character_cache = deque()

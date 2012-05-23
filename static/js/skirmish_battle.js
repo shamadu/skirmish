@@ -24,7 +24,7 @@ var initialize_battle = function () {
 
 var dropButtonClick = function () {
     $.postJSON('/character', {"action" : "drop"}, function() {
-        window.location.href='/create';
+        window.location.href='/';
     });
 };
 

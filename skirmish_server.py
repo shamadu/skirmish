@@ -104,30 +104,28 @@ def user_online(method):
     """Decorate methods with this to check if user online and add if not"""
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
-        if not self.current_user in self.online_users_holder.online_users.keys():
-            self.online_users_holder.add_online_user(self.current_user, self.locale)
-            self.db_manager.update_character(self.current_user)
-            self.redirect("/")
-            return
+        if self.current_user in self.online_users_holder.online_users.keys():
+            return method(self, *args, **kwargs)
         else:
-            self.online_users_holder.online_users[self.current_user].locale = self.locale
-
-        return method(self, *args, **kwargs)
+            return
     return wrapper
 
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
-    @user_online
     def get(self, *args, **kwargs):
         character = self.db_manager.get_character(self.current_user)
-        if not character:
-        # no such user - redirect to creation
-            self.redirect("/create")
+        if not character: # no such user - redirect to creation
+            self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
         else:
+            if not self.current_user in self.online_users_holder.online_users.keys():
+                self.online_users_holder.add_online_user(self.current_user, self.locale)
+            else:
+                self.online_users_holder.user_enter(self.current_user)
             # this sequence is important!
-            self.characters_manager.user_enter(self.current_user, self.locale)
-            self.online_users_holder.user_enter(self.current_user, self.db_manager, self.locale)
-            self.battle_bot.user_enter(self.current_user, self.locale)
+            self.db_manager.update_character(self.current_user)
+            self.characters_manager.user_enter(self.current_user)
+            self.users_manager.user_enter(self.current_user)
+            self.battle_bot.user_enter(self.current_user)
 
             self.render("skirmish.html",
                 login=self.current_user,
@@ -144,7 +142,7 @@ class StaticJSHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
         if not self.current_user:
-            self.render("login.html", locales=smarty.locales, selected=self.get_cookie("locale"))
+            self.render("login.html", locales=smarty.locales, selected=self.locale)
         else:
             self.redirect("/")
 
@@ -157,30 +155,19 @@ class LoginHandler(BaseHandler):
 
         self.write(login_response)
 
+class CreateCharacterHandler(BaseHandler):
+    @tornado.web.authenticated
+    def post(self, *args, **kwargs):
+        classID = self.get_argument("classID")
+        # insert the new character
+        self.db_manager.create_character(self.current_user, classID)
+
 class LogoutHandler(BaseHandler):
     @tornado.web.authenticated
     @user_online
     def post(self, *args, **kwargs):
         self.users_manager.user_logout(self.current_user)
         self.clear_cookie("login")
-
-class CreateCharacterHandler(BaseHandler):
-    @tornado.web.authenticated
-    @user_online
-    def get(self, *args, **kwargs):
-        character = self.db_manager.get_character(self.current_user)
-        if not character:
-        # no character - redirect to creation
-            self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
-        else:
-            self.redirect("/")
-
-    @tornado.web.authenticated
-    @user_online
-    def post(self, *args, **kwargs):
-        classID = self.get_argument("classID")
-        # insert the new character
-        self.db_manager.create_character(self.current_user, classID)
 
 class CharacterHandler(BaseHandler):
     @tornado.web.authenticated
@@ -214,7 +201,7 @@ class PollCharacterInfoHandler(BaseHandler):
     @tornado.web.asynchronous
     @user_online
     def post(self, *args, **kwargs):
-        self.characters_manager.subscribe(self.current_user, self.on_action, self.locale)
+        self.characters_manager.subscribe(self.current_user, self.on_action)
 
     def on_action(self, action):
         if self.request.connection.stream.closed():
@@ -266,7 +253,7 @@ class PollBotHandler(BaseHandler):
     @user_online
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
-        self.battle_bot.subscribe(self.current_user, self.on_action, self.locale)
+        self.battle_bot.subscribe(self.current_user, self.on_action)
 
     def on_action(self, action):
         # Closed client connection
@@ -296,7 +283,7 @@ class PollUsersHandler(BaseHandler):
     @user_online
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
-        self.users_manager.subscribe(self.current_user, self.on_users_changed, self.locale)
+        self.users_manager.subscribe(self.current_user, self.on_users_changed)
 
     def on_users_changed(self, action):
         # Closed client connection

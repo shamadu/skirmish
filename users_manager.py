@@ -102,15 +102,12 @@ class UsersManager(Thread):
     def user_leave_skirmish(self, user_name):
         self.send_action_to_all(self.create_remove_skirmish_user_action(user_name))
 
-    def subscribe(self, user_name, callback, locale):
+    def subscribe(self, user_name, callback):
         self.online_users[user_name].set_user_callback(callback)
 
     def unsubscribe(self, user_name):
         if user_name in self.online_users:
             self.online_users[user_name].set_user_callback(None)
-
-    def send_initial_users_to(self, user_name):
-        self.online_users[user_name].send_user_action(self.create_initial_users_action())
 
     def send_action_to_all(self, action):
         for online_user in self.online_users.values():
@@ -118,3 +115,7 @@ class UsersManager(Thread):
 
     def on_user_online(self, user_name):
         self.send_action_to_all(self.create_user_online_action(user_name))
+
+    def user_enter(self, user_name):
+        self.online_users[user_name].send_user_action(self.create_initial_users_action())
+
