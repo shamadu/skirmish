@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
+import random
+import items_manager
 
 __author__ = 'Pavel Padinker'
 
@@ -174,7 +176,7 @@ def get_mp_count(character):
     if character.classID < 4:
         return character.dexterity*3
     else:
-        return character.wisdom*3
+        return character.wisdom*1.7
 
 def get_hp_count(character):
     return character.level + character.strength
@@ -186,16 +188,67 @@ def get_default_parameters(classID):
         parameters = [8, 4, 3, 3, 5]
     elif classID == 1: # Guardian
         parameters = [5, 3, 3, 3, 8]
-    elif classID == 3: # Archer
+    elif classID == 2: # Archer
         parameters = [5, 7, 3, 3, 5]
-    elif classID == 4: # Rogue
+    elif classID == 3: # Rogue
         parameters = [6, 6, 3, 3, 5]
-    elif classID == 5: # Mage
+    elif classID == 4: # Mage
         parameters = [3, 3, 8, 5, 4]
-    elif classID == 6: # Priest
+    elif classID == 5: # Priest
         parameters = [3, 3, 5, 8, 4]
-    elif classID == 7: # Warlock
+    elif classID == 6: # Warlock
         parameters = [3, 3, 7, 6, 4]
-    elif classID == 8: # Necromancer
+    elif classID == 7: # Necromancer
         parameters = [3, 3, 6, 7, 4]
     return parameters
+
+def get_regeneration(character):
+    if character.classID < 4:
+        return 0.4*character.dexterity + 0.3*character.strength
+    else:
+        return 0.4*character.wisdom + 0.3*character.intellect
+
+def get_attack(character):
+    return character.strength*0.4 + character.dexterity*0.6
+
+def get_defence(character):
+    return character.strength*0.4 + character.constitution*0.6
+
+def get_magic_attack(character):
+    return character.wisdom*0.4 + character.intellect*0.6
+
+def get_magic_defence(character):
+    return character.wisdom*0.6 + character.intellect*0.4
+
+def get_armor(character):
+    return character.dexterity*3 + character.strength*6
+
+def get_spell_length(character):
+    return character.intellect/3
+
+def get_damage(character_to_attack, character_to_defence):
+    min_damage = items_manager.items[character_to_attack.current_weapon_id][7]
+    max_damage = items_manager.items[character_to_attack.current_weapon_id][8]
+    weapon_damage = random.uniform(min_damage, max_damage)
+    damage = max(0.90 + (character_to_attack.strength / 100), 1) ** 2 * weapon_damage
+    absorb = max(character_to_defence.armor * 0.01)
+    return damage*absorb
+
+def is_hit(character_to_attack, attack_percent, character_to_defence, defence_percent):
+    if (attack_percent*character_to_attack.attack)/(defence_percent*character_to_defence.defence) > 1.5: # definitely not hit
+        return True
+    elif random.random() < 2 - (attack_percent*character_to_attack.attack)/(defence_percent*character_to_defence.defence):
+        return True
+    return False
+
+def is_critical_damage(character_to_attack, character_to_defence):
+    return random.random() < character_to_attack.dexterity/1000
+
+def get_experience_for_damage(damage):
+    return damage * 10
+
+def get_experience_for_spell_damage(damage):
+    return damage * 15
+
+def get_experience_for_defence(damage):
+    return damage * 10
