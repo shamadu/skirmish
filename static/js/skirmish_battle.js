@@ -173,7 +173,7 @@ var removeDivAction = function(divAction) {
 
 var doButtonClick = function() {
     if(!checkTurnSum($(this))) {
-        window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
+        window.alert(messages[6]);
     }
     else {
         /*
@@ -182,16 +182,24 @@ var doButtonClick = function() {
          */
         turnInfo = "";
         $(".action").each(function() {
-            turnInfo += $(this).attr("action") + ":";
-            value = $(".user_select option:selected", this).html();
-            turnInfo += ((value) ? value : "") + ":";
-            value = $(".spell_select option:selected", this).html();
-            turnInfo += ((value) ? value : "") + ":";
-            turnInfo += $("input[type=text]", this).val();
-            turnInfo += ",";
+            percent = $("input[type=text]", this).val();
+            if (percent != 0) {
+                turnInfo += $(this).attr("action") + ":";
+                value = $(".user_select option:selected", this).html();
+                turnInfo += ((value) ? value : "") + ":";
+                value = $(".spell_select option:selected", this).html();
+                turnInfo += ((value) ? value : "") + ":";
+                turnInfo += $("input[type=text]", this).val();
+                turnInfo += ",";
+            }
         });
-        $.postJSON('/bot/battle', {'action' : 'turn do', 'turn_info' : turnInfo}, function(){
-        });
+        if (turnInfo) {
+            $.postJSON('/bot/battle', {'action' : 'turn do', 'turn_info' : turnInfo}, function(){
+            });
+        }
+        else {
+            window.alert(messages[7])
+        }
     }
 };
 

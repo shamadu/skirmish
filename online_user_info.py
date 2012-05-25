@@ -70,7 +70,8 @@ class OnlineUserInfo():
         self.turn_info_string = turn_info
         actions = self.turn_info_string.split(",")
         for action in actions:
-            self.turn_info.append(action.split(":"))
+            if action:
+                self.turn_info.append(action.split(":"))
 
     def get_turn_info(self):
         return self.turn_info_string
