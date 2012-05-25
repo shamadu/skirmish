@@ -5,10 +5,10 @@ import tornado.web
 import tornado.httpserver
 import tornado.database
 import tornado.locale
+from actions_manager import ActionsManager
 from battle_bot import BattleBot
 from db_manager import DBManager
 import items_manager
-from online_users_holder import OnlineUsersHolder
 from smarty import get_classes
 import smarty
 from users_manager import UsersManager
@@ -51,24 +51,26 @@ class SkirmishApplication(tornado.web.Application):
             host="127.0.0.1:3306", database="users",
             user="root", password="passw0rd")
 
-        self.online_users_holder = OnlineUsersHolder()
-        self.db_manager = DBManager(self.db, self.online_users_holder.online_users)
+        self.actions_manager = ActionsManager()
+        self.db_manager = DBManager(self.db, self.actions_manager)
 
-        self.users_manager = UsersManager(self.db_manager, self.online_users_holder)
+        self.users_manager = UsersManager(self.db_manager, self.actions_manager)
         self.users_manager.start()
 
-        self.online_users_holder.users_manager = self.users_manager
-
-        self.battle_bot = BattleBot(self.db_manager, self.online_users_holder)
+        self.battle_bot = BattleBot(self.db_manager, self.actions_manager)
         self.battle_bot.start()
 
-        self.characters_manager = CharactersManager(self.db_manager, self.online_users_holder)
+        self.characters_manager = CharactersManager(self.db_manager, self.actions_manager)
         self.messager = Messager()
+
+        self.actions_manager.users_manager = self.users_manager
+        self.actions_manager.characters_manager = self.characters_manager
+        self.actions_manager.battle_bot = self.battle_bot
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
-    def db(self):
-        return self.application.db
+    def actions_manager(self):
+        return self.application.actions_manager
 
     @property
     def characters_manager(self):
@@ -77,10 +79,6 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def db_manager(self):
         return self.application.db_manager
-
-    @property
-    def online_users_holder(self):
-        return self.application.online_users_holder
 
     @property
     def users_manager(self):
@@ -100,11 +98,14 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_user_locale(self):
         return tornado.locale.get(self.get_cookie("locale"))
 
+    def get_user_location(self):
+        return self.get_secure_cookie("location")
+
 def user_online(method):
     """Decorate methods with this to check if user online and add if not"""
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
-        if self.current_user in self.online_users_holder.online_users.keys():
+        if self.current_user in self.actions_manager.online_users.keys():
             return method(self, *args, **kwargs)
         else:
             return
@@ -117,15 +118,10 @@ class MainHandler(BaseHandler):
         if not character: # no such user - redirect to creation
             self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
         else:
-            if not self.current_user in self.online_users_holder.online_users.keys():
-                self.online_users_holder.add_online_user(self.current_user, self.locale)
-            else:
-                self.online_users_holder.user_enter(self.current_user)
-            # this sequence is important!
+            if not self.current_user in self.actions_manager.online_users.keys():
+                self.actions_manager.add_online_user(self.current_user, self.locale)
             self.db_manager.update_character(self.current_user)
-            self.characters_manager.user_enter(self.current_user)
-            self.users_manager.user_enter(self.current_user)
-            self.battle_bot.user_enter(self.current_user)
+            self.actions_manager.user_enter(self.current_user)
 
             self.render("skirmish.html",
                 login=self.current_user,
@@ -175,6 +171,8 @@ class CharacterHandler(BaseHandler):
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'drop':
             self.db_manager.remove_character(self.current_user)
+        elif self.get_argument("action") == 'change_location':
+            self.actions_manager.change_location(self.current_user, self.get_argument("location"))
         elif self.get_argument("action") == 'put_on':
             if not self.characters_manager.put_on_item(self.current_user, self.get_argument("thing_id")):
                 self.write("false")
@@ -342,7 +340,7 @@ class ShopHandler(BaseHandler):
             self.write(self.render_string("item_description.html",
                 item=item,
                 group_name=items_manager.get_item_group_name(item[2], self.locale),
-                can_buy=(self.online_users_holder.online_users[self.current_user].character.gold >= item[5])))
+                can_buy=(self.users_manager.online_users[self.current_user].character.gold >= item[5])))
         elif self.get_argument("action") == 'buy_item':
             self.characters_manager.buy_item(self.current_user, self.get_argument("item_id"))
 

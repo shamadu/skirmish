@@ -15,9 +15,11 @@ var initialize_battle = function () {
     $("#joinButton").click(joinButtonClick);
     $("#leaveButton").click(leaveButtonClick);
 
-    $('a[data-toggle="tab"]').on('shown', function (e) {
-        e.target // activated tab
-        e.relatedTarget // previous tab
+    $('a[data-toggle="tab"]').on('shown', function (tab) {
+        $.postJSON('/character', {"action" : "change_location", "location" : $(this).html()}, function() {
+        });
+//        e.target // activated tab
+//        e.relatedTarget // previous tab
         window.alert("tab!");
     });
 };

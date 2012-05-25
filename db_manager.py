@@ -4,9 +4,9 @@ import smarty
 __author__ = 'PavelP'
 
 class DBManager():
-    def __init__(self, db, online_users):
+    def __init__(self, db, actions_manager):
         self.db = db
-        self.online_users = online_users
+        self.actions_manager = actions_manager
         self.db.execute('create table if not exists characters '
                         '(id integer(11) primary key not null auto_increment unique, '
                         'name text, '
@@ -38,13 +38,13 @@ class DBManager():
 
     def update_character(self, user_name):
         character = self.get_character(user_name)
-        self.online_users[user_name].character = character
         character.current_weapon_id = int(character.weapon.split(",")[0])
         character.attack = smarty.get_attack(character)
         character.defence = smarty.get_defence(character)
         character.magic_attack = smarty.get_magic_attack(character)
         character.magic_defence = smarty.get_magic_defence(character)
         character.armor = smarty.get_armor(character)
+        self.actions_manager.update_character(user_name, character)
 
     def get_user(self, login):
         return self.db.get("select * from users where login = %s", login)

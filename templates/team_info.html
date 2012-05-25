@@ -36,6 +36,7 @@
         {% end %}
     </table>
     {% if members[user_name] < 2 %}
+    <div id="inviteDiv">
         <h4>{{ _("Invite user to team") }}</h4>
         <table class="teamInfoTable">
             <tr><td>
@@ -43,5 +44,6 @@
                 </select>
             </td><td><button id="inviteUserButton" style="margin: 0 0 0 5px">{{ _("Invite") }}</button></td></tr>
         </table>
+    </div>
     {% end %}
 </div>

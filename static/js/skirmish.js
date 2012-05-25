@@ -251,18 +251,20 @@ var initialOnlineUsers = function(users) {
     $("#divOnlineUsers").empty();
     var online_users = String(users).split(',');
     online_users.sort();
-    for (i = 0; i < online_users.length; ++i) {
+    for (i = 0; i < online_users.length && online_users[i]; ++i) {
         onlineUsersUpdater.online_users.push(online_users[i]);
         $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]));
         $("#inviteUserSelect").append("<option value=\"" + online_users[i] + "\">" + online_users[i] + "</option>");
     }
-
     resize_battle();
 };
 
 var removeOnlineUser = function(user, fromServer) {
     $("#divOnlineUsers label[value=\"" + user + "\"]").remove();
     $("#inviteUserSelect option[value=\"" + user + "\"]").remove();
+    if($("#inviteUserSelect option").length == 0) {
+        $("#inviteDiv").hide();
+    }
 
     if (fromServer) {
         onlineUsersUpdater.online_users.pop(user);
@@ -291,6 +293,7 @@ var addOnlineUser = function(user, fromServer) {
         });
     }
 
+    $("#inviteDiv").show();
     if (fromServer) {
         onlineUsersUpdater.online_users.push(user);
         resize_battle();
@@ -311,7 +314,7 @@ var initialSkirmishUsers = function(users) {
     if (users) {
         var skirmish_users = String(users).split(',');
         skirmish_users.sort();
-        for (i = 0; i < skirmish_users.length; ++i) {
+        for (i = 0; i < skirmish_users.length && skirmish_users[i]; ++i) {
             skirmish_user = skirmish_users[i].split(":");
             onlineUsersUpdater.online_users.push(skirmish_user[0]);
             $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]))

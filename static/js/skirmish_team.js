@@ -18,6 +18,9 @@ var initialize_team_info = function () {
     $("#divTeam button[class=promoteButton]").click(promoteFunc);
     $("#divTeam button[class=demoteButton]").click(demoteFunc);
     $("#divTeam button[class=removeButton]").click(removeFunc);
+    if($("#inviteUserSelect option").length == 0) {
+        $("#inviteDiv").hide();
+    }
 };
 
 var initialize_team_invitation = function(user_name, team_name) {

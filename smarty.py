@@ -150,7 +150,7 @@ def get_spells(character, locale):
     for enough_level in range(character.level):
         level_spells = spells[character.classID][enough_level + 1]
         for i in range(len(level_spells)):
-            result += locale.translate(level_spells[i])
+            result.append(locale.translate(level_spells[i]))
 
     return result
 
