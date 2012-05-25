@@ -3,14 +3,14 @@ from threading import Thread
 import time
 import smarty
 
-__author__ = 'Pavel Padinker'
+__author__ = 'PavelP'
 
 class BattleBot(Thread):
-    def __init__(self, db_manager, actions_manager):
+    def __init__(self, actions_manager, location):
         Thread.__init__(self)
         self.actions_manager = actions_manager
         self.skirmish_users = dict()
-        self.db_manager = db_manager
+        self.location = location
         # phases:
         # -1 - none
         # 0 - registration
@@ -28,19 +28,19 @@ class BattleBot(Thread):
                 # registration start
                 self.phase = 0
                 self.counter = 0
-                self.actions_manager.registration_started()
+                self.actions_manager.registration_started(self.location)
             elif self.phase == 0 and self.counter == smarty.registration_time:
                 # registration end
                 self.counter = 0
                 if len(self.skirmish_users) > 1:
                     self.phase = 1
-                    self.actions_manager.registration_ended()
+                    self.actions_manager.registration_ended(self.location)
                 else:
-                    self.actions_manager.game_cant_start()
+                    self.actions_manager.game_cant_start(self.location)
             elif self.phase > 0 and self.counter == 1:
-                self.actions_manager.round_started(self.phase, self.skirmish_users)
+                self.actions_manager.round_started(self.phase, self.location, self.skirmish_users)
             elif self.phase > 0 and self.counter == smarty.turn_time:
-                self.actions_manager.round_ended(self.phase, self.skirmish_users)
+                self.actions_manager.round_ended(self.phase, self.location, self.skirmish_users)
                 self.counter = 0
                 self.phase += 1
                 self.process_round_result()
@@ -56,8 +56,9 @@ class BattleBot(Thread):
     # attack result - who_name, whom_name, is_hit, is_critical, damage, exp
     # heal spell result - damage spell result
     def process_round_result(self):
-        random.shuffle(self.skirmish_users)
-        for user_name in self.skirmish_users.keys():
+        skirmish_users_names = self.skirmish_users.keys()
+        random.shuffle(skirmish_users_names)
+        for user_name in skirmish_users_names:
             if self.skirmish_users[user_name].is_turn_done(): # process user's turn
 
                 # TODO:
@@ -72,7 +73,7 @@ class BattleBot(Thread):
 
     def process_game_result(self):
         # TODO:
-        self.actions_manager.game_ended()
+        self.actions_manager.game_ended(self.location)
         for user_name in self.skirmish_users.keys():
             self.remove_from_skirmish(user_name)
         self.phase = -1
@@ -80,15 +81,8 @@ class BattleBot(Thread):
         pass
 
     def remove_from_skirmish(self, user_name):
-        self.actions_manager.skirmish_user_removed(user_name)
+        self.actions_manager.skirmish_user_removed(self.location, user_name)
         self.skirmish_users.pop(user_name)
-
-    def subscribe(self, user_name, callback):
-        self.online_users[user_name].set_skirmish_callback(callback)
-
-    def unsubscribe(self, user_name):
-        if user_name in self.online_users:
-            self.online_users[user_name].set_skirmish_callback(None)
 
     def user_join(self, user_name):
         if self.phase == 0 and user_name not in self.skirmish_users.keys():

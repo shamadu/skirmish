@@ -16,11 +16,9 @@ var initialize_battle = function () {
     $("#leaveButton").click(leaveButtonClick);
 
     $('a[data-toggle="tab"]').on('shown', function (tab) {
+        removeDivAction();
         $.postJSON('/character', {"action" : "change_location", "location" : $(this).html()}, function() {
         });
-//        e.target // activated tab
-//        e.relatedTarget // previous tab
-        window.alert("tab!");
     });
 };
 

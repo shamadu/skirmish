@@ -6,7 +6,7 @@ import tornado.httpserver
 import tornado.database
 import tornado.locale
 from actions_manager import ActionsManager
-from battle_bot import BattleBot
+from battle_manager import BattleManager
 from db_manager import DBManager
 import items_manager
 from smarty import get_classes
@@ -57,15 +57,14 @@ class SkirmishApplication(tornado.web.Application):
         self.users_manager = UsersManager(self.db_manager, self.actions_manager)
         self.users_manager.start()
 
-        self.battle_bot = BattleBot(self.db_manager, self.actions_manager)
-        self.battle_bot.start()
+        self.battle_manager = BattleManager(self.actions_manager)
 
         self.characters_manager = CharactersManager(self.db_manager, self.actions_manager)
         self.messager = Messager()
 
         self.actions_manager.users_manager = self.users_manager
         self.actions_manager.characters_manager = self.characters_manager
-        self.actions_manager.battle_bot = self.battle_bot
+        self.actions_manager.battle_manager = self.battle_manager
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -85,8 +84,8 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.application.users_manager
 
     @property
-    def battle_bot(self):
-        return self.application.battle_bot
+    def battle_manager(self):
+        return self.application.battle_manager
 
     @property
     def messager(self):
@@ -172,7 +171,7 @@ class CharacterHandler(BaseHandler):
         if self.get_argument("action") == 'drop':
             self.db_manager.remove_character(self.current_user)
         elif self.get_argument("action") == 'change_location':
-            self.actions_manager.change_location(self.current_user, self.get_argument("location"))
+            self.users_manager.change_location(self.current_user, self.get_argument("location"))
         elif self.get_argument("action") == 'put_on':
             if not self.characters_manager.put_on_item(self.current_user, self.get_argument("thing_id")):
                 self.write("false")
@@ -238,20 +237,20 @@ class BattleBotHandler(BaseHandler):
     @user_online
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'join':
-            self.battle_bot.user_join(self.current_user)
+            self.battle_manager.user_join(self.current_user)
         elif self.get_argument("action") == 'leave':
-            self.battle_bot.user_leave(self.current_user)
+            self.battle_manager.user_leave(self.current_user)
         elif self.get_argument("action") == 'turn do':
-            self.battle_bot.user_turn(self.current_user, self.get_argument("turn_info"))
+            self.battle_manager.user_turn(self.current_user, self.get_argument("turn_info"))
         elif self.get_argument("action") == 'turn cancel':
-            self.battle_bot.user_turn_cancel(self.current_user)
+            self.battle_manager.user_turn_cancel(self.current_user)
 
 class PollBotHandler(BaseHandler):
     @tornado.web.authenticated
     @user_online
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
-        self.battle_bot.subscribe(self.current_user, self.on_action)
+        self.battle_manager.subscribe(self.current_user, self.on_action)
 
     def on_action(self, action):
         # Closed client connection
@@ -274,7 +273,7 @@ class PollBotHandler(BaseHandler):
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
     def on_connection_close(self):
-        self.battle_bot.unsubscribe(self.current_user)
+        self.battle_manager.unsubscribe(self.current_user)
 
 class PollUsersHandler(BaseHandler):
     @tornado.web.authenticated

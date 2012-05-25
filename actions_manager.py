@@ -14,9 +14,13 @@ class Action:
 class ActionsManager:
     def __init__(self):
         self.online_users = dict()
+        self.location_users = {
+            "En" : dict(),
+            "Ru" : dict()
+            }
         self.users_manager = None
         self.characters_manager = None
-        self.battle_bot = None
+        self.battle_manager = None
 
     # user action types are:
     # 0 - show all online and skirmish users
@@ -24,9 +28,9 @@ class ActionsManager:
     # 2 - remove online user
     # 3 - add skirmish users
     # 4 - remove skirmish users
-    def initial_users_action(self, skirmish_users):
+    def initial_users_action(self, online_users, skirmish_users):
         online_user_non_skirmish = list()
-        for user_name in self.online_users.keys():
+        for user_name in online_users.keys():
             if user_name not in skirmish_users.keys():
                 online_user_non_skirmish.append(user_name)
         skirmish_users_list = list()
@@ -193,15 +197,22 @@ class ActionsManager:
 
 # users callbacks
     def add_online_user(self, user_name, locale):
-        self.send_user_action_to_all(self.user_online_action(user_name))
+        online_users = self.location_users["En"]
+        self.send_user_action_to_all(online_users, self.user_online_action(user_name))
         self.online_users[user_name] = OnlineUserInfo(user_name, locale)
+        self.location_users["En"][user_name] = self.online_users[user_name]
 
     def remove_online_user(self, user_name):
-        self.send_user_action_to_all(self.user_offline_action(user_name))
+        online_users = self.location_users[self.online_users[user_name].location]
+        self.send_user_action_to_all(online_users, self.user_offline_action(user_name))
         self.online_users.pop(user_name)
 
     def change_location(self, user_name, location):
-        self.online_users[user_name].location = location
+        online_users = self.location_users[self.online_users[user_name].location]
+        self.send_user_action_to_all(online_users, self.user_offline_action(user_name))
+        self.send_user_action_to_all(self.location_users[location], self.user_online_action(user_name))
+        self.location_users[self.online_users[user_name].location].pop(user_name)
+        self.location_users[location][user_name] = self.online_users[user_name]
 
     def user_logout(self, user_name):
         if user_name in self.online_users.keys():
@@ -213,39 +224,49 @@ class ActionsManager:
 
 # skirmish callbacks
     def skirmish_user_added(self, user_name):
+        online_users = self.location_users[self.online_users[user_name].location]
         self.send_skirmish_action_to_user(user_name, self.can_leave_action())
-        self.send_user_action_to_all(self.add_skirmish_user_action(user_name))
+        self.send_user_action_to_all(online_users, self.add_skirmish_user_action(user_name))
 
-    def skirmish_user_removed(self, user_name):
-        self.send_skirmish_action_to_user(user_name, self.reset_to_initial_action())
-        self.send_user_action_to_all(self.remove_skirmish_user_action(user_name))
+    def skirmish_user_removed(self, location, user_name):
+        online_users = self.location_users[location]
+        if self.online_users[user_name].location == location: # user still in the same location
+            self.send_skirmish_action_to_user(user_name, self.reset_to_initial_action())
+        self.send_user_action_to_all(online_users, self.remove_skirmish_user_action(user_name))
 
     def skirmish_user_left(self, user_name):
+        online_users = self.location_users[self.online_users[user_name].location]
         self.send_skirmish_action_to_user(user_name, self.can_join_action())
-        self.send_user_action_to_all(self.remove_skirmish_user_action(user_name))
+        self.send_user_action_to_all(online_users, self.remove_skirmish_user_action(user_name))
 
-    def registration_started(self):
-        self.send_skirmish_action_to_all(self.text_action(0)) # registration has been started
-        self.send_skirmish_action_to_all(self.can_join_action())
+    def registration_started(self, location):
+        online_users = self.location_users[location]
+        self.send_skirmish_action_to_all(online_users, self.text_action(0)) # registration has been started
+        self.send_skirmish_action_to_all(online_users, self.can_join_action())
 
-    def registration_ended(self):
-        self.send_skirmish_action_to_all(self.text_action(1)) # registration has been ended
+    def registration_ended(self, location):
+        online_users = self.location_users[location]
+        self.send_skirmish_action_to_all(online_users, self.text_action(1)) # registration has been ended
 
-    def round_started(self, number, skirmish_users):
-        self.send_skirmish_action_to_all(self.text_action(2, {"round" : number})) # round has been started
+    def round_started(self, number, location, skirmish_users):
+        online_users = self.location_users[location]
+        self.send_skirmish_action_to_all(online_users, self.text_action(2, {"round" : number})) # round has been started
         for user_name in skirmish_users.keys():
             skirmish_users[user_name].send_skirmish_action(self.can_do_turn_action(user_name, skirmish_users))
 
-    def round_ended(self, number, skirmish_users):
-        self.send_skirmish_action_to_all(self.text_action(3, {"round" : number})) # round has been ended
+    def round_ended(self, number, location, skirmish_users):
+        online_users = self.location_users[location]
+        self.send_skirmish_action_to_all(online_users, self.text_action(3, {"round" : number})) # round has been ended
         for user_name in skirmish_users.keys():
             skirmish_users[user_name].send_skirmish_action(self.wait_for_result_action(user_name, skirmish_users))
 
-    def game_ended(self):
-        self.send_skirmish_action_to_all(self.text_action(4)) # game has been ended
+    def game_ended(self, location):
+        online_users = self.location_users[location]
+        self.send_skirmish_action_to_all(online_users, self.text_action(4)) # game has been ended
 
-    def game_cant_start(self):
-        self.send_skirmish_action_to_all(self.text_action(5)) # game can't be started, not enough players
+    def game_cant_start(self, location):
+        online_users = self.location_users[location]
+        self.send_skirmish_action_to_all(online_users, self.text_action(5)) # game can't be started, not enough players
 
     def user_did_turn(self, user_name, skirmish_users):
         self.send_skirmish_action_to_user(user_name, self.can_cancel_turn_action(user_name, skirmish_users))
@@ -254,12 +275,12 @@ class ActionsManager:
         self.send_skirmish_action_to_user(user_name, self.can_do_turn_action(user_name, skirmish_users))
 
 # util methods
-    def send_user_action_to_all(self, action):
-        for online_user in self.online_users.values():
+    def send_user_action_to_all(self, online_users, action):
+        for online_user in online_users.values():
             online_user.send_user_action(action)
 
-    def send_skirmish_action_to_all(self, action):
-        for online_user in self.online_users.values():
+    def send_skirmish_action_to_all(self, online_users, action):
+        for online_user in online_users.values():
             online_user.send_skirmish_action(action)
 
     def send_skirmish_action_to_user(self, user_name, action):
@@ -273,11 +294,14 @@ class ActionsManager:
         # this sequence is important!
         self.users_manager.user_enter(user_name)
         self.characters_manager.user_enter(user_name)
-        self.battle_bot.user_enter(user_name)
+        self.battle_manager.user_enter(user_name)
 
     def user_enter_users_manager(self, user_name):
         # TODO: skirmish users could differs for different battle bots
-        self.online_users[user_name].send_user_action(self.initial_users_action(self.battle_bot.skirmish_users))
+        location = self.online_users[user_name].location
+        online_users = self.location_users[location]
+        skirmish_users = self.battle_manager.battle_bots[location].skirmish_users
+        self.online_users[user_name].send_user_action(self.initial_users_action(online_users, skirmish_users))
 
     def user_enter_battle_bot(self, user_name, phase, counter, skirmish_users):
         # if registration is in progress

@@ -56,3 +56,8 @@ class UsersManager(Thread):
 
     def user_enter(self, user_name):
         self.actions_manager.user_enter_users_manager(user_name)
+
+    def change_location(self, user_name, location):
+        self.actions_manager.change_location(user_name, location)
+        self.online_users[user_name].location = location
+        self.actions_manager.user_enter(user_name)
