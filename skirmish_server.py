@@ -338,8 +338,8 @@ class ShopHandler(BaseHandler):
             item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
             self.write(self.render_string("item_description.html",
                 item=item,
-                group_name=items_manager.get_item_group_name(item[2], self.locale),
-                can_buy=(self.users_manager.online_users[self.current_user].character.gold >= item[5])))
+                group_name=items_manager.get_item_group_name(item.type, self.locale),
+                can_buy=(self.users_manager.online_users[self.current_user].character.gold >= item.price)))
         elif self.get_argument("action") == 'buy_item':
             self.characters_manager.buy_item(self.current_user, self.get_argument("item_id"))
 

@@ -1,6 +1,6 @@
 from collections import OrderedDict, deque
 import items_manager
-from online_users import OnlineUserInfo
+from online_user_info import OnlineUserInfo
 import smarty
 
 __author__ = 'PavelP'
@@ -146,15 +146,15 @@ class ActionsManager:
         locale = self.online_users[user_name].locale
         return Action(1, {
             # <id1>:<name1>,<id2>:<name2>:...
-            "weapon" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.weapon, locale)),
-            "shield" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.shield, locale)),
-            "head" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.head, locale)),
-            "body" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.body, locale)),
-            "left_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.left_hand, locale)),
-            "right_hand" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.right_hand, locale)),
-            "legs" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.legs, locale)),
-            "feet" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.feet, locale)),
-            "cloak" : ",".join("%s" % ":".join([str(thing[0]), thing[1]]) for thing in items_manager.get_items(character.cloak, locale))
+            "weapon" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.weapon, locale)),
+            "shield" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.shield, locale)),
+            "head" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.head, locale)),
+            "body" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.body, locale)),
+            "left_hand" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.left_hand, locale)),
+            "right_hand" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.right_hand, locale)),
+            "legs" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.legs, locale)),
+            "feet" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.feet, locale)),
+            "cloak" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.cloak, locale))
         })
 
     def can_create_team_action(self):
