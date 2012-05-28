@@ -36,6 +36,7 @@ class SkirmishApplication(tornado.web.Application):
             (r'/message/new', NewMessageHandler,),
             (r'/character', CharacterHandler,),
             (r'/shop', ShopHandler,),
+            (r'/db', ItemsDBHandler,),
         ]
         settings = {
             "cookie_secret" : "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
@@ -191,7 +192,8 @@ class CharacterHandler(BaseHandler):
             pass
         elif self.get_argument("action") == "leave_team":
             self.characters_manager.user_leave_team(self.current_user)
-
+        elif self.get_argument("action") == "learn_spell":
+            self.characters_manager.learn_spell(self.current_user, self.get_argument("spell_id"))
 
 class PollCharacterInfoHandler(BaseHandler):
     @tornado.web.authenticated
@@ -206,16 +208,19 @@ class PollCharacterInfoHandler(BaseHandler):
 
         result = {}
         if action.type == 2:
+            result["type"] = action.args["type"]
+            result["spells_div"] = self.render_string("spells_table.html", spells=action.args["spells"], spells_to_learn=action.args["spells_to_learn"])
+        elif action.type == 3:
             result = action.args
             result["team_div"] = self.render_string("create_team.html")
-        elif action.type == 3:
+        elif action.type == 4:
             result["type"] = action.type
             result["team_div"] = self.render_string("team_info.html",
                 user_name=self.current_user,
                 team_name=action.args["team_name"],
                 team_gold=action.args["team_gold"],
                 members=action.args["members"])
-        elif action.type == 4:
+        elif action.type == 5:
             result = action.args
             result["invitation_div"] = self.render_string("team_invitation.html",
                 user_name=action.args["user_name"],
@@ -339,9 +344,22 @@ class ShopHandler(BaseHandler):
             self.write(self.render_string("item_description.html",
                 item=item,
                 group_name=items_manager.get_item_group_name(item.type, self.locale),
+                buy_button=True,
                 can_buy=(self.users_manager.online_users[self.current_user].character.gold >= item.price)))
         elif self.get_argument("action") == 'buy_item':
             self.characters_manager.buy_item(self.current_user, self.get_argument("item_id"))
+
+class ItemsDBHandler(BaseHandler):
+    @tornado.web.authenticated
+    @user_online
+    def post(self, *args, **kwargs):
+        if self.get_argument("action") == 'get_item':
+            item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
+            self.write(self.render_string("item_description.html",
+                item=item,
+                group_name=items_manager.get_item_group_name(item.type, self.locale),
+                buy_button=False,
+                can_buy=False))
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

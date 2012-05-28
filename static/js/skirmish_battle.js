@@ -133,6 +133,27 @@ var showDivAction = function(divAction) {
     $("#cancelButton").attr('disabled', true);
 };
 
+
+var disableDivAction = function(divAction, turn_info) {
+    if($("#divAction").length == 0) {
+        showDivAction(divAction);
+        turn_infos = turn_info.split(",");
+        divs = $("#divAction .action");
+        for (i = 0; i < divs.length; i++){
+            turn_parts = turn_infos[i].split(":");
+            if (turn_parts[1]) {
+                $(".user_select option[value=\"" + turn_parts[1] + "\"]", $(divs[i])).attr("selected", "selected");
+            }
+            if (turn_parts[2]) {
+                $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(divs[i])).attr("selected", "selected");
+            }
+            $("input", $(divs[i])).val(turn_parts[3]);
+        }
+    }
+    $("#divAction input,#divAction select,#divAction button").attr('disabled', true);
+    $("#cancelButton").removeAttr('disabled');
+};
+
 /*
  Return true if all values (text inputs in div with id "divAction") are correct (integer), false otherwise
  */
@@ -187,7 +208,7 @@ var doButtonClick = function() {
                 turnInfo += $(this).attr("action") + ":";
                 value = $(".user_select option:selected", this).html();
                 turnInfo += ((value) ? value : "") + ":";
-                value = $(".spell_select option:selected", this).html();
+                value = $(".spell_select option:selected", this).val();
                 turnInfo += ((value) ? value : "") + ":";
                 turnInfo += $("input[type=text]", this).val();
                 turnInfo += ",";

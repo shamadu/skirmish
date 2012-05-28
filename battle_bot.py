@@ -122,7 +122,7 @@ class BattleBot(Thread):
     def user_turn(self, user_name, turn_info):
         if self.phase > 0:
             self.turn_done_count += 1
-            self.skirmish_users[user_name].parse_turn_info(turn_info)
+            self.skirmish_users[user_name].set_turn_string(turn_info)
             self.actions_manager.user_did_turn(user_name, self.skirmish_users)
 
     def user_turn_cancel(self, user_name):

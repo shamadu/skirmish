@@ -18,3 +18,17 @@ var putOnFunc = function() {
         }
     });
 };
+
+var addThings = function(things, select) {
+    select.empty();
+    arrThings = things.split(",");
+    for (i = 0; i < arrThings.length; i++) {
+        thing = arrThings[i].split(":"); // 0 is id, 1 is name
+        select.append("<option value=\"" + thing[0] + "\">" + thing[1] + "</option>");
+    }
+};
+
+var learnSpellFunc = function() {
+    $.postJSON('/character', {"action" : "learn_spell", "spell_id" : $(this).attr("spell_id")}, function(response) {
+    });
+}

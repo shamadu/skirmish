@@ -1,0 +1,23 @@
+{% comment spells, spells_to_learn = list of Spell objects %}
+{% if len(spells) > 0 %}
+<h4>{{ _("Already known spells") }}</h4>
+<table id="characterSpellTable" class="characterInfoTable">
+    {% for spell in spells %}
+    <tr><td>{{ spell.name }}</td><td>{{ spell.description }}</td></tr>
+    {% end %}
+</table>
+{% end %}
+{% if len(spells_to_learn) > 0 %}
+<h4>{{ _("Spells you can learn") }}</h4>
+<table id="learnSpellTable" class="characterInfoTable">
+    {% for spell in spells_to_learn %}
+    <tr>
+        <td>{{ spell.name }}</td>
+        <td>{{ _("Spell price: {0}").format(spell.price) }}</td>
+        <td>{{ _("Required level: {0}").format(spell.required_level) }}</td>
+        <td>{{ spell.description }}</td>
+        <td><button id="learnButton" spell_id="{{ spell.id }}">{{ _("Learn") }}</button></td>
+    </tr>
+    {% end %}
+{% end %}
+</table>

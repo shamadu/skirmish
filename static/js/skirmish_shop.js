@@ -5,9 +5,17 @@
  */
 
 var initialize_shop = function() {
+    initialize_dropDown($("#shopMenu"), getShopItemFunc)
+};
+
+var initialize_DB = function() {
+    initialize_dropDown($("#dbMenu"), getDBItemFunc)
+};
+
+var initialize_dropDown = function(dropDown, clickHandler) {
     max_width1 = 0;
     li_first_level = new Array();
-    $("#shopMenu >ul>li").each(function(){
+    $(dropDown).find(">ul>li").each(function(){
         width = $(">a", this).width();
         if (width > max_width1) {
             max_width1 = width;
@@ -34,18 +42,28 @@ var initialize_shop = function() {
 
         $(">ul>li", li_first_level[i]).each(function(){
             $(this).width(max_width2);
-            $(this).click(getItemFunc);
+            $(this).click(clickHandler);
+        });
+    }
+}
+
+var getShopItemFunc = function() {
+    if ($("#shopItemDescriptions div[item_id=" + $(">a", this).attr('item_id') + "]").length == 0) {
+        $.postJSON('/shop', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
+            $("#shopItemDescriptions").append(response);
+            $("#shopItemDescriptions >div:last").width($("#shopItemDescriptions >div:last >table").width());
+            $("#shopItemDescriptions >div:last >button.close").click(closeDescription);
+            $("#shopItemDescriptions >div:last button.buyButton").click(buyItem);
         });
     }
 };
 
-var getItemFunc = function() {
-    if ($("#item_description_" + $(">a", this).attr('item_id')).length == 0) {
-        $.postJSON('/shop', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
-            $("#itemDescriptions").append(response);
-            $("#itemDescriptions >div:last").width($("#itemDescriptions >div:last >table").width());
-            $("#itemDescriptions >div:last >button.close").click(closeDescription);
-            $("#itemDescriptions >div:last button#buyButton").click(buyItem);
+var getDBItemFunc = function() {
+    if ($("#dbItemDescriptions div[item_id=" + $(">a", this).attr('item_id') + "]").length == 0) {
+        $.postJSON('/db', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
+            $("#dbItemDescriptions").append(response);
+            $("#dbItemDescriptions >div:last").width($("#dbItemDescriptions >div:last >table").width());
+            $("#dbItemDescriptions >div:last >button.close").click(closeDescription);
         });
     }
 };
@@ -57,4 +75,5 @@ var closeDescription = function() {
 var buyItem = function() {
     $.postJSON('/shop', {"action" : "buy_item", "item_id" : $(this).attr('item_id')}, function(response) {
     });
+    $(this).closest("div").remove();
 };

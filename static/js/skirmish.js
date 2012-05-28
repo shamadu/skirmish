@@ -8,6 +8,7 @@ var initialize = function () {
     initialize_battle();
     initialize_character();
     initialize_shop();
+    initialize_DB();
     messager.poll();
     onlineUsersUpdater.poll();
     battleBotUpdater.poll();
@@ -21,51 +22,43 @@ var initialize = function () {
     $("#characterAnchor").click(showCharacter);
     $("#teamAnchor").click(showTeam);
     $("#shopAnchor").click(showShop);
+    $("#dbAnchor").click(showDB);
 };
 
 var showBattle = function() {
+    $("#contentDiv >div.contentDiv").hide();
+    $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#battleDivContainer").show();
     $("#battleAnchor").parent().attr("class", "active");
-    $("#characterDivContainer").hide();
-    $("#characterAnchor").parent().removeAttr("class");
-    $("#teamDivContainer").hide();
-    $("#teamAnchor").parent().removeAttr("class");
-    $("#shopDivContainer").hide();
-    $("#shopAnchor").parent().removeAttr("class");
     resize_battle();
 };
 
 var showCharacter = function() {
+    $("#contentDiv >div.contentDiv").hide();
+    $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#characterDivContainer").show();
     $("#characterAnchor").parent().attr("class", "active");
-    $("#battleDivContainer").hide();
-    $("#battleAnchor").parent().removeAttr("class");
-    $("#teamDivContainer").hide();
-    $("#teamAnchor").parent().removeAttr("class");
-    $("#shopDivContainer").hide();
-    $("#shopAnchor").parent().removeAttr("class");
 };
 
 var showTeam = function() {
+    $("#contentDiv >div.contentDiv").hide();
+    $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#teamDivContainer").show();
     $("#teamAnchor").parent().attr("class", "active");
-    $("#battleDivContainer").hide();
-    $("#battleAnchor").parent().removeAttr("class");
-    $("#characterDivContainer").hide();
-    $("#characterAnchor").parent().removeAttr("class");
-    $("#shopDivContainer").hide();
-    $("#shopAnchor").parent().removeAttr("class");
 };
 
 var showShop = function() {
+    $("#contentDiv >div.contentDiv").hide();
+    $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#shopDivContainer").show();
     $("#shopAnchor").parent().attr("class", "active");
-    $("#teamDivContainer").hide();
-    $("#teamAnchor").parent().removeAttr("class");
-    $("#battleDivContainer").hide();
-    $("#battleAnchor").parent().removeAttr("class");
-    $("#characterDivContainer").hide();
-    $("#characterAnchor").parent().removeAttr("class");
+};
+
+var showDB = function() {
+    $("#contentDiv >div.contentDiv").hide();
+    $("#sideBar li:not(#serverStatus)").removeAttr("class");
+    $("#dbDivContainer").show();
+    $("#dbAnchor").parent().attr("class", "active");
 };
 
 var characterInfoUpdater = {
@@ -109,7 +102,7 @@ var characterInfoUpdater = {
             $("#shopGoldLabel").text(characterInfo[16]);
         }
         // character stuff update
-        if (action.type == 1) {
+        else if (action.type == 1) {
             if (action.weapon) {
                 $("#weaponSelect").empty();
                 addThings(action.weapon, $("#weaponSelect"));
@@ -139,26 +132,30 @@ var characterInfoUpdater = {
                 addThings(action.cloak, $("#cloakSelect"));
             }
         }
-        // show create team div
+        // character spells update
         else if (action.type == 2) {
+            $("#characterSpellDiv").empty();
+            $("#characterSpellDiv").append(action.spells_div);
+            $("#learnSpellTable button").click(learnSpellFunc);
+        }
+        // show create team div
+        else if (action.type == 3) {
             $("#teamDivContainer").empty();
             $("#teamDivContainer").append(action.team_div);
             initialize_create_team();
         }
         // show team info div
-        else if (action.type == 3) {
+        else if (action.type == 4) {
             $("#teamDivContainer").empty();
             $("#teamDivContainer").append(action.team_div);
             initialize_team_info();
         }
         // add invitation
-        else if (action.type == 4) {
+        else if (action.type == 5) {
             $("#divInvitationContent").empty();
             $("#divInvitationContent").append(action.invitation_div);
             initialize_team_invitation(action.user_name, action.team_name);
         }
-        resize_battle();
-
         characterInfoUpdater.errorSleepTime = 500;
         window.setTimeout(characterInfoUpdater.poll, 0);
     },
@@ -166,15 +163,6 @@ var characterInfoUpdater = {
     onError: function() {
         characterInfoUpdater.errorSleepTime *= 2;
         window.setTimeout(characterInfoUpdater.poll, characterInfoUpdater.errorSleepTime);
-    }
-};
-
-var addThings = function(things, select) {
-    select.empty();
-    arrThings = things.split(",");
-    for (i = 0; i < arrThings.length; i++) {
-        thing = arrThings[i].split(":"); // 0 is id, 1 is name
-        select.append("<option value=\"" + thing[0] + "\">" + thing[1] + "</option>");
     }
 };
 
@@ -416,24 +404,4 @@ var battleBotUpdater = {
         battleBotUpdater.errorSleepTime *= 2;
         window.setTimeout(battleBotUpdater.poll, battleBotUpdater.errorSleepTime);
     }
-};
-
-var disableDivAction = function(divAction, turn_info) {
-    if($("#divAction").length == 0) {
-        showDivAction(divAction);
-        turn_infos = turn_info.split(",");
-        divs = $("#divAction .action");
-        for (i = 0; i < divs.length; i++){
-            turn_parts = turn_infos[i].split(":");
-            if (turn_parts[1]) {
-                $(".user_select option[value=\"" + turn_parts[1] + "\"]", $(divs[i])).attr("selected", "selected");
-            }
-            if (turn_parts[2]) {
-                $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(divs[i])).attr("selected", "selected");
-            }
-            $("input", $(divs[i])).val(turn_parts[3]);
-        }
-    }
-    $("#divAction input,#divAction select,#divAction button").attr('disabled', true);
-    $("#cancelButton").removeAttr('disabled');
 };

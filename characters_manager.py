@@ -1,5 +1,6 @@
 import items_manager
 import smarty
+import spells_manager
 
 __author__ = 'Pavel Padinker'
 
@@ -152,14 +153,28 @@ class CharactersManager:
     def buy_item(self, user_name, item_id):
         character = self.online_users[user_name].character
         item = items_manager.items[int(item_id)]
-        if character.gold >= item[5]: # if character can buy it
+        if character.gold >= item.price: # if character can buy it
             update_fields = dict()
-            update_fields["gold"] = character.gold - item[5]
-            item_type = items_manager.get_item_type(item[0])
+            update_fields["gold"] = character.gold - item.price
+            item_type = items_manager.get_item_type(item.id)
             update_fields[item_type] = ",".join([character[item_type], item_id])
             self.db_manager.change_character_fields(user_name, update_fields)
             self.actions_manager.send_character_info(user_name)
             self.actions_manager.send_character_stuff(user_name)
+
+    def learn_spell(self, user_name, spell_id):
+        character = self.online_users[user_name].character
+        spell = spells_manager.spells[int(spell_id)]
+        if character.gold >= spell.price: # if character can buy it
+            update_fields = dict()
+            update_fields["gold"] = character.gold - spell.price
+            if character.spells:
+                update_fields["spells"] = ",".join([character.spells, spell_id])
+            else:
+                update_fields["spells"] = spell_id
+            self.db_manager.change_character_fields(user_name, update_fields)
+            self.actions_manager.send_character_spells(user_name)
+            self.actions_manager.send_character_info(user_name)
 
     def subscribe(self, user_name, callback):
         self.online_users[user_name].set_character_callback(callback)

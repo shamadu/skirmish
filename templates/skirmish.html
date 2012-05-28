@@ -35,6 +35,9 @@
             <li>
                 <a id="shopAnchor" class="mouse_pointer"><i class="icon-shopping-cart"></i>{{ _("Shop") }}</a>
             </li>
+            <li>
+                <a id="dbAnchor" class="mouse_pointer"><i class="icon-book"></i>{{ _("Database") }}</a>
+            </li>
         </ul>
     </div>
     <div id="contentDiv" class="contentDiv">
@@ -122,6 +125,10 @@
                             <tr><td>{{ _("Cloak") }}</td><td><select id="cloakSelect" class="commonSelect"></select></td></tr>
                         </table>
                     </td>
+                    <td>
+                        <div id="characterSpellDiv">
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -148,7 +155,25 @@
                     {% end %}
                 </ul>
             </div>
-            <div id="itemDescriptions">
+            <div id="shopItemDescriptions">
+            </div>
+        </div>
+
+        <div id="dbDivContainer" class="contentDiv">
+            <div id="dbMenu" class="shopMenu">
+                <ul>
+                    {% for item_group_name in shop.keys() %}
+                    <li><a href="javascript:void(0)">{{ item_group_name }}</a>
+                        <ul>
+                            {% for item_id in shop[item_group_name].keys() %}
+                            <li><a href="javascript:void(0)" item_id="{{ item_id }}">{{ shop[item_group_name][item_id] }}</a></li>
+                            {% end %}
+                        </ul>
+                    </li>
+                    {% end %}
+                </ul>
+            </div>
+            <div id="dbItemDescriptions">
             </div>
         </div>
     </div>

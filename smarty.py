@@ -145,15 +145,6 @@ def get_spell_count(classID, level):
 
     return spell_count
 
-def get_spells(character, locale):
-    result = list()
-    for enough_level in range(character.level):
-        level_spells = spells[character.classID][enough_level + 1]
-        for i in range(len(level_spells)):
-            result.append(locale.translate(level_spells[i]))
-
-    return result
-
 def get_ability_name(classID, locale):
     ability_name = ""
     if classID < 4:
@@ -227,8 +218,8 @@ def get_spell_length(character):
     return character.intellect/3
 
 def get_damage(character_to_attack, character_to_defence):
-    min_damage = items_manager.items[character_to_attack.current_weapon_id][7]
-    max_damage = items_manager.items[character_to_attack.current_weapon_id][8]
+    min_damage = items_manager.items[character_to_attack.current_weapon_id].min_dmg
+    max_damage = items_manager.items[character_to_attack.current_weapon_id].max_dmg
     weapon_damage = random.uniform(min_damage, max_damage)
     damage = max(0.90 + (character_to_attack.strength / 100), 1) ** 2 * weapon_damage
     absorb = max(character_to_defence.armor * 0.01)

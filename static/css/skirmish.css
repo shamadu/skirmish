@@ -103,7 +103,7 @@
 .characterInfoTable td,
 .teamInfoTable td {
     vertical-align : middle;
-    padding: 1px;
+    padding: 1px 5px 1px 5px;
 }
 
 .teamInfoTable {
@@ -138,6 +138,11 @@
 
 .tableContentHolder tr {
     vertical-align : top;
+}
+
+.tableContentHolder >tbody>tr>td {
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .shopMenu, .shopMenu ul, .shopMenu li{

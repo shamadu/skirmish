@@ -2,11 +2,22 @@ from collections import deque
 
 __author__ = 'PavelP'
 
+class TurnAction:
+    def __init__(self, who, whom, action_type, spell_id, percent):
+        self.who = who
+        self.whom = whom
+        # 0 - attack
+        # 1 - defence
+        # 2 - spell/ability
+        # 3 - mana/energy regeneration
+        self.action_type = action_type
+        self.spell_id = spell_id
+        self.percent = percent
+
 class OnlineUserInfo():
     def __init__(self, name, locale):
         self.counter = 10
         self.character = {} # will be filled by db_manager
-        self.turn_info = list()
         self.turn_info_string = ""
         self.user_callback = None
         self.user_cache = deque()
@@ -66,21 +77,27 @@ class OnlineUserInfo():
         else:
             self.character_cache.append(action)
 
-    def parse_turn_info(self, turn_info):
-        self.turn_info_string = turn_info
-        actions = self.turn_info_string.split(",")
-        for action in actions:
-            if action:
-                self.turn_info.append(action.split(":"))
+    def set_turn_string(self, turn_info_string):
+        self.turn_info_string = turn_info_string
 
-    def get_turn_info(self):
+    def get_turn_string(self):
         return self.turn_info_string
 
     def reset_turn(self):
-        self.turn_info = list()
+        self.turn_info_string = ""
 
     def is_turn_done(self):
-        if len(self.turn_info) > 0:
+        if len(self.turn_info_string) > 0:
             return True
         else:
             return False
+
+    def get_turn_info(self):
+        result = list()
+        actions = self.turn_info_string.split(",")
+        for action in actions:
+            if action:
+                action_tokens = action.split(":")
+                result.append(TurnAction(self.user_name, action_tokens[0], int(action_tokens[1]), action_tokens[2], action_tokens[3]))
+
+        return result

@@ -1,16 +1,20 @@
 {% comment item - object with properties - id, name, type, required_stats, bonus_stats, price, description %}
-{% comment group_name (text name of group), can_buy if user has enough money %}
-<div id="item_description_{{ item.id }}" class="well itemDescriptionDiv">
+{% comment group_name (text name of group), can_buy if user has enough money, buy_button if buy button should be added %}
+<div item_id="{{ item.id }}" class="well itemDescriptionDiv">
     <button class="close">&times;</button>
     <table class="characterInfoTable itemDescriptionTable">
         <tr><td>{{ item.name }}</td><td>{{ group_name }}</td><td>{{ _("{0} gold").format(item.price) }}</td></tr>
         <tr><td colspan="3">{{ item.description }}</td></tr>
         {% if item.id > 0 %}
-        <tr><td colspan="3"><button id="buyButton" item_id="{{ item.id }}"
+        <tr>
+            {% if buy_button %}
+            <td colspan="3"><button class="buyButton" item_id="{{ item.id }}"
                 {% if not can_buy %}
                 disabled="disabled"
                 {% end %}
-                >{{ _("Buy") }}</button></td></tr>
+                >{{ _("Buy") }}</button></td>
+            {% end %}
+        </tr>
         {% end %}
     </table>
 </div>

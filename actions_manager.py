@@ -2,6 +2,7 @@ from collections import OrderedDict, deque
 import items_manager
 from online_user_info import OnlineUserInfo
 import smarty
+import spells_manager
 
 __author__ = 'PavelP'
 
@@ -10,6 +11,7 @@ class Action:
         self.type = type
         self.args = args
         self.args["type"] = type
+
 
 class ActionsManager:
     def __init__(self):
@@ -102,8 +104,8 @@ class ActionsManager:
         return {
             "actions" : actions,
             "users" : skirmish_users.keys(),
-            "spells" : smarty.get_spells(user.character, user.locale),
-            "turn_info" : user.get_turn_info()
+            "spells" : spells_manager.get_spells(user.character, user.locale),
+            "turn_info" : user.get_turn_string()
         }
 
     # character action types are:
@@ -157,11 +159,19 @@ class ActionsManager:
             "cloak" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.cloak, locale))
         })
 
+    def character_spells_action(self, user_name):
+        character = self.online_users[user_name].character
+        locale = self.online_users[user_name].locale
+        return Action(2, {
+            "spells" : spells_manager.get_spells(character, locale),
+            "spells_to_learn" : spells_manager.get_spells_to_learn(character, locale)
+        })
+
     def can_create_team_action(self):
-        return Action(2, {})
+        return Action(3, {})
 
     def team_info_action(self, team_members):
-        return Action(3, {
+        return Action(4, {
             "team_name" : self.online_users[team_members.keys()[0]].character.team_name,
             # TODO: add team gold in special team table
             "team_gold" : 0,
@@ -169,7 +179,7 @@ class ActionsManager:
         })
 
     def invite_action(self, user_name, team_name):
-        return Action(4, {
+        return Action(5, {
             "user_name" : user_name,
             "team_name" : team_name,
             })
@@ -182,6 +192,9 @@ class ActionsManager:
 
     def send_character_stuff(self, user_name):
         self.online_users[user_name].send_character_action(self.character_stuff_action(user_name))
+
+    def send_character_spells(self, user_name):
+        self.online_users[user_name].send_character_action(self.character_spells_action(user_name))
 
     def send_team_info_to_user(self, user_name, team_members):
         self.online_users[user_name].send_character_action(self.team_info_action(team_members))
@@ -329,6 +342,7 @@ class ActionsManager:
     def user_enter_characters_manager(self, user_name, team_members):
         self.send_character_info(user_name)
         self.send_character_stuff(user_name)
+        self.send_character_spells(user_name)
         character = self.online_users[user_name].character
         if character.team_name:
             # character is in team

@@ -30,7 +30,8 @@ class DBManager():
                         'right_hand text, '
                         'legs text, '
                         'feet text, '
-                        'cloak text)')
+                        'cloak text, '
+                        'spells text)')
         self.db.execute("create table if not exists users "
                         "(id integer(11) primary key not null auto_increment unique, "
                         "login text, "
@@ -60,8 +61,8 @@ class DBManager():
             default_parameters = smarty.get_default_parameters(int(classID))
             default_stuff = items_manager.get_default_stuff(int(classID))
             self.db.execute("insert into characters (name, classID, strength, dexterity, intellect, wisdom, constitution, "
-                            "weapon, shield, head, body, left_hand, right_hand, legs, feet, cloak) values "
-                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                            "weapon, shield, head, body, left_hand, right_hand, legs, feet, cloak, spells) values "
+                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 , name
                 , classID
                 , str(default_parameters[0])
@@ -77,7 +78,8 @@ class DBManager():
                 , default_stuff[5]
                 , default_stuff[6]
                 , default_stuff[7]
-                , default_stuff[8])
+                , default_stuff[8]
+                , None)
 
     def remove_character(self, name):
         self.db.execute("delete from characters where name = %s", name)
