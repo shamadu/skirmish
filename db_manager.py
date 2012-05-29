@@ -10,7 +10,7 @@ class DBManager():
         self.db.execute('create table if not exists characters '
                         '(id integer(11) primary key not null auto_increment unique, '
                         'name text, '
-                        'classID integer, '
+                        'class_id integer, '
                         'level integer default 1, '
                         'strength integer default 1, '
                         'dexterity integer default 1, '
@@ -56,15 +56,15 @@ class DBManager():
     def get_character(self, name):
         return self.db.get("select * from characters where name = %s", name)
 
-    def create_character(self, name, classID):
+    def create_character(self, name, class_id):
         if not self.get_character(name):
-            default_parameters = smarty.get_default_parameters(int(classID))
-            default_stuff = items_manager.get_default_stuff(int(classID))
-            self.db.execute("insert into characters (name, classID, strength, dexterity, intellect, wisdom, constitution, "
+            default_parameters = smarty.get_default_parameters(int(class_id))
+            default_stuff = items_manager.get_default_stuff(int(class_id))
+            self.db.execute("insert into characters (name, class_id, strength, dexterity, intellect, wisdom, constitution, "
                             "weapon, shield, head, body, left_hand, right_hand, legs, feet, cloak, spells) values "
                             "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 , name
-                , classID
+                , class_id
                 , str(default_parameters[0])
                 , str(default_parameters[1])
                 , str(default_parameters[2])

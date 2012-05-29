@@ -102,15 +102,15 @@ def get_classes(locale):
         result[class_id] = locale.translate(classes[class_id])
     return result
 
-def get_class_name(classID, locale):
-    return locale.translate(classes[classID])
+def get_class_name(class_id, locale):
+    return locale.translate(classes[class_id])
 
-def get_attack_count(classID, level):
+def get_attack_count(class_id, level):
     attack_count = 1
-    if 3 == classID:
+    if 3 == class_id:
         if level > 5:
             attack_count = 2
-    elif 2 == classID:
+    elif 2 == class_id:
         if level > 7:
             attack_count = 4
         elif level > 5:
@@ -120,14 +120,14 @@ def get_attack_count(classID, level):
 
     return attack_count
 
-def get_defence_count(classID, level):
+def get_defence_count(class_id, level):
     defence_count = 1
-    if 0 == classID:
+    if 0 == class_id:
         if level > 7:
             defence_count = 3
         elif level > 5:
             defence_count = 2
-    elif 1 == classID:
+    elif 1 == class_id:
         if level > 7:
             defence_count = 4
         elif level > 5:
@@ -137,26 +137,26 @@ def get_defence_count(classID, level):
 
     return defence_count
 
-def get_spell_count(classID, level):
+def get_spell_count(class_id, level):
     spell_count = 1
     # TODO: add level condition - 4 or 5 or smth else
-    if 5 == classID or 6 == classID:
+    if 5 == class_id or 6 == class_id:
         spell_count = 2
 
     return spell_count
 
-def get_ability_name(classID, locale):
+def get_ability_name(class_id, locale):
     ability_name = ""
-    if classID < 4:
+    if class_id < 4:
         ability_name = locale.translate(ability_names[0])
     else:
         ability_name = locale.translate(ability_names[1])
 
     return ability_name
 
-def get_substance_name(classID, locale):
+def get_substance_name(class_id, locale):
     substance_name = ""
-    if classID < 4:
+    if class_id < 4:
         substance_name = locale.translate(substance_names[0])
     else:
         substance_name = locale.translate(substance_names[1])
@@ -164,7 +164,7 @@ def get_substance_name(classID, locale):
     return substance_name
 
 def get_mp_count(character):
-    if character.classID < 4:
+    if character.class_id < 4:
         return character.dexterity*3
     else:
         return character.wisdom*1.7
@@ -173,28 +173,28 @@ def get_hp_count(character):
     return character.level + character.strength
 
 # return default parameters : str, dex, int, wis, con
-def get_default_parameters(classID):
+def get_default_parameters(class_id):
     parameters = []
-    if classID == 0: # Warrior
+    if class_id == 0: # Warrior
         parameters = [8, 4, 3, 3, 5]
-    elif classID == 1: # Guardian
+    elif class_id == 1: # Guardian
         parameters = [5, 3, 3, 3, 8]
-    elif classID == 2: # Archer
+    elif class_id == 2: # Archer
         parameters = [5, 7, 3, 3, 5]
-    elif classID == 3: # Rogue
+    elif class_id == 3: # Rogue
         parameters = [6, 6, 3, 3, 5]
-    elif classID == 4: # Mage
+    elif class_id == 4: # Mage
         parameters = [3, 3, 8, 5, 4]
-    elif classID == 5: # Priest
+    elif class_id == 5: # Priest
         parameters = [3, 3, 5, 8, 4]
-    elif classID == 6: # Warlock
+    elif class_id == 6: # Warlock
         parameters = [3, 3, 7, 6, 4]
-    elif classID == 7: # Necromancer
+    elif class_id == 7: # Necromancer
         parameters = [3, 3, 6, 7, 4]
     return parameters
 
 def get_regeneration(character):
-    if character.classID < 4:
+    if character.class_id < 4:
         return 0.4*character.dexterity + 0.3*character.strength
     else:
         return 0.4*character.wisdom + 0.3*character.intellect

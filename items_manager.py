@@ -56,7 +56,7 @@ item_groups = {
     6 : _("Legs"),
     7 : _("Feet"),
     8 : _("Cloak"),
-    }
+}
 
 # means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
 build_id = lambda type, id: 100*type + id
@@ -85,14 +85,25 @@ items = {
     build_id(8, 0) : Item(build_id(8, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     }
 
+shop_items_ids = [build_id(0, 1), build_id(1, 1), build_id(2, 1)]
+
 def get_shop(locale):
     shop = OrderedDict()
-    for id in item_groups.keys():
-        shop[locale.translate(item_groups[id])] = OrderedDict()
+    for group_name in item_groups.values():
+        shop[locale.translate(group_name)] = OrderedDict()
+    for id in shop_items_ids:
+        item = items[id]
+        shop[locale.translate(item_groups[item.type])][item.id] = locale.translate(item.name)
+    return shop
+
+def get_all(locale):
+    all = OrderedDict()
+    for group_name in item_groups.values():
+        all[locale.translate(group_name)] = OrderedDict()
     for item in items.values():
         if item.type != -1:
-            shop[locale.translate(item_groups[item.type])][item.id] = locale.translate(item.name)
-    return shop
+            all[locale.translate(item_groups[item.type])][item.id] = locale.translate(item.name)
+    return all
 
 def get_item_group_name(type, locale):
     return locale.translate(item_groups[type])
@@ -163,9 +174,9 @@ def get_bonuses(item_id):
     return result
 
 # return default stuff
-def get_default_stuff(classID):
+def get_default_stuff(class_id):
     stuff = []
-    if classID < 4: # non casters
+    if class_id < 4: # non casters
         stuff = [
               str(build_id(0, 0))
             , str(build_id(1, 0))

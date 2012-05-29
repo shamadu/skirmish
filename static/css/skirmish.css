@@ -1,3 +1,19 @@
+.baseInfoBar {
+    position: absolute;
+    height: 10px;
+    width: auto;
+    left: 5px;
+    right: 5px;
+}
+
+.baseInfoBar label {
+    position: absolute;
+    width: auto;
+    display: inline;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .commonSelect {
     margin: auto;
     width: auto;
@@ -8,20 +24,25 @@
     color: red;
 }
 
-.contentDiv {
+.mainContentDiv {
     position: absolute;
     width: auto;
     height: auto;
     left: 5px;
     right: 5px;
-    top: 5px;
+    top: 20px;
     bottom: 5px;
+}
+
+.contentDiv {
+    top: 5px;
 }
 
 .sideBar {
     position: absolute;
     width: auto;
     left: 5px;
+    top: 20px;
 }
 
 .mouse_pointer {
@@ -141,7 +162,6 @@
 }
 
 .tableContentHolder >tbody>tr>td {
-    padding-left: 20px;
     padding-right: 20px;
 }
 

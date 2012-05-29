@@ -1,9 +1,9 @@
-{% comment spells, spells_to_learn = list of Spell objects %}
+{% comment spells, spells_to_learn = list of Spell objects, substance_name - mana or energy %}
 {% if len(spells) > 0 %}
 <h4>{{ _("Already known spells") }}</h4>
 <table id="characterSpellTable" class="characterInfoTable">
     {% for spell in spells %}
-    <tr><td>{{ spell.name }}</td><td>{{ spell.description }}</td></tr>
+    <tr><td>{{ spell.name }}</td><td>{{ "{0} {1}".format(spell.mana, substance_name.lower()) }}</td><td>{{ spell.description }}</td></tr>
     {% end %}
 </table>
 {% end %}

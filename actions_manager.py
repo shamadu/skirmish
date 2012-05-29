@@ -97,10 +97,10 @@ class ActionsManager:
     def div_args(self, user_name, skirmish_users):
         user = skirmish_users[user_name]
         actions = OrderedDict()
-        actions[0] = user.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(user.character.classID, user.character.level)
-        actions[1] = user.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(user.character.classID, user.character.level)
-        actions[2] = smarty.get_ability_name(user.character.classID, user.locale) , smarty.get_spell_count(user.character.classID, user.character.level)
-        actions[3] = smarty.get_substance_name(user.character.classID, user.locale) , 0
+        actions[0] = user.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(user.character.class_id, user.character.level)
+        actions[1] = user.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(user.character.class_id, user.character.level)
+        actions[2] = smarty.get_ability_name(user.character.class_id, user.locale) , smarty.get_spell_count(user.character.class_id, user.character.level)
+        actions[3] = smarty.get_substance_name(user.character.class_id, user.locale) , 0
         return {
             "actions" : actions,
             "users" : skirmish_users.keys(),
@@ -122,7 +122,7 @@ class ActionsManager:
         locale = self.online_users[user_name].locale
         character_info = [
             character.name,
-            smarty.get_class_name(character.classID, locale),
+            smarty.get_class_name(character.class_id, locale),
             str(character.level),
             str(smarty.get_hp_count(character)),
             str(smarty.get_mp_count(character)),
@@ -164,7 +164,8 @@ class ActionsManager:
         locale = self.online_users[user_name].locale
         return Action(2, {
             "spells" : spells_manager.get_spells(character, locale),
-            "spells_to_learn" : spells_manager.get_spells_to_learn(character, locale)
+            "spells_to_learn" : spells_manager.get_spells_to_learn(character, locale),
+            "substance_name" : smarty.get_substance_name(character.class_id, locale)
         })
 
     def can_create_team_action(self):

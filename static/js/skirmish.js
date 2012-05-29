@@ -15,7 +15,7 @@ var initialize = function () {
     characterInfoUpdater.poll();
 
     width = $("#sideBar").width();
-    $("#contentDiv").css('left', width + 5 + 'px');
+    $("#contentDiv").css('left', width + 10 + 'px');
 
     showBattle();
     $("#battleAnchor").click(showBattle);
@@ -98,8 +98,6 @@ var characterInfoUpdater = {
             $("#levelLabel_battle").text(characterInfo[2]);
             $("#HPLabel_battle").text(characterInfo[3]);
             $("#MPLabel_battle").text(characterInfo[4]);
-
-            $("#shopGoldLabel").text(characterInfo[16]);
         }
         // character stuff update
         else if (action.type == 1) {

@@ -10,7 +10,7 @@ var initialize = function () {
 };
 
 var createFunc = function () {
-    $.postJSON('/create', {"classID":$("#classMenu option:selected").val()}, function() {
+    $.postJSON('/create', {"class_id":$("#classMenu option:selected").val()}, function() {
         window.location.href='/';
     })
 };
