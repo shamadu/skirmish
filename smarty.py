@@ -240,7 +240,7 @@ def get_damage(character_to_attack, attack_percent, character_to_defence):
     weapon_damage = random.uniform(min_damage, max_damage)
     damage = max(0.90 + (character_to_attack.strength / 100), 1) ** 2 * weapon_damage
     absorb = character_to_defence.armor * 0.001
-    return round(damage - damage*attack_percent*absorb, 2)
+    return round((damage*attack_percent) - damage*absorb, 2)
 
 def get_magical_damage(spell, character_to_attack, attack_percent, character_to_defence):
     spell_damage = spell.damage

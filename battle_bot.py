@@ -13,7 +13,6 @@ class BattleBot(Thread):
         self.db_manager = db_manager
         self.skirmish_users = dict()
         self.dead_users = dict()
-        self.ran_users = dict()
         self.location = location
         # phases:
         # -1 - none
@@ -211,7 +210,6 @@ class BattleBot(Thread):
             self.actions_manager.send_character_info(user.user_name)
 
         for user_name in self.ran_users:
-            self.ran_users[user_name] = self.skirmish_users[user_name]
             self.remove_from_skirmish(user_name)
             self.actions_manager.user_ran(self.location, user_name)
 

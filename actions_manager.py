@@ -294,7 +294,7 @@ class ActionsManager:
     def game_win_user(self, location, who):
         self.send_text_action_to_users(self.location_users[location], 12, who)
 
-    def game_win_nobody(self, location, who):
+    def game_win_nobody(self, location):
         self.send_text_action_to_users(self.location_users[location], 13)
 
     def user_did_turn(self, user_name, skirmish_users):
