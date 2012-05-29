@@ -63,8 +63,8 @@ build_id = lambda type, id: 100*type + id
 
 items = {
     #weapons
-    build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 0.2, 0.3),
-    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(1, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5),
+    build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 1.2, 2.2),
+    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(1, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
     #shields
     build_id(1, 0) : Item(build_id(1, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     build_id(1, 1) : Item(build_id(1, 1), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 15, _("Just wooden shield with iron circle in center")),

@@ -194,7 +194,7 @@ var removeDivAction = function(divAction) {
 
 var doButtonClick = function() {
     if(!checkTurnSum($(this))) {
-        window.alert(messages[6]);
+        window.alert(messages[0]);
     }
     else {
         /*
@@ -219,7 +219,7 @@ var doButtonClick = function() {
             });
         }
         else {
-            window.alert(messages[7])
+            window.alert(messages[1])
         }
     }
 };

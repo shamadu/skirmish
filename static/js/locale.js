@@ -15,11 +15,5 @@ String.prototype.format = String.prototype.f = function() {
 };
 
 var messages = new Object();
-messages[0] = {{ '"%s"' % _("Registration has been started") }};
-messages[1] = {{ '"%s"' % _("Registration has been ended") }};
-messages[2] = {{ '"%s"' % _("Round {0} has been started") }};
-messages[3] = {{ '"%s"' % _("Round {0} has been ended") }};
-messages[4] = {{ '"%s"' % _("Game has been ended") }};
-messages[5] = {{ '"%s"' % _("Game can't be started, not enough players") }};
-messages[6] = {{ '"%s"' % _("Incorrect percentage of the action. Incorrect values were changed to 0") }};
-messages[7] = {{ '"%s"' % _("Nothing to do. Please do your turn") }};
+messages[0] = {{ '"%s"' % _("Incorrect percentage of the action. Incorrect values were changed to 0") }};
+messages[1] = {{ '"%s"' % _("Nothing to do. Please do your turn") }};

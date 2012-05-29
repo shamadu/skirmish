@@ -39,6 +39,8 @@ class DBManager():
 
     def update_character(self, user_name):
         character = self.get_character(user_name)
+        character.health = smarty.get_hp_count(character)
+        character.mana = smarty.get_mp_count(character)
         character.current_weapon_id = int(character.weapon.split(",")[0])
         character.attack = smarty.get_attack(character)
         character.defence = smarty.get_defence(character)

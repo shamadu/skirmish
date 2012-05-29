@@ -29,6 +29,15 @@ error_messages = {
     4 : _("Invitation has been sent")
 }
 
+battle_messages = {
+    0 : _("Registration has been started"),
+    1 : _("Registration has been ended"),
+    2 : _("Round {0} has been {1} started"),
+    3 : _("Round {0} has been ended"),
+    4 : _("Game has been ended"),
+    5 : _("Game can't be started, not enough players")
+}
+
 locales = OrderedDict([
     ("en_US", "English"),
     ("ru", u"Русский")
@@ -170,7 +179,7 @@ def get_mp_count(character):
         return character.wisdom*1.7
 
 def get_hp_count(character):
-    return character.level + character.strength
+    return character.level + character.strength + character.constitution
 
 # return default parameters : str, dex, int, wis, con
 def get_default_parameters(class_id):
@@ -217,29 +226,59 @@ def get_armor(character):
 def get_spell_length(character):
     return character.intellect/3
 
-def get_damage(character_to_attack, character_to_defence):
-    min_damage = items_manager.items[character_to_attack.current_weapon_id].min_dmg
-    max_damage = items_manager.items[character_to_attack.current_weapon_id].max_dmg
+def get_damage(character_to_attack, attack_percent, character_to_defence):
+    min_damage = items_manager.items[character_to_attack.current_weapon_id].min_damage
+    max_damage = items_manager.items[character_to_attack.current_weapon_id].max_damage
     weapon_damage = random.uniform(min_damage, max_damage)
     damage = max(0.90 + (character_to_attack.strength / 100), 1) ** 2 * weapon_damage
-    absorb = max(character_to_defence.armor * 0.01)
-    return damage*absorb
+    absorb = character_to_defence.armor * 0.001
+    return round(damage - damage*attack_percent*absorb, 2)
 
-def is_hit(character_to_attack, attack_percent, character_to_defence, defence_percent):
-    if (attack_percent*character_to_attack.attack)/(defence_percent*character_to_defence.defence) > 1.5: # definitely not hit
+def get_magical_damage(spell, character_to_attack, attack_percent, character_to_defence):
+    spell_damage = spell.damage
+    damage = max(0.90 + (character_to_attack.intellect / 100), 1) ** 2 * spell_damage
+    absorb = character_to_defence.magic_defence * 0.001
+    return round(damage - damage*attack_percent*absorb, 2)
+
+def is_hit(character_to_attack, attack_percent, defenders):
+    defence = 0.001 # attack 1 on 1% should hit player without defence at all
+    for defender in defenders:
+        defence += defender[0].defence*defender[1]
+    if (attack_percent*character_to_attack.attack)/defence > 1.5: # definitely hit
         return True
-    elif random.random() < 2 - (attack_percent*character_to_attack.attack)/(defence_percent*character_to_defence.defence):
+    elif (attack_percent*character_to_attack.attack)/defence < 1: # definitely not hit
+        return False
+    elif random.random()*0.5 < (attack_percent*character_to_attack.attack)/defence - 1:
         return True
     return False
 
-def is_critical_damage(character_to_attack, character_to_defence):
+def is_magical_hit(character_to_attack, attack_percent, character_to_defence):
+    if (attack_percent*character_to_attack.magic_attack)/character_to_defence.magic_defence > 1.5: # definitely hit
+        return True
+    elif (attack_percent*character_to_attack.magic_attack)/character_to_defence.magic_defence < 1: # definitely not hit
+        return False
+    elif random.random()*0.5 < (attack_percent*character_to_attack.magic_attack)/character_to_defence.magic_defence - 1:
+        return True
+    return False
+
+def is_ability_passed(character_to_attack, attack_percent, character_to_defence):
+    if (attack_percent*character_to_attack.level)/character_to_defence.level > 1.5: # definitely hit
+        return True
+    elif random.random() < 2 - (attack_percent*character_to_attack.level)/character_to_defence.level:
+        return True
+    return False
+
+def is_critical_hit(character_to_attack, character_to_defence):
     return random.random() < character_to_attack.dexterity/1000
 
+def is_critical_magic_hit(character_to_attack, character_to_defence):
+    return random.random() < character_to_attack.intellect/1000
+
 def get_experience_for_damage(damage):
-    return damage * 10
+    return round(damage * 10)
 
 def get_experience_for_spell_damage(damage):
-    return damage * 15
+    return round(damage * 15)
 
 def get_experience_for_defence(damage):
-    return damage * 10
+    return round(damage * 5)

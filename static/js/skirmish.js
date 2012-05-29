@@ -382,14 +382,7 @@ var battleBotUpdater = {
         // message action
         else if(action.type == 9) {
             message = {};
-            if(action.message_number == 2 || action.message_number == 3)
-            {
-                message["body"] = messages[action.message_number].f(action.round);
-            }
-            else
-            {
-                message["body"] = messages[action.message_number];
-            }
+            message["body"] = action.battle_message;
             message["from"] = "bot";
             addTextTo("#tabChat >div>div.active>textarea", format_message(message))
         }

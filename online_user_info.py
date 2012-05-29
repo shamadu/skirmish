@@ -3,14 +3,14 @@ from collections import deque
 __author__ = 'PavelP'
 
 class TurnAction:
-    def __init__(self, who, whom, action_type, spell_id, percent):
+    def __init__(self, who, whom, type, spell_id, percent):
         self.who = who
         self.whom = whom
         # 0 - attack
         # 1 - defence
         # 2 - spell/ability
         # 3 - mana/energy regeneration
-        self.action_type = action_type
+        self.type = type
         self.spell_id = spell_id
         self.percent = percent
 
@@ -98,6 +98,6 @@ class OnlineUserInfo():
         for action in actions:
             if action:
                 action_tokens = action.split(":")
-                result.append(TurnAction(self.user_name, action_tokens[0], int(action_tokens[1]), action_tokens[2], action_tokens[3]))
+                result.append(TurnAction(self.user_name, action_tokens[1], int(action_tokens[0]), action_tokens[2], int(action_tokens[3])))
 
         return result
