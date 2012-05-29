@@ -212,6 +212,7 @@ class BattleBot(Thread):
         for user_name in self.ran_users:
             self.remove_from_skirmish(user_name)
             self.actions_manager.user_ran(self.location, user_name)
+            self.ran_users.pop(user_name)
 
         # if there is just users of one team - end game
         # count teams of users
