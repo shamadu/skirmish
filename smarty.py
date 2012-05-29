@@ -32,10 +32,18 @@ error_messages = {
 battle_messages = {
     0 : _("Registration has been started"),
     1 : _("Registration has been ended"),
-    2 : _("Round {0} has been {1} started"),
+    2 : _("Round {0} has been started"),
     3 : _("Round {0} has been ended"),
     4 : _("Game has been ended"),
-    5 : _("Game can't be started, not enough players")
+    5 : _("Game can't be started, not enough players"),
+    6 : _("{0} attacked {1} and damaged him for {2}hp({3}hp) [{4}]"),
+    7 : _("{0} tried to attack {1}, but couldn't break protection({2})"),
+    8 : _("{0} makes critical hit!"),
+    9 : _("{0} is dead"),
+    10 : _("{0} ran from skirmish"),
+    11 : _("Team {0} win"),
+    12 : _("{0} win"),
+    13 : _("Nobody win")
 }
 
 locales = OrderedDict([

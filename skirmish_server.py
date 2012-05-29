@@ -59,7 +59,7 @@ class SkirmishApplication(tornado.web.Application):
         self.users_manager = UsersManager(self.db_manager, self.actions_manager)
         self.users_manager.start()
 
-        self.battle_manager = BattleManager(self.actions_manager)
+        self.battle_manager = BattleManager(self.actions_manager, self.db_manager)
 
         self.characters_manager = CharactersManager(self.db_manager, self.actions_manager)
         self.messager = Messager()

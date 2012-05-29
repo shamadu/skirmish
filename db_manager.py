@@ -99,10 +99,18 @@ class DBManager():
 
     def change_character_field(self, user_name, field_name, field_value):
         self.db.execute("update characters set {0}=%s where name=%s".format(field_name), field_value, user_name)
+
+    def change_character_field_update(self, user_name, field_name, field_value):
+        self.change_character_field(user_name, field_name, field_value)
         self.update_character(user_name)
 
     def change_character_fields(self, user_name, fields):
         if len(fields) > 0:
             fields_str = ", ".join("{0}='{1}'".format(key, str(fields[key])) for key in fields.keys())
             self.db.execute("update characters set {0} where name=%s".format(fields_str), user_name)
+
+    def change_character_fields_update(self, user_name, fields):
+        if len(fields) > 0:
+            self.change_character_fields(user_name, fields)
             self.update_character(user_name)
+

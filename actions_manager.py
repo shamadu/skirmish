@@ -237,50 +237,65 @@ class ActionsManager:
 
 # skirmish callbacks
     def skirmish_user_added(self, user_name):
-        online_users = self.location_users[self.online_users[user_name].location]
         self.send_skirmish_action_to_user(user_name, self.can_leave_action())
-        self.send_user_action_to_all(online_users, self.add_skirmish_user_action(user_name))
+        self.send_user_action_to_all(self.location_users[self.online_users[user_name].location], self.add_skirmish_user_action(user_name))
 
     def skirmish_user_removed(self, location, user_name):
-        online_users = self.location_users[location]
         if self.online_users[user_name].location == location: # user still in the same location
             self.send_skirmish_action_to_user(user_name, self.reset_to_initial_action())
-        self.send_user_action_to_all(online_users, self.remove_skirmish_user_action(user_name))
+        self.send_user_action_to_all(self.location_users[location], self.remove_skirmish_user_action(user_name))
 
     def skirmish_user_left(self, user_name):
-        online_users = self.location_users[self.online_users[user_name].location]
         self.send_skirmish_action_to_user(user_name, self.can_join_action())
-        self.send_user_action_to_all(online_users, self.remove_skirmish_user_action(user_name))
+        self.send_user_action_to_all(self.location_users[self.online_users[user_name].location], self.remove_skirmish_user_action(user_name))
 
     def registration_started(self, location):
-        online_users = self.location_users[location]
-        self.send_text_action_to_users(online_users, 0, None) # registration has been started
-        for online_user in online_users.values():
+        self.send_text_action_to_users(self.location_users[location], 0, None) # registration has been started
+        for online_user in self.location_users[location].values():
             online_user.send_skirmish_action(self.can_join_action())
 
     def registration_ended(self, location):
-        online_users = self.location_users[location]
-        self.send_text_action_to_users(online_users, 1, None) # registration has been ended
+        self.send_text_action_to_users(self.location_users[location], 1, None) # registration has been ended
 
     def round_started(self, number, location, skirmish_users):
-        online_users = self.location_users[location]
-        self.send_text_action_to_users(online_users, 2, number, "a") # round has been started
+        self.send_text_action_to_users(self.location_users[location], 2, number) # round has been started
         for user_name in skirmish_users.keys():
             skirmish_users[user_name].send_skirmish_action(self.can_do_turn_action(user_name, skirmish_users))
 
     def round_ended(self, number, location, skirmish_users):
-        online_users = self.location_users[location]
-        self.send_text_action_to_users(online_users, 3, number) # round has been ended
+        self.send_text_action_to_users(self.location_users[location], 3, number) # round has been ended
         for user_name in skirmish_users.keys():
             skirmish_users[user_name].send_skirmish_action(self.wait_for_result_action(user_name, skirmish_users))
 
     def game_ended(self, location):
-        online_users = self.location_users[location]
-        self.send_text_action_to_users(online_users, 4, None) # game has been ended
+        self.send_text_action_to_users(self.location_users[location], 4, None) # game has been ended
 
     def game_cant_start(self, location):
-        online_users = self.location_users[location]
-        self.send_text_action_to_users(online_users, 5, None) # game can't be started, not enough players
+        self.send_text_action_to_users(self.location_users[location], 5, None) # game can't be started, not enough players
+
+    def succeeded_attack(self, location, who, whom, amount, new_health, experience):
+        self.send_text_action_to_users(self.location_users[location], 6, who, whom, amount, new_health, experience)
+
+    def failed_attack(self, location, action, def_experiences):
+        self.send_text_action_to_users(self.location_users[location], 7, action.who, action.whom, def_experiences)
+
+    def critical_hit(self, location, who):
+        self.send_text_action_to_users(self.location_users[location], 8, who)
+
+    def user_is_dead(self, location, who):
+        self.send_text_action_to_users(self.location_users[location], 9, who)
+
+    def user_ran(self, location, who):
+        self.send_text_action_to_users(self.location_users[location], 10, who)
+
+    def game_win_team(self, location, who):
+        self.send_text_action_to_users(self.location_users[location], 11, who)
+
+    def game_win_user(self, location, who):
+        self.send_text_action_to_users(self.location_users[location], 12, who)
+
+    def game_win_nobody(self, location, who):
+        self.send_text_action_to_users(self.location_users[location], 13)
 
     def user_did_turn(self, user_name, skirmish_users):
         self.send_skirmish_action_to_user(user_name, self.can_cancel_turn_action(user_name, skirmish_users))

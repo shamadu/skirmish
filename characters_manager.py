@@ -46,7 +46,7 @@ class CharactersManager:
             if user_boss.rank_in_team < 2:
                 user_for_promotion = self.online_users[promote_user].character
                 if user_boss.team_name == user_for_promotion.team_name and user_for_promotion.rank_in_team > user_boss.rank_in_team:
-                    self.db_manager.change_character_field(promote_user, "rank_in_team", user_for_promotion.rank_in_team - 1)
+                    self.db_manager.change_character_field_update(promote_user, "rank_in_team", user_for_promotion.rank_in_team - 1)
                     self.actions_manager.send_team_info_to_members(self.get_team_members(user_for_promotion.team_name))
                     self.actions_manager.send_character_info(promote_user)
 
@@ -56,7 +56,7 @@ class CharactersManager:
             if user_boss.rank_in_team < 2:
                 user_for_demotion = self.online_users[demote_user].character
                 if user_boss.team_name == user_for_demotion.team_name and user_for_demotion.rank_in_team > user_boss.rank_in_team and user_for_demotion.rank_in_team != 5:
-                    self.db_manager.change_character_field(demote_user, "rank_in_team", user_for_demotion.rank_in_team + 1)
+                    self.db_manager.change_character_field_update(demote_user, "rank_in_team", user_for_demotion.rank_in_team + 1)
                     self.actions_manager.send_team_info_to_members(self.get_team_members(user_for_demotion.team_name))
                     self.actions_manager.send_character_info(demote_user)
 
@@ -128,7 +128,7 @@ class CharactersManager:
             # put it on by changing its place with first one
             thing_pos = items.index(thing_id)
             items[0], items[thing_pos] = items[thing_pos], items[0]
-            self.db_manager.change_character_field(user_name, item_type, ",".join(items))
+            self.db_manager.change_character_field_update(user_name, item_type, ",".join(items))
             self.actions_manager.send_character_stuff(user_name)
 
             # get bonuses of old thing to subtract them from character
@@ -144,7 +144,7 @@ class CharactersManager:
             # calculate new character stats
             for bonus_name in bonuses.keys():
                 bonuses[bonus_name] = character[bonus_name] + bonuses[bonus_name]
-            self.db_manager.change_character_fields(user_name, bonuses)
+            self.db_manager.change_character_fields_update(user_name, bonuses)
             self.actions_manager.send_character_info(user_name)
             result = True
 
@@ -158,7 +158,7 @@ class CharactersManager:
             update_fields["gold"] = character.gold - item.price
             item_type = items_manager.get_item_type(item.id)
             update_fields[item_type] = ",".join([character[item_type], item_id])
-            self.db_manager.change_character_fields(user_name, update_fields)
+            self.db_manager.change_character_fields_update(user_name, update_fields)
             self.actions_manager.send_character_info(user_name)
             self.actions_manager.send_character_stuff(user_name)
 
@@ -172,7 +172,7 @@ class CharactersManager:
                 update_fields["spells"] = ",".join([character.spells, spell_id])
             else:
                 update_fields["spells"] = spell_id
-            self.db_manager.change_character_fields(user_name, update_fields)
+            self.db_manager.change_character_fields_update(user_name, update_fields)
             self.actions_manager.send_character_spells(user_name)
             self.actions_manager.send_character_info(user_name)
 

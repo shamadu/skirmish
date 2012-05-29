@@ -6,24 +6,14 @@ import spells_manager
 
 __author__ = 'PavelP'
 
-class ResultAction:
-    def __init__(self, action):
-        self.who = action.who
-        self.whom = action.whom
-        self.type = action.type
-        self.spell_id = action.spell_id
-        self.amount = 0
-        self.experience = 0
-        self.is_hit = False
-        self.is_critical = False
-        self.is_low_mana = False
-        self.percent = float(action.percent)/100
-
 class BattleBot(Thread):
-    def __init__(self, actions_manager, location):
+    def __init__(self, actions_manager, db_manager, location):
         Thread.__init__(self)
         self.actions_manager = actions_manager
+        self.db_manager = db_manager
         self.skirmish_users = dict()
+        self.dead_users = dict()
+        self.ran_users = dict()
         self.location = location
         # phases:
         # -1 - none
@@ -39,7 +29,7 @@ class BattleBot(Thread):
         # 3 - attack result - who_name, whom_name, is_hit, is_critical, damage, exp
         # 4 - heal spell result - damage spell result
         self.round_results = dict()
-        self.users_to_remove = list()
+        self.ran_users = list()
         self.turn_done_count = 0
 
     @property
@@ -81,7 +71,7 @@ class BattleBot(Thread):
     # attack result - who_name, whom_name, is_hit, is_critical, damage, exp
     # heal spell result - damage spell result
     def process_round_result(self):
-        result_actions = list()
+        ordered_actions = list()
         # collect actions from every user
         skirmish_users_names = self.skirmish_users.keys()
         random.shuffle(skirmish_users_names)
@@ -95,10 +85,10 @@ class BattleBot(Thread):
             skirmish_user = self.skirmish_users[user_name]
             if skirmish_user.is_turn_done(): # process user's turn
                 for action in skirmish_user.get_turn_info():
-                    actions[action.type].append(ResultAction(action))
+                    actions[action.type].append(action)
                 self.skirmish_users[user_name].reset_turn()
             else: # remove users from skirmish
-                self.users_to_remove.append(user_name)
+                self.ran_users.append(user_name)
 
         def get_spells_by_ordinal(actions, ordinal):
             spell_actions = list()
@@ -118,7 +108,7 @@ class BattleBot(Thread):
                     action.is_hit = True
             else:
                 action.is_low_mana = True
-            result_actions.append(action)
+            ordered_actions.append(action)
 
         # TODO: increase parameters or do something else with characters
         def add_result_action_ability(action):
@@ -128,29 +118,28 @@ class BattleBot(Thread):
                     action.is_hit = True
             else:
                 action.is_low_mana = True
-            result_actions.append(action)
+            ordered_actions.append(action)
 
         # TODO: optimize algorithm and add long spells effect (store them on character)
         def add_result_action_damage_heal(action):
-            result_action = ResultAction(action)
             spell = spells_manager.spells[action.spell_id]
             if self.skirmish_users[action.who].character.mana >= spell.mana:
                 self.skirmish_users[action.who].character.mana -= spell.mana
                 if smarty.is_magical_hit(self.skirmish_users[action.who].character, action.percent, self.skirmish_users[action.whom].character):
-                    result_action.is_hit = True
+                    action.is_hit = True
                     who_character = self.skirmish_users[action.who].character
                     whom_character = self.skirmish_users[action.whom].character
-                    result_action.amount = smarty.get_magical_damage(spell, who_character, who_character.percent, whom_character)
+                    action.amount = smarty.get_magical_damage(spell, who_character, who_character.percent, whom_character)
                     if smarty.is_critical_magic_hit(who_character, whom_character):
-                        result_action.is_critical = True
-                        result_action.amount *= 1.5
+                        action.is_critical = True
+                        action.amount *= 1.5
                     if spell.ordinal == 3: # damage
-                        whom_character.health -= result_action.amount
+                        whom_character.health -= action.amount
                     elif spell.ordinal == 4: # heal:
-                        whom_character.health += result_action.amount
+                        whom_character.health += action.amount
             else:
-                result_action.is_low_mana = True
-            result_actions.append(action)
+                action.is_low_mana = True
+            ordered_actions.append(action)
 
         for action in spell_actions:
             add_result_action_special_spell(action)
@@ -178,33 +167,34 @@ class BattleBot(Thread):
             for def_action in actions[1]: # defence
                 if def_action.whom == action.whom:
                     defenders.append((self.skirmish_users[def_action.who].character, def_action.percent))
-            if smarty.is_hit(self.skirmish_users[action.who].character, action.percent, defenders):
-                action.is_hit = True
-                who_character = self.skirmish_users[action.who].character
-                whom_character = self.skirmish_users[action.whom].character
-                action.amount = smarty.get_damage(who_character, action.percent, whom_character)
+            who_character = self.skirmish_users[action.who].character
+            whom_character = self.skirmish_users[action.whom].character
+            if smarty.is_hit(who_character, action.percent, defenders):
+                amount = smarty.get_damage(who_character, action.percent, whom_character)
                 if smarty.is_critical_hit(who_character, whom_character):
-                    action.is_critical = True
-                    action.amount *= 1.5
-                    whom_character.health -= action.amount
-                experience = smarty.get_experience_for_damage(action.amount)
-                self.skirmish_users[action.who].character.experience += experience
-                action.experience = experience
+                    self.actions_manager.critical_hit(self.location, action.who)
+                    amount *= 1.5
+                whom_character.health -= amount
+                experience = smarty.get_experience_for_damage(amount)
+                who_character.experience += experience
+                self.db_manager.change_character_field(who_character.name, "experience", who_character.experience)
+                self.actions_manager.succeeded_attack(self.location, action.who, action.whom, amount, whom_character.health, experience)
             else: # not hit - set exp to defenders
-                who_character = self.skirmish_users[action.who].character
-                whom_character = self.skirmish_users[action.whom].character
-                action.amount = smarty.get_damage(who_character, action.percent, whom_character)
+                amount = smarty.get_damage(who_character, action.percent, whom_character)
                 if smarty.is_critical_hit(who_character, whom_character):
-                    action.amount *= 1.5
+                    amount *= 1.5
                 all_defence = 0
                 for defender in defenders:
                     all_defence += defender[0].defence
-                experience = smarty.get_experience_for_defence(action.amount)
+                all_experience = smarty.get_experience_for_defence(amount)
+                defence_experience = list()
                 for def_action in actions[1]: # defence
                     if def_action.whom == action.whom:
-                        def_action.is_hit = True
-                        def_action.experience = experience*(self.skirmish_users[def_action.who].character.defence/all_defence)
-                        self.skirmish_users[def_action.who].character.experience += def_action.experience
+                        def_experience = all_experience*(self.skirmish_users[def_action.who].character.defence/all_defence)
+                        who_character.experience += def_experience
+                        self.db_manager.change_character_field(who_character.name, "experience", who_character.experience)
+                        defence_experience.append("{0}[{1}]".format(def_action.who, def_experience))
+                self.actions_manager.failed_attack(self.location, action, ",".join(defence_experience))
 
         # get spells which should be done as 4 ordinal (heal spells)
         spell_actions = get_spells_by_ordinal(actions[2], 4)
@@ -212,27 +202,43 @@ class BattleBot(Thread):
         for action in spell_actions:
             add_result_action_damage_heal(action)
 
-        # go over result actions and prepare messages
-        for action in result_actions:
-            if action.is_hit:
-                pass
+        for user in self.skirmish_users.values():
+            if user.character.health <= 0:
+                self.dead_users[user.user_name] = user
+                self.remove_from_skirmish(user.user_name)
+                self.actions_manager.user_is_dead(self.location, user.user_name)
+                self.db_manager.update_character(user.user_name)
+            self.actions_manager.send_character_info(user.user_name)
 
-        for user_name in self.users_to_remove:
+        for user_name in self.ran_users:
+            self.ran_users[user_name] = self.skirmish_users[user_name]
             self.remove_from_skirmish(user_name)
-        # TODO: count teams, not users
+            self.actions_manager.user_ran(self.location, user_name)
+
         # if there is just users of one team - end game
         # count teams of users
-        if len(self.skirmish_users) < 2:
-            self.process_game_result()
+        teams = list()
+        users_no_team = list()
+        for user in self.skirmish_users.values():
+            if user.character.team_name:
+                if user.character.team_name not in teams:
+                    teams.append(user.character.team_name)
+            else:
+                users_no_team.append(user.user_name)
 
-    def process_game_result(self):
-        # TODO:
-        self.actions_manager.game_ended(self.location)
-        for user_name in self.skirmish_users.keys():
-            self.remove_from_skirmish(user_name)
-        self.phase = -1
-        self.counter = 0
-        pass
+
+        if (len(teams) < 2 and len(users_no_team) == 0) or (len(teams) == 0 and len(users_no_team) < 2): # process game result
+            self.actions_manager.game_ended(self.location)
+            if len(teams) == 1:
+                self.actions_manager.game_win_team(self.location, "{0}({1})".format(teams[0], ",".join(self.skirmish_users.keys())))
+            elif len(users_no_team) == 1:
+                self.actions_manager.game_win_user(self.location, "{0}".format(users_no_team[0]))
+            else:
+                self.actions_manager.game_win_nobody(self.location)
+            for user_name in self.skirmish_users.keys():
+                self.remove_from_skirmish(user_name)
+            self.phase = -1
+            self.counter = 0
 
     def remove_from_skirmish(self, user_name):
         self.actions_manager.skirmish_user_removed(self.location, user_name)
