@@ -43,7 +43,9 @@ battle_messages = {
     10 : _("{0} ran from skirmish"),
     11 : _("Team {0} win"),
     12 : _("{0} win"),
-    13 : _("Nobody win")
+    13 : _("Nobody win"),
+    14 : _("{0} tried to cast {2} on {1}, but couldn't"),
+    15 : _("{0} tried to cast {2} on {1}, but had low mana")
 }
 
 locales = OrderedDict([
@@ -77,41 +79,6 @@ main_abilities = [
     _("Attack"),
     _("Defence")
 ]
-
-spells = {
-    # warrior
-    0 : {
-        1 : [_("Berserk Fury"), _("Disarmament")]
-    },
-    # guardian
-    1 : {
-        1 : [_("Armor"), _("Shield Block")]
-    },
-    # archer
-    2 : {
-        1 : [_("Evasion"), _("Berserk Fury")]
-    },
-    # rogue
-    3 : {
-        1 : [_("Evasion"), _("Trip")]
-    },
-    # mage
-    4 : {
-        1 : [_("Frost Needle"), _("Fire Spark")]
-    },
-    # priest
-    5 : {
-        1 : [_("Prayer for Attack"), _("Prayer for Protection")]
-    },
-    # warlock
-    6 : {
-        1 : [_("Curse of Weakness"), _("Leech Life")]
-    },
-    # necromancer
-    7 : {
-        1 : [_("Infection"), _("Stench")]
-    }
-    }
 
 def get_classes(locale):
     result = dict()
@@ -231,7 +198,7 @@ def get_magic_defence(character):
 def get_armor(character):
     return character.dexterity*3 + character.strength*6
 
-def get_spell_length(character):
+def get_spell_duration(character):
     return character.intellect/3
 
 def get_damage(character_to_attack, attack_percent, character_to_defence):
@@ -243,7 +210,7 @@ def get_damage(character_to_attack, attack_percent, character_to_defence):
     return round((damage*attack_percent) - damage*absorb, 2)
 
 def get_magical_damage(spell, character_to_attack, attack_percent, character_to_defence):
-    spell_damage = spell.damage
+    spell_damage = spell.base_amount
     damage = max(0.90 + (character_to_attack.intellect / 100), 1) ** 2 * spell_damage
     absorb = character_to_defence.magic_defence * 0.001
     return round(damage - damage*attack_percent*absorb, 2)

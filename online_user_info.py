@@ -2,7 +2,7 @@ from collections import deque
 
 __author__ = 'PavelP'
 
-class ResultAction:
+class TurnAction:
     def __init__(self, who, whom, type, spell_id, percent):
         self.who = who
         self.whom = whom
@@ -11,7 +11,8 @@ class ResultAction:
         # 2 - spell/ability
         # 3 - mana/energy regeneration
         self.type = type
-        self.spell_id = spell_id
+        if type == 2:
+            self.spell_id = int(spell_id)
         self.percent = float(percent)/100
 
 class OnlineUserInfo():
@@ -98,6 +99,6 @@ class OnlineUserInfo():
         for action in actions:
             if action:
                 action_tokens = action.split(":")
-                result.append(ResultAction(self.user_name, action_tokens[1], int(action_tokens[0]), action_tokens[2], int(action_tokens[3])))
+                result.append(TurnAction(self.user_name, action_tokens[1], int(action_tokens[0]), action_tokens[2], int(action_tokens[3])))
 
         return result
