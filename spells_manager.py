@@ -58,7 +58,9 @@ class Ability(object):
         return False
 
     def is_hit(self, percent):
-        return True
+        if random.uniform(0.1, 0.2) < percent:
+            return True
+        return False
 
     def get_low_mana_message(self, locale):
         return locale.translate(spell_messages[4]).format(
@@ -74,9 +76,6 @@ class BerserkFurySpell(Ability):
     def init(self, who_character, whom_character):
         super(BerserkFurySpell, self).init_internal(spells[build_id(10, 0)], who_character, whom_character)
         self.attack = 0
-
-    def is_hit(self, percent):
-        return True
 
     def round_start(self):
         self.attack = round(self.who_character.attack * 0.3, 2)
@@ -109,11 +108,7 @@ class Spell(object):
         return False
 
     def is_hit(self, percent):
-        if (percent*self.who_character.magic_attack)/self.whom_character.magic_defence > 1.1: # definitely hit
-            return True
-        elif (percent*self.who_character.magic_attack)/self.whom_character.magic_defence < 0.9: # definitely not hit
-            return False
-        elif random.uniform(0.9, 1.1) < (percent*self.who_character.magic_attack)/self.whom_character.magic_defence:
+        if random.uniform(0.9, 1.1) < (percent*self.who_character.magic_attack)/self.whom_character.magic_defence:
             return True
         return False
 
@@ -212,7 +207,9 @@ class DirectHealSpell(Spell):
         self.heal = 0
 
     def is_hit(self, percent):
-        return True
+        if random.uniform(0.5, 0.8) < percent + max(self.who_character.level - 4, 1)/10:
+            return True
+        return False
 
     def process(self, percent, max_health):
         spell_heal = self.spell_info.base_amount
@@ -249,29 +246,30 @@ build_id = lambda type, id: spell_range*type + id
 spells = {
     #warrior
     build_id(10, 0) : SpellInfo(build_id(10, 0), _("Berserk Fury"),             0, 4, 1, 0, 5, 15, _("Howling with rage, you rush to the enemy. Attack power is increased")),
-    build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 0, 2, 0, 8, 15, _("You knock weapons out of enemy hands. He can not attack")),
+    build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 0, 1, 0, 5, 15, _("You knock weapons out of enemy hands. He can not attack")),
     # guardian
     build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 0, 1, 0, 5, 15, _("")),
-    build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 0, 2, 0, 8, 15, _("")),
+    build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 0, 1, 0, 5, 15, _("")),
     # archer
     build_id(12, 0) : SpellInfo(build_id(12, 0), _("Evasion"),                  2, 0, 1, 0, 5, 15, _("")),
-    build_id(12, 1) : SpellInfo(build_id(12, 1), _("Berserk Fury"),             2, 0, 2, 0, 8, 15, _("")),
+    build_id(12, 1) : SpellInfo(build_id(12, 1), _("Berserk Fury"),             2, 0, 1, 0, 5, 15, _("")),
     # rogue
     build_id(13, 0) : SpellInfo(build_id(13, 0), _("Evasion"),                  3, 0, 1, 0, 5, 15, _("")),
-    build_id(13, 1) : SpellInfo(build_id(13, 1), _("Trip"),                     3, 0, 2, 0, 8, 15, _("")),
+    build_id(13, 1) : SpellInfo(build_id(13, 1), _("Trip"),                     3, 0, 1, 0, 5, 15, _("")),
     # mage
     build_id(14, 0) : SpellInfo(build_id(14, 0), _("Frost Needle"),             4, 1, 1, 1.5, 5, 15, _("")),
-    build_id(14, 1) : SpellInfo(build_id(14, 1), _("Fire Spark"),               4, 1, 2, 2.5, 8, 15, _("")),
+    build_id(14, 1) : SpellInfo(build_id(14, 1), _("Fire Spark"),               4, 1, 1, 2.5, 5, 15, _("")),
+    build_id(14, 2) : SpellInfo(build_id(14, 2), _("Phantoms"),                 4, 1, 1, 0, 1, 15, _("")),
     # priest
     build_id(15, 0) : SpellInfo(build_id(15, 0), _("Prayer for Attack"),        5, 4, 1, 0, 5, 15, _("")),
-    build_id(15, 1) : SpellInfo(build_id(15, 1), _("Prayer for Health"),        5, 2, 1, 2, 8, 15, _("")),
-    build_id(15, 2) : SpellInfo(build_id(15, 2), _("Prayer for Protection"),    5, 0, 2, 0, 8, 15, _("")),
+    build_id(15, 1) : SpellInfo(build_id(15, 1), _("Prayer for Health"),        5, 2, 1, 2, 5, 15, _("")),
+    build_id(15, 2) : SpellInfo(build_id(15, 2), _("Prayer for Protection"),    5, 0, 1, 0, 5, 15, _("")),
     # warlock
     build_id(16, 0) : SpellInfo(build_id(16, 0), _("Curse of Weakness"),        6, 0, 1, 0, 5, 15, _("")),
-    build_id(16, 1) : SpellInfo(build_id(16, 1), _("Leech Life"),               6, 0, 2, 0, 8, 15, _("")),
+    build_id(16, 1) : SpellInfo(build_id(16, 1), _("Leech Life"),               6, 0, 1, 0, 5, 15, _("")),
     # necromancer
     build_id(17, 0) : SpellInfo(build_id(17, 0), _("Infection"),                7, 0, 1, 0, 5, 15, _("")),
-    build_id(17, 1) : SpellInfo(build_id(17, 1), _("Stench"),                   7, 0, 2, 0, 8, 15, _(""))
+    build_id(17, 1) : SpellInfo(build_id(17, 1), _("Stench"),                   7, 0, 1, 0, 5, 15, _(""))
 }
 
 spells_action_classes = {

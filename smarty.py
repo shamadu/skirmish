@@ -211,18 +211,7 @@ def is_hit(character_to_attack, attack_percent, defenders):
     defence = 0.001 # attack 1 on 1% should hit player without defence at all
     for defender in defenders:
         defence += defender[0].defence*defender[1]
-    if (attack_percent*character_to_attack.attack)/defence > 1.3: # definitely hit
-        return True
-    elif (attack_percent*character_to_attack.attack)/defence < 0.8: # definitely not hit
-        return False
-    elif random.uniform(0.8, 1.3) < (attack_percent*character_to_attack.attack)/defence:
-        return True
-    return False
-
-def is_ability_passed(character_to_attack, attack_percent, character_to_defence):
-    if (attack_percent*character_to_attack.level)/character_to_defence.level > 1.5: # definitely hit
-        return True
-    elif random.random() < 2 - (attack_percent*character_to_attack.level)/character_to_defence.level:
+    if random.uniform(0.8, 1.3) < (attack_percent*character_to_attack.attack)/defence:
         return True
     return False
 
