@@ -384,7 +384,7 @@ var battleBotUpdater = {
             message = {};
             message["body"] = action.battle_message;
             message["from"] = "bot";
-            addTextTo("#tabChat >div>div.active>textarea", format_message(message))
+            addTextTo("#tabChat >div>div.active>div", format_message(message))
         }
 
         battleBotUpdater.errorSleepTime = 500;

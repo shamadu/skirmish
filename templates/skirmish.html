@@ -18,9 +18,6 @@
 </head>
 
 <body>
-    <div id="baseInfoBar" class="baseInfoBar divCenter">
-        {{ _("Gold") }}<label id="goldLabel"></label>
-    </div>
     <div id="sideBar" class="sideBar">
         <ul class="nav nav-list">
             <li id="serverStatus" class="nav-header">
@@ -44,6 +41,9 @@
         </ul>
     </div>
     <div id="contentDiv" class="mainContentDiv">
+        <div id="baseInfoBar" class="baseInfoBar divCenter">
+            {{ _("Gold") }}<label id="goldLabel"></label>
+        </div>
         <div id="battleDivContainer" class="contentDiv">
             <div id="divMain" class="divMain">
                 <div class="divCenter">
@@ -74,10 +74,10 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="1">
-                            <textarea id="enTextArea" class="textArea" rows="10" cols="0" readonly="readonly"></textarea>
+                            <div id="enTextArea" class="textArea"></div>
                         </div>
                         <div class="tab-pane" id="2">
-                            <textarea id="ruTextArea" class="textArea" rows="10" cols="0" readonly="readonly"></textarea>
+                            <div id="ruTextArea" class="textArea"></div>
                         </div>
                     </div>
                     <div class="divSend">

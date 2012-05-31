@@ -43,7 +43,7 @@ var resize_battle = function() {
     $("#divChat").css('right', width + 15 + 'px');
 
     width = $("#divUsers").width();
-    $("#tabChat").css('right', width + 25 + 'px');
+    $("#tabChat").css('right', width + 15 + 'px');
 };
 
 var sendFunc = function() {
@@ -89,7 +89,7 @@ var format_message = function(message) {
     body_lines = message.body.split("\n");
     message_formatted = "";
     for(line in body_lines){
-        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + body_lines[line] + "\n";
+        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + body_lines[line] + "<br>";
     }
 
     return message_formatted;
@@ -97,8 +97,8 @@ var format_message = function(message) {
 
 var addTextTo = function(element_id, message) {
     element = $(element_id);
-    element.val(element.val() + message);
-    element.scrollTop(element[0].scrollHeight - element.height());
+    element.html(element.html() + message);
+    element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
 };
 
 var showDivAction = function(divAction, turn_info) {
