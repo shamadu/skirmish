@@ -106,20 +106,17 @@ class BattleBot(Thread):
             else: # remove users from skirmish
                 self.ran_users.append(user_name)
 
-        def get_spells_by_type(actions, type):
-            spell_actions = list()
-            for action in actions:
-                if spells_manager.spells[action.spell_id].type == type:
-                    spell_actions.append(action)
-            return spell_actions
-
         # get and process spells with type 4 - Buf/debuf
-        self.apply_buf_spells(get_spells_by_type(actions[2], 4))
+        self.apply_buf_spells(actions[2])
         self.round_start_buf_spells()
 
-        #        self.process_direct_spell_actions(spell_actions)
+        # direct damage
+        self.process_direct_spell_actions(actions[2], 1)
 
         self.process_attack_defence_actions(actions[0], actions[1])
+
+        # direct heal
+        self.process_direct_spell_actions(actions[2], 2)
 
         self.process_regeneration_actions(actions[3])
 
@@ -205,7 +202,15 @@ class BattleBot(Thread):
                         defence_experience.append("{0}[{1}/{2}]".format(def_action.who, def_experience, def_character.experience))
                 self.failed_attack(action.who, action.whom, ",".join(defence_experience))
 
-    def apply_buf_spells(self, turn_actions):
+    def get_spells_by_type(self, turn_actions, type):
+        spell_actions = list()
+        for action in turn_actions:
+            if spells_manager.spells[action.spell_id].type == type:
+                spell_actions.append(action)
+        return spell_actions
+
+    def apply_buf_spells(self, spell_actions):
+        turn_actions = self.get_spells_by_type(spell_actions, 4)
         for turn_action in turn_actions:
             spell_action = spells_manager.spells_action_classes[turn_action.spell_id]()
             spell_action.init(self.skirmish_users[turn_action.who].character, self.skirmish_users[turn_action.whom].character)
@@ -228,34 +233,25 @@ class BattleBot(Thread):
             if spell_action.round_end():
                 self.spell_actions[4].remove(spell_action)
 
-        # TODO: optimize algorithm and add long spells effect (store them on character)
-    def process_direct_spell_actions(self, actions):
-        for action in actions:
-            spell = spells_manager.spells[action.spell_id]
-            if self.skirmish_users[action.who].character.mana >= spell.mana:
-                self.skirmish_users[action.who].character.mana -= spell.mana
-                if smarty.is_magical_hit(self.skirmish_users[action.who].character, action.percent, self.skirmish_users[action.whom].character):
-                    who_character = self.skirmish_users[action.who].character
-                    whom_character = self.skirmish_users[action.whom].character
-                    amount = smarty.get_magical_damage(spell, who_character, who_character.percent, whom_character)
-                    if smarty.is_critical_magic_hit(who_character, whom_character):
-                        amount *= 1.5
-                    experience = 0
-                    if spell.ordinal == 3: # damage
-                        whom_character.health -= amount
-                        if who_character.name != whom_character.name:
-                            experience = smarty.get_experience_for_spell_damage(amount)
-                            who_character.experience += experience
-                        # TODO:  self.actions_manager.succeeded_magical_attack(action.who, action.whom, amount, whom_character.health, experience)
-                    elif spell.ordinal == 4: # heal:
-                        whom_character.health += amount
-                        experience = smarty.get_experience_for_spell_damage(amount)
-                        who_character.experience += experience
-                        # TODO: self.actions_manager.succeeded_magical_attack(action.who, action.whom, amount, whom_character.health, experience)
+    def process_direct_spell_actions(self, spell_actions, type):
+        turn_actions = self.get_spells_by_type(spell_actions, type)
+        for turn_action in turn_actions:
+            spell_action = spells_manager.spells_action_classes[turn_action.spell_id]()
+            spell_action.init(self.skirmish_users[turn_action.who].character, self.skirmish_users[turn_action.whom].character)
+            if spell_action.consume_mana():
+                if spell_action.is_hit(turn_action.percent):
+                    if type == 1: # damage
+                        spell_action.process(turn_action.percent)
+                    elif type == 2: # heal
+                        spell_action.process(turn_action.percent, self.characters[turn_action.whom].health)
+                    for online_user in self.location_users.values():
+                        online_user.send_skirmish_action(self.actions_manager.text_spell_action(spell_action.get_message(online_user.locale)))
+                    if self.skirmish_users[turn_action.whom].character.health <= 0 and not turn_action.whom in self.victims.keys():
+                        self.victims[turn_action.whom] = turn_action.who
                 else:
-                    self.failed_spell(action.who, action.whom, spell)
+                    self.failed_spell(spell_action)
             else:
-                self.failed_spell_low_mana(action.who, action.whom, spell)
+                self.failed_spell_low_mana(spell_action)
 
     def process_regeneration_actions(self, regeneration_actions):
         for action in regeneration_actions:

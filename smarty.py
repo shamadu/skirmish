@@ -207,21 +207,15 @@ def get_damage(character_to_attack, attack_percent, character_to_defence):
     absorb = character_to_defence.armor * 0.001
     return round((damage*attack_percent) - damage*absorb, 2)
 
-def get_magical_damage(spell, character_to_attack, attack_percent, character_to_defence):
-    spell_damage = spell.base_amount
-    damage = max(0.90 + (character_to_attack.intellect / 100), 1) ** 2 * spell_damage
-    absorb = character_to_defence.magic_defence * 0.001
-    return round(damage - damage*attack_percent*absorb, 2)
-
 def is_hit(character_to_attack, attack_percent, defenders):
     defence = 0.001 # attack 1 on 1% should hit player without defence at all
     for defender in defenders:
         defence += defender[0].defence*defender[1]
-    if (attack_percent*character_to_attack.attack)/defence > 1.5: # definitely hit
+    if (attack_percent*character_to_attack.attack)/defence > 1.3: # definitely hit
         return True
-    elif (attack_percent*character_to_attack.attack)/defence < 1: # definitely not hit
+    elif (attack_percent*character_to_attack.attack)/defence < 0.8: # definitely not hit
         return False
-    elif random.random()*0.5 < (attack_percent*character_to_attack.attack)/defence - 1:
+    elif random.uniform(0.8, 1.3) < (attack_percent*character_to_attack.attack)/defence:
         return True
     return False
 
@@ -242,6 +236,9 @@ def get_experience_for_damage(damage):
     return round(damage * 10)
 
 def get_experience_for_spell_damage(damage):
+    return round(damage * 15)
+
+def get_experience_for_spell_heal(damage):
     return round(damage * 15)
 
 def get_experience_for_defence(damage):
