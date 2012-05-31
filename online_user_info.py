@@ -16,19 +16,19 @@ class TurnAction:
         self.percent = float(percent)/100
 
 class OnlineUserInfo():
-    def __init__(self, name, locale):
+    def __init__(self, user_name, locale):
+        self.user_name = user_name
         self.counter = 10
-        self.character = {} # will be filled by db_manager
-        self.turn_info_string = ""
         self.user_callback = None
         self.user_cache = deque()
         self.skirmish_callback = None
         self.skirmish_cache = deque()
         self.character_callback = None
         self.character_cache = deque()
+        self.character = {} # will be filled by db_manager
         self.locale = locale
         self.location = "En"
-        self.user_name = name
+        self.turn_info_string = ""
 
     def set_user_callback(self, user_callback):
         self.counter = 10

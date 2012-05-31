@@ -1,3 +1,4 @@
+import copy
 import random
 from threading import Thread
 import time
@@ -12,7 +13,6 @@ class BattleBot(Thread):
         self.actions_manager = actions_manager
         self.db_manager = db_manager
         self.skirmish_users = dict()
-        self.dead_users = dict()
         self.location = location
         self.location_users = actions_manager.location_users[location]
         # phases:
@@ -31,8 +31,21 @@ class BattleBot(Thread):
         self.spell_actions = {
             4 : list()
         }
-        self.ran_users = list()
         self.turn_done_count = 0
+        self.dead_users = dict()
+        self.ran_users = list()
+        self.characters = dict()
+        self.victims = dict()
+
+    def reset(self):
+        del self.ran_users[:]
+        self.dead_users.clear()
+        self.characters.clear()
+        self.skirmish_users.clear()
+        self.spell_actions.clear()
+        self.victims.clear()
+        self.phase = -1
+        self.counter = 0
 
     @property
     def online_users(self):
@@ -51,6 +64,7 @@ class BattleBot(Thread):
                 if len(self.skirmish_users) > 1:
                     self.phase = 1
                     self.registration_ended()
+                    self.game_started()
                 else:
                     self.game_cant_start()
             elif self.phase > 0 and self.counter == 1:
@@ -112,17 +126,18 @@ class BattleBot(Thread):
         self.round_end_buf_spells()
 
         for user in self.skirmish_users.values():
-            self.db_manager.change_character_field(user.user_name, "experience", user.character.experience)
             if user.character.health <= 0:
                 self.dead_users[user.user_name] = user
                 self.remove_from_skirmish(user.user_name)
                 self.user_is_dead(user.user_name)
+                self.characters[self.victims[user.user_name]].gold += user.character.level + 1
             else:
                 self.actions_manager.send_character_info(user.user_name)
 
         for user_name in self.ran_users:
-            self.remove_from_skirmish(user_name)
-            self.user_ran(user_name)
+            if user_name not in self.dead_users.keys():
+                self.remove_from_skirmish(user_name)
+                self.user_ran(user_name)
 
     def process_game_result(self):
         # if there is just users of one team - end game
@@ -146,9 +161,8 @@ class BattleBot(Thread):
                 self.game_win_nobody()
             for user_name in self.skirmish_users.keys():
                 self.remove_from_skirmish(user_name)
-            self.phase = -1
-            self.counter = 0
-            self.ran_users = list()
+
+            self.reset()
 
     def process_attack_defence_actions(self, attack_actions, defence_actions):
         for action in attack_actions: # attack
@@ -168,7 +182,9 @@ class BattleBot(Thread):
                 if who_character.name != whom_character.name:
                     experience = smarty.get_experience_for_damage(amount)
                     who_character.experience += experience
-                self.succeeded_attack(action.who, action.whom, amount, whom_character.health, experience)
+                    if whom_character.health <= 0 and not action.whom in self.victims.keys():
+                        self.victims[action.whom] = action.who
+                self.succeeded_attack(action.who, action.whom, amount, whom_character.health, experience, who_character.experience)
             else: # not hit - set exp to defenders
                 amount = smarty.get_damage(who_character, action.percent, whom_character)
                 if smarty.is_critical_hit(who_character, whom_character):
@@ -185,7 +201,7 @@ class BattleBot(Thread):
                         if def_action.who != action.who:
                             def_experience = all_experience*(self.skirmish_users[def_action.who].character.defence/all_defence)
                             who_character.experience += def_experience
-                        defence_experience.append("{0}[{1}]".format(def_action.who, def_experience))
+                        defence_experience.append("{0}[{1}/{2}]".format(def_action.who, def_experience, who_character.experience))
                 self.failed_attack(action.who, action.whom, ",".join(defence_experience))
 
     def apply_buf_spells(self, turn_actions):
@@ -250,7 +266,7 @@ class BattleBot(Thread):
             who_character.mana += smarty.get_regeneration(who_character)*action.percent
 
     def remove_from_skirmish(self, user_name):
-        self.db_manager.update_character(user_name)
+        self.db_manager.change_character_field_update(user_name, "experience", self.characters[user_name].experience + self.skirmish_users[user_name].character.experience)
         self.actions_manager.send_character_info(user_name)
         self.actions_manager.skirmish_user_removed(self.location, user_name)
         self.skirmish_users.pop(user_name)
@@ -295,14 +311,23 @@ class BattleBot(Thread):
         self.send_text_action_to_users(self.location_users, 3, self.phase) # round has been ended
         self.actions_manager.round_ended(self.skirmish_users)
 
+    def game_started(self):
+        for user_name in self.skirmish_users.keys():
+            self.characters[user_name] = copy.copy(self.skirmish_users[user_name].character)
+            self.skirmish_users[user_name].character.experience = 0
+            self.skirmish_users[user_name].character.gold = 0
+
     def game_ended(self):
+        for user_name in self.skirmish_users.keys():
+            self.db_manager.change_character_field(user_name, "experience", self.characters[user_name].experience + self.skirmish_users[user_name].character.experience)
+            self.db_manager.change_character_field(user_name, "gold", self.characters[user_name].gold + self.skirmish_users[user_name].character.gold)
         self.send_text_action_to_users(self.location_users, 4, None) # game has been ended
 
     def game_cant_start(self):
         self.send_text_action_to_users(self.location_users, 5, None) # game can't be started, not enough players
 
-    def succeeded_attack(self, who, whom, amount, new_health, experience):
-        self.send_text_action_to_users(self.location_users, 6, who, whom, amount, new_health, experience)
+    def succeeded_attack(self, who, whom, amount, new_health, experience, full_experience):
+        self.send_text_action_to_users(self.location_users, 6, who, whom, amount, new_health, experience, full_experience)
 
     def failed_attack(self, who, whom, def_experiences):
         self.send_text_action_to_users(self.location_users, 7, who, whom, def_experiences)

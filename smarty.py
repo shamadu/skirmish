@@ -36,7 +36,7 @@ battle_messages = {
     3 : _("Round {0} has been ended"),
     4 : _("Game has been ended"),
     5 : _("Game can't be started, not enough players"),
-    6 : _("{0} attacked {1} and damaged him for {2}hp({3}hp) [{4}]"),
+    6 : _("{0} attacked {1} and damaged him for {2}hp({3}hp) [{4}/{5}]"),
     7 : _("{0} tried to attack {1}, but couldn't break protection({2})"),
     8 : _("{0} makes critical hit!"),
     9 : _("{0} is dead"),

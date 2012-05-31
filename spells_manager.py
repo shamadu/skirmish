@@ -7,8 +7,8 @@ __author__ = 'PavelP'
 _ = lambda s: s
 
 spell_messages = {
-    0 : "{0} used ability {1}[{2}]",
-    1 : "{0} casts spell {1} on {2} [{3}/{4}][{5}]"
+    0 : "{0} used ability {1}[{2}/{3}]",
+    1 : "{0} casts spell {1} on {2} [{3}/{4}][{5}/{6}]"
 }
 
 class Spell:
@@ -45,7 +45,6 @@ class BerserkFurySpell(BufSpell):
     def apply(self, who_character, whom_character):
         self.attack = 0
         self.who_character = who_character
-        # TODO: count experience for all battle, save it at the end of the game
         self.experience = 0
 
     def round_start(self):
@@ -58,7 +57,8 @@ class BerserkFurySpell(BufSpell):
         return locale.translate(spell_messages[0]).format(
                 self.who_character.name,
                 locale.translate(spells[build_id(10, 0)].name),
-                self.experience)
+                self.experience,
+                self.who_character.experience)
 
     def round_end(self):
         self.who_character.attack -= self.attack
@@ -74,10 +74,11 @@ class PrayerForAttackSpell(BufSpell):
         self.counter = 1
 
     def round_start(self):
-        self.attack += round(self.whom_character.attack * 0.1, 2)
-        self.whom_character.attack += round(self.whom_character.attack * 0.1)
-        self.experience += round(self.attack*0.9)
-        self.who_character.experience += round(self.attack*0.9)
+        attack = round(self.whom_character.attack * 0.1, 2)
+        self.attack += attack
+        self.whom_character.attack += attack
+        self.experience = round(attack*0.9)
+        self.who_character.experience += self.experience
 
     def get_message(self, locale):
         return locale.translate(spell_messages[1]).format(
@@ -86,7 +87,8 @@ class PrayerForAttackSpell(BufSpell):
                 self.whom_character.name,
                 self.counter,
                 self.duration,
-                self.experience)
+                self.experience,
+                self.who_character.experience)
 
     def round_end(self):
         self.counter += 1
