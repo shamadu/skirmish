@@ -362,7 +362,7 @@ var battleBotUpdater = {
         // can do turn
         else if(action.type == 5) {
             removeDivAction();
-            showDivAction(action.div_action);
+            showDivAction(action.div_action, action.turn_info);
         }
         // can cancel
         else if(action.type == 6) {

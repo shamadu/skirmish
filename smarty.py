@@ -44,8 +44,6 @@ battle_messages = {
     11 : _("Team {0} win"),
     12 : _("{0} win"),
     13 : _("Nobody win"),
-    14 : _("{0} tried to cast {2} on {1}, but couldn't"),
-    15 : _("{0} tried to cast {2} on {1}, but had low mana")
 }
 
 locales = OrderedDict([
@@ -224,15 +222,6 @@ def is_hit(character_to_attack, attack_percent, defenders):
     elif (attack_percent*character_to_attack.attack)/defence < 1: # definitely not hit
         return False
     elif random.random()*0.5 < (attack_percent*character_to_attack.attack)/defence - 1:
-        return True
-    return False
-
-def is_magical_hit(character_to_attack, attack_percent, character_to_defence):
-    if (attack_percent*character_to_attack.magic_attack)/character_to_defence.magic_defence > 1.5: # definitely hit
-        return True
-    elif (attack_percent*character_to_attack.magic_attack)/character_to_defence.magic_defence < 1: # definitely not hit
-        return False
-    elif random.random()*0.5 < (attack_percent*character_to_attack.magic_attack)/character_to_defence.magic_defence - 1:
         return True
     return False
 
