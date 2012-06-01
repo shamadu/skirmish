@@ -2,6 +2,7 @@ import copy
 import random
 from threading import Thread
 import time
+import items_manager
 import smarty
 import spells_manager
 
@@ -411,10 +412,29 @@ class BattleBot(Thread):
         self.send_text_action_to_users(self.location_users, 5, None) # game can't be started, not enough players
 
     def succeeded_attack(self, who, whom, amount, new_health, experience, full_experience):
-        self.send_text_action_to_users(self.location_users, 6, who, whom, amount, new_health, experience, full_experience)
+        for online_user in self.location_users.values():
+            text_action = self.actions_manager.text_action(
+                smarty.battle_messages[6],
+                online_user.locale,
+                who,
+                whom,
+                items_manager.get_current_weapon_name(self.location_users[who].character, online_user.locale),
+                amount,
+                new_health,
+                experience,
+                full_experience)
+            online_user.send_skirmish_action(text_action)
 
     def failed_attack(self, who, whom, def_experiences):
-        self.send_text_action_to_users(self.location_users, 7, who, whom, def_experiences)
+        for online_user in self.location_users.values():
+            text_action = self.actions_manager.text_action(
+                smarty.battle_messages[7],
+                online_user.locale,
+                who,
+                whom,
+                items_manager.get_current_weapon_name(self.location_users[who].character, online_user.locale),
+                def_experiences)
+            online_user.send_skirmish_action(text_action)
 
     def critical_hit(self, who):
         self.send_text_action_to_users(self.location_users, 8, who)

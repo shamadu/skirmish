@@ -111,6 +111,9 @@ def get_item_group_name(type, locale):
 def get_item(id, locale):
     return items[id].translate(locale)
 
+def get_current_weapon_name(character, locale):
+    return get_item(int(character.weapon.split(",")[0]), locale).name
+
 def get_items(item_ids_str, locale):
     items = list()
     item_ids = item_ids_str.split(",")
