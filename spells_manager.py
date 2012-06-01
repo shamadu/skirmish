@@ -17,6 +17,8 @@ spell_messages = {
     6 : _("{0} casts spell {1} on {2} and freezes him for {3}hp({4}hp)[{5}/{6}]"),
     7 : _("{0} casts spell {1} on {2} and burns him for {3}hp({4}hp)[{5}/{6}]"),
     8 : _("{0} casts spell {1} on {2} and heals him for {3}hp({4}hp)[{5}/{6}]"),
+    9 : _("{0} tried to attack {1}, but kills one phantom {2}/{3}"),
+    10 : _("{0} has rounded himself with {1} phantoms [{2}/{3}][{4}/{5}]"),
 }
 
 class SpellInfo:
@@ -24,14 +26,15 @@ class SpellInfo:
     # 0 - Special one round spell/ability
     # 1 - Direct damage spell
     # 2 - Direct heal spell
-    # 3 - Over time spell
-    # 4 - Buf (and debuf)
+    # 3 - Affects attack spell
+    # 4 - Over time spell
     # 5 - Area of effect spell
-    def __init__(self, id, name, class_id, type, required_level, base_amount, mana, price, description):
+    def __init__(self, id, name, class_id, type, is_self, required_level, base_amount, mana, price, description):
         self.id = id
         self.name = name
         self.class_id = class_id
         self.type = type
+        self.is_self = is_self
         self.required_level = required_level
         self.base_amount = base_amount
         self.mana = mana
@@ -124,32 +127,90 @@ class Spell(object):
             locale.translate(self.spell_info.name),
             self.whom_character.name)
 
-class PrayerForAttackSpell(Spell):
-    def init(self, who_character, whom_character):
-        super(PrayerForAttackSpell, self).init_internal(spells[build_id(15, 0)], who_character, whom_character)
+class LongSpell(Spell):
+    def init_internal(self, spell_info, who_character, whom_character):
+        super(LongSpell, self).init_internal(spell_info, who_character, whom_character)
         self.duration = smarty.get_spell_duration(who_character)
-        self.attack = 0
-        self.counter = 1
+        self.counter = 0
+
+    # implement if inherit
+    def on_round_start(self):
+        pass
 
     def round_start(self):
+        self.counter += 1
+        self.on_round_start()
+
+    # implement if inherit
+    def on_effect_end(self):
+        pass
+
+    def round_end(self):
+        if self.counter == self.duration:
+            self.on_effect_end()
+            return True
+        return False
+
+class AffectAttackSpell(object):
+    def is_succeed_attack(self, attack_character):
+        return True
+
+    def get_attack_message(self, locale):
+        pass
+
+class PrayerForAttackSpell(LongSpell):
+    def init(self, who_character, whom_character):
+        super(PrayerForAttackSpell, self).init_internal(spells[build_id(15, 0)], who_character, whom_character)
+        self.attack = 0
+
+    def on_round_start(self):
         attack = round(self.whom_character.attack * 0.1, 2)
         self.attack += attack
         self.whom_character.attack += attack
         self.experience = round(attack*0.9)
         self.who_character.experience += self.experience
 
-    def round_end(self):
-        self.counter += 1
-        if self.counter > self.duration:
-            self.whom_character.attack -= self.attack
-            return True
-        return False
+    def on_effect_end(self):
+        self.whom_character.attack -= self.attack
 
     def get_message(self, locale):
         return locale.translate(spell_messages[1]).format(
             self.who_character.name,
             locale.translate(self.spell_info.name),
             self.whom_character.name,
+            self.counter,
+            self.duration,
+            self.experience,
+            self.who_character.experience)
+
+class PhantomsSpell(LongSpell, AffectAttackSpell):
+    def init(self, who_character, whom_character):
+        super(PhantomsSpell, self).init_internal(spells[build_id(14, 2)], who_character, whom_character)
+        self.all_phantoms = 3
+        self.phantoms = self.all_phantoms
+        self.attack_character = None
+        self.succeed_attack = False
+
+    def is_succeed_attack(self, attack_character):
+        self.attack_character = attack_character
+        self.succeed_attack = (self.phantoms*0.3 < random.random()) # each phantom gives 30% failed attack
+        if not self.succeed_attack:
+            self.phantoms -= 1
+            if self.phantoms == 0: # no phantoms - finish spell
+                self.counter = self.duration
+        return self.succeed_attack
+
+    def get_attack_message(self, locale):
+        return locale.translate(spell_messages[9]).format(
+            self.attack_character.name,
+            self.whom_character.name,
+            self.phantoms,
+            self.all_phantoms)
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[10]).format(
+            self.who_character.name,
+            self.phantoms,
             self.counter,
             self.duration,
             self.experience,
@@ -245,37 +306,38 @@ build_id = lambda type, id: spell_range*type + id
 # means that 1000-1099 are warrior spells, 1100-1199 are guardian spells, 2100-2199 are archer spells, etc.
 spells = {
     #warrior
-    build_id(10, 0) : SpellInfo(build_id(10, 0), _("Berserk Fury"),             0, 4, 1, 0, 5, 15, _("Howling with rage, you rush to the enemy. Attack power is increased")),
-    build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 0, 1, 0, 5, 15, _("You knock weapons out of enemy hands. He can not attack")),
+    build_id(10, 0) : SpellInfo(build_id(10, 0), _("Berserk Fury"),             0, 4, True, 1, 0, 5, 15, _("Howling with rage, you rush to the enemy. Attack power is increased")),
+    build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 0, False, 1, 0, 5, 15, _("You knock weapons out of enemy hands. He can not attack")),
     # guardian
-    build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 0, 1, 0, 5, 15, _("")),
-    build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 0, 1, 0, 5, 15, _("")),
+    build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 0, True, 1, 0, 5, 15, _("")),
+    build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 0, False, 1, 0, 5, 15, _("")),
     # archer
-    build_id(12, 0) : SpellInfo(build_id(12, 0), _("Evasion"),                  2, 0, 1, 0, 5, 15, _("")),
-    build_id(12, 1) : SpellInfo(build_id(12, 1), _("Berserk Fury"),             2, 0, 1, 0, 5, 15, _("")),
+    build_id(12, 0) : SpellInfo(build_id(12, 0), _("Evasion"),                  2, 0, True, 1, 0, 5, 15, _("")),
+    build_id(12, 1) : SpellInfo(build_id(12, 1), _("Berserk Fury"),             2, 0, True, 1, 0, 5, 15, _("")),
     # rogue
-    build_id(13, 0) : SpellInfo(build_id(13, 0), _("Evasion"),                  3, 0, 1, 0, 5, 15, _("")),
-    build_id(13, 1) : SpellInfo(build_id(13, 1), _("Trip"),                     3, 0, 1, 0, 5, 15, _("")),
+    build_id(13, 0) : SpellInfo(build_id(13, 0), _("Evasion"),                  3, 0, True, 1, 0, 5, 15, _("")),
+    build_id(13, 1) : SpellInfo(build_id(13, 1), _("Trip"),                     3, 0, False, 1, 0, 5, 15, _("")),
     # mage
-    build_id(14, 0) : SpellInfo(build_id(14, 0), _("Frost Needle"),             4, 1, 1, 1.5, 5, 15, _("")),
-    build_id(14, 1) : SpellInfo(build_id(14, 1), _("Fire Spark"),               4, 1, 1, 2.5, 5, 15, _("")),
-    build_id(14, 2) : SpellInfo(build_id(14, 2), _("Phantoms"),                 4, 1, 1, 0, 1, 15, _("")),
+    build_id(14, 0) : SpellInfo(build_id(14, 0), _("Frost Needle"),             4, 1, False, 1, 1.5, 5, 15, _("")),
+    build_id(14, 1) : SpellInfo(build_id(14, 1), _("Fire Spark"),               4, 1, False, 1, 2.5, 5, 15, _("")),
+    build_id(14, 2) : SpellInfo(build_id(14, 2), _("Phantoms"),                 4, 3, True, 1, 0, 1, 15, _("")),
     # priest
-    build_id(15, 0) : SpellInfo(build_id(15, 0), _("Prayer for Attack"),        5, 4, 1, 0, 5, 15, _("")),
-    build_id(15, 1) : SpellInfo(build_id(15, 1), _("Prayer for Health"),        5, 2, 1, 2, 5, 15, _("")),
-    build_id(15, 2) : SpellInfo(build_id(15, 2), _("Prayer for Protection"),    5, 0, 1, 0, 5, 15, _("")),
+    build_id(15, 0) : SpellInfo(build_id(15, 0), _("Prayer for Attack"),        5, 4, False, 1, 0, 5, 15, _("")),
+    build_id(15, 1) : SpellInfo(build_id(15, 1), _("Prayer for Health"),        5, 2, False, 1, 2, 5, 15, _("")),
+    build_id(15, 2) : SpellInfo(build_id(15, 2), _("Prayer for Protection"),    5, 0, False, 1, 0, 5, 15, _("")),
     # warlock
-    build_id(16, 0) : SpellInfo(build_id(16, 0), _("Curse of Weakness"),        6, 0, 1, 0, 5, 15, _("")),
-    build_id(16, 1) : SpellInfo(build_id(16, 1), _("Leech Life"),               6, 0, 1, 0, 5, 15, _("")),
+    build_id(16, 0) : SpellInfo(build_id(16, 0), _("Curse of Weakness"),        6, 0, False, 1, 0, 5, 15, _("")),
+    build_id(16, 1) : SpellInfo(build_id(16, 1), _("Leech Life"),               6, 0, False, 1, 0, 5, 15, _("")),
     # necromancer
-    build_id(17, 0) : SpellInfo(build_id(17, 0), _("Infection"),                7, 0, 1, 0, 5, 15, _("")),
-    build_id(17, 1) : SpellInfo(build_id(17, 1), _("Stench"),                   7, 0, 1, 0, 5, 15, _(""))
+    build_id(17, 0) : SpellInfo(build_id(17, 0), _("Infection"),                7, 0, False, 1, 0, 5, 15, _("")),
+    build_id(17, 1) : SpellInfo(build_id(17, 1), _("Stench"),                   7, 0, False, 1, 0, 5, 15, _(""))
 }
 
 spells_action_classes = {
     build_id(10, 0) : BerserkFurySpell,
     build_id(14, 0) : FrostNeedleSpell,
     build_id(14, 1) : FireSparkSpell,
+    build_id(14, 2) : PhantomsSpell,
     build_id(15, 0) : PrayerForAttackSpell,
     build_id(15, 1) : PrayerForHealthSpell
 }

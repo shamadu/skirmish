@@ -19,7 +19,11 @@
                     {% if action == 2 %}
                     <select class="spell_select" style="margin: auto; width: auto;">
                         {% for spell in spells %}
-                        <option value="{{ spell.id }}">{{ spell.name }}</option>
+                        <option value="{{ spell.id }}"
+                                {% if spell.is_self %}
+                                class="self"
+                                {% end %}
+                                >{{ spell.name }}</option>
                         {% end %}
                     </select>
                     {% end %}

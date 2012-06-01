@@ -122,6 +122,16 @@ var showDivAction = function(divAction, turn_info) {
             }
         });
 
+        $("#divAction select.spell_select").change(function(){
+            if($("option:selected", this).hasClass("self")) {
+                $(".user_select option[value=\"" + $("#nameLabel_battle").text() + "\"]", $(this).parent()).attr("selected", "selected");
+                $(".user_select", $(this).parent()).attr('disabled', 'true');
+            }
+            else {
+                $(".user_select", $(this).parent()).removeAttr('disabled');
+            }
+        });
+
         $("#resetButton").click(resetButtonClick);
 
         $("#doButton").click(doButtonClick);
