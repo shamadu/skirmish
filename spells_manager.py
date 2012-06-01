@@ -9,7 +9,7 @@ _ = lambda s: s
 
 spell_messages = {
     0 : _("{0} used ability {1}[{2}/{3}]"),
-    1 : _("{0} casts spell {1} on {2} [{3}/{4}][{5}/{6}]"),
+    1 : _("{0} increases attack of {2} [{3}/{4}][{5}/{6}]"),
     2 : _("{0} tried to cast {1} on {2}, but had low mana"),
     3 : _("{0} tried to cast {1} on {2}, but couldn't"),
     4 : _("{0} tried to use ability {1}, but had low energy"),
@@ -19,6 +19,8 @@ spell_messages = {
     8 : _("{0} casts spell {1} on {2} and heals him for {3}hp({4}hp)[{5}/{6}]"),
     9 : _("{0} tried to attack {1}, but kills one phantom {2}/{3}"),
     10 : _("{0} has rounded himself with {1} phantoms [{2}/{3}][{4}/{5}]"),
+    11 : _("{0} used ability {1} and knocked the weapon from {2} [{3}/{4}]"),
+    12 : _("{0} has tried to attack {1} but has no weapon in hands"),
 }
 
 class SpellInfo:
@@ -26,9 +28,9 @@ class SpellInfo:
     # 0 - Special one round spell/ability
     # 1 - Direct damage spell
     # 2 - Direct heal spell
-    # 3 - Affects attack spell
+    # 3 - Affects victim spell
     # 4 - Over time spell
-    # 5 - Area of effect spell
+    # 5 - Affects attacker spell
     def __init__(self, id, name, class_id, type, is_self, required_level, base_amount, mana, price, description):
         self.id = id
         self.name = name
@@ -46,56 +48,6 @@ class SpellInfo:
         spell.name = locale.translate(self.name)
         spell.description = locale.translate(self.description)
         return spell
-
-class Ability(object):
-    def init_internal(self, spell_info, who_character, whom_character):
-        self.who_character = who_character
-        self.whom_character = whom_character
-        self.spell_info = spell_info
-        self.experience = 0
-
-    def consume_mana(self):
-        if self.who_character.mana >= self.spell_info.mana:
-            self.who_character.mana -= self.spell_info.mana
-            return True
-        return False
-
-    def is_hit(self, percent):
-        if random.uniform(0.1, 0.2) < percent:
-            return True
-        return False
-
-    def get_low_mana_message(self, locale):
-        return locale.translate(spell_messages[4]).format(
-            self.who_character.name,
-            locale.translate(self.spell_info.name))
-
-    def get_failed_message(self, locale):
-        return locale.translate(spell_messages[5]).format(
-            self.who_character.name,
-            locale.translate(self.spell_info.name))
-
-class BerserkFurySpell(Ability):
-    def init(self, who_character, whom_character):
-        super(BerserkFurySpell, self).init_internal(spells[build_id(10, 0)], who_character, whom_character)
-        self.attack = 0
-
-    def round_start(self):
-        self.attack = round(self.who_character.attack * 0.3, 2)
-        self.who_character.attack += self.attack
-        self.experience = round(self.attack*0.9)
-        self.who_character.experience += self.experience
-
-    def round_end(self):
-        self.who_character.attack -= self.attack
-        return True
-
-    def get_message(self, locale):
-        return locale.translate(spell_messages[0]).format(
-            self.who_character.name,
-            locale.translate(self.spell_info.name),
-            self.experience,
-            self.who_character.experience)
 
 class Spell(object):
     def init_internal(self, spell_info, who_character, whom_character):
@@ -151,12 +103,86 @@ class LongSpell(Spell):
             return True
         return False
 
-class AffectAttackSpell(object):
-    def is_succeed_attack(self, attack_character):
+class Ability(LongSpell):
+    def init_internal(self, spell_info, who_character, whom_character):
+        super(Ability, self).init_internal(spell_info, who_character, whom_character)
+        self.duration = 1
+        self.counter = 0
+
+    def is_hit(self, percent):
+        if random.uniform(0.1, 0.2) < percent:
+            return True
+        return False
+
+    def get_low_mana_message(self, locale):
+        return locale.translate(spell_messages[4]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name))
+
+    def get_failed_message(self, locale):
+        return locale.translate(spell_messages[5]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name))
+
+class BerserkFurySpell(Ability):
+    def init(self, who_character, whom_character):
+        super(BerserkFurySpell, self).init_internal(spells[build_id(10, 0)], who_character, whom_character)
+        self.attack = 0
+
+    def on_round_start(self):
+        self.attack = round(self.who_character.attack * 0.3, 2)
+        self.who_character.attack += self.attack
+        self.experience = round(self.attack*0.9)
+        self.who_character.experience += self.experience
+
+    def on_effect_end(self):
+        self.who_character.attack -= self.attack
         return True
 
+    def get_message(self, locale):
+        return locale.translate(spell_messages[0]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.experience,
+            self.who_character.experience)
+
+class AffectAttackSpell(object):
+    def is_succeed_attack(self, attack_character, defence_character):
+        self.attack_character = attack_character
+        self.defence_character = defence_character
+        return self.check_succeed_attack()
+
+    # implement if inherit
+    def check_succeed_attack(self):
+        return True
+
+    # implement if inherit
     def get_attack_message(self, locale):
         pass
+
+class DisarmamentSpell(Ability, AffectAttackSpell):
+    def init(self, who_character, whom_character):
+        super(DisarmamentSpell, self).init_internal(spells[build_id(10, 1)], who_character, whom_character)
+
+    def check_succeed_attack(self):
+        return False
+
+    def get_attack_message(self, locale):
+        return locale.translate(spell_messages[12]).format(
+            self.attack_character.name,
+            self.defence_character.name)
+
+    def on_round_start(self):
+        self.experience = self.who_character.level*10
+        self.who_character.experience += self.experience
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[11]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.whom_character.name,
+            self.experience,
+            self.who_character.experience)
 
 class PrayerForAttackSpell(LongSpell):
     def init(self, who_character, whom_character):
@@ -188,12 +214,14 @@ class PhantomsSpell(LongSpell, AffectAttackSpell):
         super(PhantomsSpell, self).init_internal(spells[build_id(14, 2)], who_character, whom_character)
         self.all_phantoms = 3
         self.phantoms = self.all_phantoms
-        self.attack_character = None
         self.succeed_attack = False
 
-    def is_succeed_attack(self, attack_character):
-        self.attack_character = attack_character
-        self.succeed_attack = (self.phantoms*0.3 < random.random()) # each phantom gives 30% failed attack
+    def on_round_start(self):
+        self.experience = self.who_character.level*10
+        self.who_character.experience += self.experience
+
+    def check_succeed_attack(self):
+        self.succeed_attack = (random.random() < 1/(self.phantoms + 1)) # 1 / phantoms_count + you
         if not self.succeed_attack:
             self.phantoms -= 1
             if self.phantoms == 0: # no phantoms - finish spell
@@ -203,7 +231,7 @@ class PhantomsSpell(LongSpell, AffectAttackSpell):
     def get_attack_message(self, locale):
         return locale.translate(spell_messages[9]).format(
             self.attack_character.name,
-            self.whom_character.name,
+            self.defence_character.name,
             self.phantoms,
             self.all_phantoms)
 
@@ -307,7 +335,7 @@ build_id = lambda type, id: spell_range*type + id
 spells = {
     #warrior
     build_id(10, 0) : SpellInfo(build_id(10, 0), _("Berserk Fury"),             0, 4, True, 1, 0, 5, 15, _("Howling with rage, you rush to the enemy. Attack power is increased")),
-    build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 0, False, 1, 0, 5, 15, _("You knock weapons out of enemy hands. He can not attack")),
+    build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 5, False, 1, 0, 5, 15, _("You knock weapons out of enemy hands. He can not attack")),
     # guardian
     build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 0, True, 1, 0, 5, 15, _("")),
     build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 0, False, 1, 0, 5, 15, _("")),
@@ -335,6 +363,7 @@ spells = {
 
 spells_action_classes = {
     build_id(10, 0) : BerserkFurySpell,
+    build_id(10, 1) : DisarmamentSpell,
     build_id(14, 0) : FrostNeedleSpell,
     build_id(14, 1) : FireSparkSpell,
     build_id(14, 2) : PhantomsSpell,
