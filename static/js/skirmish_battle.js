@@ -43,7 +43,7 @@ var resize_battle = function() {
     $("#divChat").css('right', width + 15 + 'px');
 
     width = $("#divUsers").width();
-    $("#tabChat").css('right', width + 25 + 'px');
+    $("#tabChat").css('right', width + 15 + 'px');
 };
 
 var sendFunc = function() {
@@ -89,20 +89,19 @@ var format_message = function(message) {
     body_lines = message.body.split("\n");
     message_formatted = "";
     for(line in body_lines){
-        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + body_lines[line] + "\n";
+        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + body_lines[line] + "<br>";
     }
 
     return message_formatted;
 };
 
 var addTextTo = function(element_id, message) {
-    element = $(element_id)
-    element.val(element.val() + message);
-    element.scrollTop(element[0].scrollHeight - element.height());
+    element = $(element_id);
+    element.html(element.html() + message);
+    element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
 };
 
-var showDivAction = function(divAction) {
-//    $("#divAction").remove();
+var showDivAction = function(divAction, turn_info) {
     if($("#divAction").length == 0) {
         $("#divMain").append(divAction);
         resize_battle();
@@ -123,6 +122,16 @@ var showDivAction = function(divAction) {
             }
         });
 
+        $("#divAction select.spell_select").change(function(){
+            if($("option:selected", this).hasClass("self")) {
+                $(".user_select option[value=\"" + $("#nameLabel_battle").text() + "\"]", $(this).parent()).attr("selected", "selected");
+                $(".user_select", $(this).parent()).attr('disabled', 'true');
+            }
+            else {
+                $(".user_select", $(this).parent()).removeAttr('disabled');
+            }
+        });
+
         $("#resetButton").click(resetButtonClick);
 
         $("#doButton").click(doButtonClick);
@@ -131,24 +140,57 @@ var showDivAction = function(divAction) {
     }
     $("#divAction input,#divAction select,#divAction button").removeAttr('disabled');
     $("#cancelButton").attr('disabled', true);
+
+    if (turn_info) {
+        turn_infos = turn_info.split(",");
+        attack_count = 0;
+        defence_count = 0;
+        spell_count = 0;
+        for (i = 0; i < turn_infos.length; i++){
+            if (turn_infos[i]) {
+                turn_parts = turn_infos[i].split(":");
+                if (turn_parts[0] == 0) {
+                    div = $("#divAction .action[action='0']")[attack_count];
+                    attack_count += 1;
+                }
+                else if (turn_parts[0] == 1) {
+                    div = $("#divAction .action[action='1']")[defence_count];
+                    defence_count += 1;
+                }
+                else if (turn_parts[0] == 2) {
+                    div = $("#divAction .action[action='2']")[spell_count];
+                    spell_count += 1;
+                }
+                else if (turn_parts[0] == 3) {
+                    div = $("#divAction .action[action='3']");
+                }
+                // if there is target user_name and there is such user in list, restore turn part
+                // if there is no such user - do nothing
+                if (turn_parts[1] ) {
+                    if ($(".user_select option[value=\"" + turn_parts[1] + "\"]", $(div)).length > 0) {
+                        $(".user_select option[value=\"" + turn_parts[1] + "\"]", $(div)).attr("selected", "selected");
+                        if (turn_parts[2]) {
+                            $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(div)).attr("selected", "selected");
+                        }
+                        $("input", $(div)).val(turn_parts[3]);
+                    }
+                }
+                // if there is no target user - restore turn
+                else {
+                    if (turn_parts[2]) {
+                        $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(div)).attr("selected", "selected");
+                    }
+                    $("input", $(div)).val(turn_parts[3]);
+                }
+            }
+        }
+    }
 };
 
 
 var disableDivAction = function(divAction, turn_info) {
     if($("#divAction").length == 0) {
-        showDivAction(divAction);
-        turn_infos = turn_info.split(",");
-        divs = $("#divAction .action");
-        for (i = 0; i < divs.length; i++){
-            turn_parts = turn_infos[i].split(":");
-            if (turn_parts[1]) {
-                $(".user_select option[value=\"" + turn_parts[1] + "\"]", $(divs[i])).attr("selected", "selected");
-            }
-            if (turn_parts[2]) {
-                $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(divs[i])).attr("selected", "selected");
-            }
-            $("input", $(divs[i])).val(turn_parts[3]);
-        }
+        showDivAction(divAction, turn_info);
     }
     $("#divAction input,#divAction select,#divAction button").attr('disabled', true);
     $("#cancelButton").removeAttr('disabled');
@@ -194,7 +236,7 @@ var removeDivAction = function(divAction) {
 
 var doButtonClick = function() {
     if(!checkTurnSum($(this))) {
-        window.alert(messages[6]);
+        window.alert(messages[0]);
     }
     else {
         /*
@@ -219,7 +261,7 @@ var doButtonClick = function() {
             });
         }
         else {
-            window.alert(messages[7])
+            window.alert(messages[1])
         }
     }
 };

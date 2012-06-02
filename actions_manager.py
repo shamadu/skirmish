@@ -87,20 +87,22 @@ class ActionsManager:
     def reset_to_initial_action(self):
         return Action(8, {})
 
-    def text_action(self, message_number, args=None):
-        if not args:
-            args = {}
-        args["message_number"] = message_number
+    def text_action(self, message, locale, *args):
+        translated_message = locale.translate(message)
+        if args:
+            translated_message = translated_message.format(*args)
+        return Action(9, {"battle_message" : translated_message})
 
-        return Action(9, args)
+    def text_spell_action(self, message):
+        return Action(9, {"battle_message" : message})
 
     def div_args(self, user_name, skirmish_users):
         user = skirmish_users[user_name]
         actions = OrderedDict()
-        actions[0] = user.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(user.character.classID, user.character.level)
-        actions[1] = user.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(user.character.classID, user.character.level)
-        actions[2] = smarty.get_ability_name(user.character.classID, user.locale) , smarty.get_spell_count(user.character.classID, user.character.level)
-        actions[3] = smarty.get_substance_name(user.character.classID, user.locale) , 0
+        actions[0] = user.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(user.character.class_id, user.character.level)
+        actions[1] = user.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(user.character.class_id, user.character.level)
+        actions[2] = smarty.get_ability_name(user.character.class_id, user.locale) , smarty.get_spell_count(user.character.class_id, user.character.level)
+        actions[3] = smarty.get_substance_name(user.character.class_id, user.locale) , 0
         return {
             "actions" : actions,
             "users" : skirmish_users.keys(),
@@ -122,10 +124,10 @@ class ActionsManager:
         locale = self.online_users[user_name].locale
         character_info = [
             character.name,
-            smarty.get_class_name(character.classID, locale),
+            smarty.get_class_name(character.class_id, locale),
             str(character.level),
-            str(smarty.get_hp_count(character)),
-            str(smarty.get_mp_count(character)),
+            str(character.health),
+            str(character.mana),
             str(character.strength),
             str(character.dexterity),
             str(character.intellect),
@@ -164,7 +166,8 @@ class ActionsManager:
         locale = self.online_users[user_name].locale
         return Action(2, {
             "spells" : spells_manager.get_spells(character, locale),
-            "spells_to_learn" : spells_manager.get_spells_to_learn(character, locale)
+            "spells_to_learn" : spells_manager.get_spells_to_learn(character, locale),
+            "substance_name" : smarty.get_substance_name(character.class_id, locale)
         })
 
     def can_create_team_action(self):
@@ -219,6 +222,7 @@ class ActionsManager:
         online_users = self.location_users[self.online_users[user_name].location]
         self.send_user_action_to_all(online_users, self.user_offline_action(user_name))
         self.online_users.pop(user_name)
+        online_users.pop(user_name)
 
     def change_location(self, user_name, location):
         online_users = self.location_users[self.online_users[user_name].location]
@@ -237,49 +241,29 @@ class ActionsManager:
 
 # skirmish callbacks
     def skirmish_user_added(self, user_name):
-        online_users = self.location_users[self.online_users[user_name].location]
         self.send_skirmish_action_to_user(user_name, self.can_leave_action())
-        self.send_user_action_to_all(online_users, self.add_skirmish_user_action(user_name))
+        self.send_user_action_to_all(self.location_users[self.online_users[user_name].location], self.add_skirmish_user_action(user_name))
 
     def skirmish_user_removed(self, location, user_name):
-        online_users = self.location_users[location]
         if self.online_users[user_name].location == location: # user still in the same location
             self.send_skirmish_action_to_user(user_name, self.reset_to_initial_action())
-        self.send_user_action_to_all(online_users, self.remove_skirmish_user_action(user_name))
+        self.send_user_action_to_all(self.location_users[location], self.remove_skirmish_user_action(user_name))
 
     def skirmish_user_left(self, user_name):
-        online_users = self.location_users[self.online_users[user_name].location]
         self.send_skirmish_action_to_user(user_name, self.can_join_action())
-        self.send_user_action_to_all(online_users, self.remove_skirmish_user_action(user_name))
+        self.send_user_action_to_all(self.location_users[self.online_users[user_name].location], self.remove_skirmish_user_action(user_name))
 
-    def registration_started(self, location):
-        online_users = self.location_users[location]
-        self.send_skirmish_action_to_all(online_users, self.text_action(0)) # registration has been started
-        self.send_skirmish_action_to_all(online_users, self.can_join_action())
+    def registration_started(self, location_users):
+        for online_user in location_users.values():
+            online_user.send_skirmish_action(self.can_join_action())
 
-    def registration_ended(self, location):
-        online_users = self.location_users[location]
-        self.send_skirmish_action_to_all(online_users, self.text_action(1)) # registration has been ended
-
-    def round_started(self, number, location, skirmish_users):
-        online_users = self.location_users[location]
-        self.send_skirmish_action_to_all(online_users, self.text_action(2, {"round" : number})) # round has been started
+    def round_started(self, skirmish_users):
         for user_name in skirmish_users.keys():
             skirmish_users[user_name].send_skirmish_action(self.can_do_turn_action(user_name, skirmish_users))
 
-    def round_ended(self, number, location, skirmish_users):
-        online_users = self.location_users[location]
-        self.send_skirmish_action_to_all(online_users, self.text_action(3, {"round" : number})) # round has been ended
+    def round_ended(self, skirmish_users):
         for user_name in skirmish_users.keys():
             skirmish_users[user_name].send_skirmish_action(self.wait_for_result_action(user_name, skirmish_users))
-
-    def game_ended(self, location):
-        online_users = self.location_users[location]
-        self.send_skirmish_action_to_all(online_users, self.text_action(4)) # game has been ended
-
-    def game_cant_start(self, location):
-        online_users = self.location_users[location]
-        self.send_skirmish_action_to_all(online_users, self.text_action(5)) # game can't be started, not enough players
 
     def user_did_turn(self, user_name, skirmish_users):
         self.send_skirmish_action_to_user(user_name, self.can_cancel_turn_action(user_name, skirmish_users))
@@ -287,14 +271,10 @@ class ActionsManager:
     def user_cancel_turn(self, user_name, skirmish_users):
         self.send_skirmish_action_to_user(user_name, self.can_do_turn_action(user_name, skirmish_users))
 
-# util methods
+    # util methods
     def send_user_action_to_all(self, online_users, action):
         for online_user in online_users.values():
             online_user.send_user_action(action)
-
-    def send_skirmish_action_to_all(self, online_users, action):
-        for online_user in online_users.values():
-            online_user.send_skirmish_action(action)
 
     def send_skirmish_action_to_user(self, user_name, action):
         if user_name in self.online_users.keys():

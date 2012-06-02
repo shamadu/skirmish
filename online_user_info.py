@@ -3,31 +3,32 @@ from collections import deque
 __author__ = 'PavelP'
 
 class TurnAction:
-    def __init__(self, who, whom, action_type, spell_id, percent):
+    def __init__(self, who, whom, type, spell_id, percent):
         self.who = who
         self.whom = whom
         # 0 - attack
         # 1 - defence
         # 2 - spell/ability
         # 3 - mana/energy regeneration
-        self.action_type = action_type
-        self.spell_id = spell_id
-        self.percent = percent
+        self.type = type
+        if type == 2:
+            self.spell_id = int(spell_id)
+        self.percent = float(percent)/100
 
 class OnlineUserInfo():
-    def __init__(self, name, locale):
+    def __init__(self, user_name, locale):
+        self.user_name = user_name
         self.counter = 10
-        self.character = {} # will be filled by db_manager
-        self.turn_info_string = ""
         self.user_callback = None
         self.user_cache = deque()
         self.skirmish_callback = None
         self.skirmish_cache = deque()
         self.character_callback = None
         self.character_cache = deque()
+        self.character = {} # will be filled by db_manager
         self.locale = locale
         self.location = "En"
-        self.user_name = name
+        self.turn_info_string = ""
 
     def set_user_callback(self, user_callback):
         self.counter = 10
@@ -98,6 +99,6 @@ class OnlineUserInfo():
         for action in actions:
             if action:
                 action_tokens = action.split(":")
-                result.append(TurnAction(self.user_name, action_tokens[0], int(action_tokens[1]), action_tokens[2], action_tokens[3]))
+                result.append(TurnAction(self.user_name, action_tokens[1], int(action_tokens[0]), action_tokens[2], int(action_tokens[3])))
 
         return result

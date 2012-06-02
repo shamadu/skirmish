@@ -11,6 +11,7 @@ from db_manager import DBManager
 import items_manager
 from smarty import get_classes
 import smarty
+import spells_manager
 from users_manager import UsersManager
 from characters_manager import CharactersManager
 from messager import Messager
@@ -58,7 +59,7 @@ class SkirmishApplication(tornado.web.Application):
         self.users_manager = UsersManager(self.db_manager, self.actions_manager)
         self.users_manager.start()
 
-        self.battle_manager = BattleManager(self.actions_manager)
+        self.battle_manager = BattleManager(self.actions_manager, self.db_manager)
 
         self.characters_manager = CharactersManager(self.db_manager, self.actions_manager)
         self.messager = Messager()
@@ -123,10 +124,13 @@ class MainHandler(BaseHandler):
             self.db_manager.update_character(self.current_user)
             self.actions_manager.user_enter(self.current_user)
 
+            database = items_manager.get_all(self.locale)
+            database.update(spells_manager.get_all_spells(self.locale))
             self.render("skirmish.html",
                 login=self.current_user,
-                substance=smarty.get_substance_name(character.classID, self.locale),
-                shop=items_manager.get_shop(self.locale))
+                substance=smarty.get_substance_name(character.class_id, self.locale),
+                shop=items_manager.get_shop(self.locale),
+                database=database)
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated
@@ -154,9 +158,9 @@ class LoginHandler(BaseHandler):
 class CreateCharacterHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self, *args, **kwargs):
-        classID = self.get_argument("classID")
+        class_id = self.get_argument("class_id")
         # insert the new character
-        self.db_manager.create_character(self.current_user, classID)
+        self.db_manager.create_character(self.current_user, class_id)
 
 class LogoutHandler(BaseHandler):
     @tornado.web.authenticated
@@ -209,7 +213,10 @@ class PollCharacterInfoHandler(BaseHandler):
         result = {}
         if action.type == 2:
             result["type"] = action.args["type"]
-            result["spells_div"] = self.render_string("spells_table.html", spells=action.args["spells"], spells_to_learn=action.args["spells_to_learn"])
+            result["spells_div"] = self.render_string("spells_table.html",
+                spells=action.args["spells"],
+                spells_to_learn=action.args["spells_to_learn"],
+                substance_name=action.args["substance_name"])
         elif action.type == 3:
             result = action.args
             result["team_div"] = self.render_string("create_team.html")
@@ -354,12 +361,20 @@ class ItemsDBHandler(BaseHandler):
     @user_online
     def post(self, *args, **kwargs):
         if self.get_argument("action") == 'get_item':
-            item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
-            self.write(self.render_string("item_description.html",
-                item=item,
-                group_name=items_manager.get_item_group_name(item.type, self.locale),
-                buy_button=False,
-                can_buy=False))
+            id = int(self.get_argument("item_id"))
+            if id >= items_manager.build_id(10, 0) and id < items_manager.build_id(18, 0):
+                spell = spells_manager.get_spell(id, self.locale)
+                self.write(self.render_string("spell_description.html",
+                    spell=spell,
+                    group_name=smarty.get_class_name(spell.class_id, self.locale),
+                    substance_name=smarty.get_substance_name(spell.class_id, self.locale)))
+            else:
+                item = items_manager.get_item(id, self.locale)
+                self.write(self.render_string("item_description.html",
+                    item=item,
+                    group_name=items_manager.get_item_group_name(item.type, self.locale),
+                    buy_button=False,
+                    can_buy=False))
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

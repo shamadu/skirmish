@@ -56,15 +56,15 @@ item_groups = {
     6 : _("Legs"),
     7 : _("Feet"),
     8 : _("Cloak"),
-    }
+}
 
 # means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
 build_id = lambda type, id: 100*type + id
 
 items = {
     #weapons
-    build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 0.2, 0.3),
-    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(1, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 0.4, 0.5),
+    build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 1.2, 2.2),
+    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(1, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
     #shields
     build_id(1, 0) : Item(build_id(1, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     build_id(1, 1) : Item(build_id(1, 1), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 15, _("Just wooden shield with iron circle in center")),
@@ -85,20 +85,34 @@ items = {
     build_id(8, 0) : Item(build_id(8, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     }
 
+shop_items_ids = [build_id(0, 1), build_id(1, 1), build_id(2, 1)]
+
 def get_shop(locale):
     shop = OrderedDict()
-    for id in item_groups.keys():
-        shop[locale.translate(item_groups[id])] = OrderedDict()
+    for group_name in item_groups.values():
+        shop[locale.translate(group_name)] = OrderedDict()
+    for id in shop_items_ids:
+        item = items[id]
+        shop[locale.translate(item_groups[item.type])][item.id] = locale.translate(item.name)
+    return shop
+
+def get_all(locale):
+    all = OrderedDict()
+    for group_name in item_groups.values():
+        all[locale.translate(group_name)] = OrderedDict()
     for item in items.values():
         if item.type != -1:
-            shop[locale.translate(item_groups[item.type])][item.id] = locale.translate(item.name)
-    return shop
+            all[locale.translate(item_groups[item.type])][item.id] = locale.translate(item.name)
+    return all
 
 def get_item_group_name(type, locale):
     return locale.translate(item_groups[type])
 
 def get_item(id, locale):
     return items[id].translate(locale)
+
+def get_current_weapon_name(character, locale):
+    return get_item(int(character.weapon.split(",")[0]), locale).name
 
 def get_items(item_ids_str, locale):
     items = list()
@@ -163,9 +177,9 @@ def get_bonuses(item_id):
     return result
 
 # return default stuff
-def get_default_stuff(classID):
+def get_default_stuff(class_id):
     stuff = []
-    if classID < 4: # non casters
+    if class_id < 4: # non casters
         stuff = [
               str(build_id(0, 0))
             , str(build_id(1, 0))

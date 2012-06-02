@@ -1,4 +1,4 @@
-{% comment login = string user name, sunstance = string substance name, shop = shop content ordereddict(section_name, ordereddict(id, name)) %}
+{% comment login = string user name, sunstance = string substance name, shop = shop content ordereddict(section_name, ordereddict(id, name)), database - the same for all objects %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -40,12 +40,14 @@
             </li>
         </ul>
     </div>
-    <div id="contentDiv" class="contentDiv">
+    <div id="contentDiv" class="mainContentDiv">
+        <div id="baseInfoBar" class="baseInfoBar divCenter">
+            {{ _("Gold") }}<label id="goldLabel"></label>
+        </div>
         <div id="battleDivContainer" class="contentDiv">
             <div id="divMain" class="divMain">
                 <div class="divCenter">
-                    <p>{{ _("Hello") }}, {{ login }}.</p>
-                    <p><button id="logoutButton" style="margin:0 5px 0 0;">{{ _("Logout") }}</button><button id="dropButton">{{ _("Drop") }}</button></p>
+                    <button id="logoutButton" style="margin:0 5px 0 0;">{{ _("Logout") }}</button><button id="dropButton">{{ _("Drop") }}</button>
                 </div>
                 <table id="characterInfoTable" class="characterInfoTable">
                     <tr><td>{{ _("Name") }}</td><td><label id="nameLabel_battle"></label></td></tr>
@@ -72,10 +74,10 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="1">
-                            <textarea id="enTextArea" class="textArea" rows="10" cols="0" readonly="readonly"></textarea>
+                            <div id="enTextArea" class="textArea"></div>
                         </div>
                         <div class="tab-pane" id="2">
-                            <textarea id="ruTextArea" class="textArea" rows="10" cols="0" readonly="readonly"></textarea>
+                            <div id="ruTextArea" class="textArea"></div>
                         </div>
                     </div>
                     <div class="divSend">
@@ -107,7 +109,6 @@
                             <tr><td>{{ _("Magic defence") }}</td><td><label id="magicDefenceLabel"></label></td></tr>
                             <tr><td>{{ _("Armor") }}</td><td><label id="armorLabel"></label></td></tr>
                             <tr><td>{{ _("Experience") }}</td><td><label id="experienceLabel"></label></td></tr>
-                            <tr><td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td></tr>
                             <tr><td>{{ _("Team") }}</td><td><label id="teamLabel"></label></td></tr>
                             <tr><td>{{ _("Rank") }}</td><td><label id="rankLabel"></label></td></tr>
                         </table>
@@ -139,9 +140,6 @@
 
 
         <div id="shopDivContainer" class="contentDiv">
-            <div id="goldDiv" class="divCenter">
-                {{ _("Gold") }} <label id="shopGoldLabel" style="width: 100px; display: inline;"></label>
-            </div>
             <div id="shopMenu" class="shopMenu">
                 <ul>
                     {% for item_group_name in shop.keys() %}
@@ -162,11 +160,11 @@
         <div id="dbDivContainer" class="contentDiv">
             <div id="dbMenu" class="shopMenu">
                 <ul>
-                    {% for item_group_name in shop.keys() %}
+                    {% for item_group_name in database.keys() %}
                     <li><a href="javascript:void(0)">{{ item_group_name }}</a>
                         <ul>
-                            {% for item_id in shop[item_group_name].keys() %}
-                            <li><a href="javascript:void(0)" item_id="{{ item_id }}">{{ shop[item_group_name][item_id] }}</a></li>
+                            {% for item_id in database[item_group_name].keys() %}
+                            <li><a href="javascript:void(0)" item_id="{{ item_id }}">{{ database[item_group_name][item_id] }}</a></li>
                             {% end %}
                         </ul>
                     </li>

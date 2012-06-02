@@ -3,11 +3,11 @@ from battle_bot import BattleBot
 __author__ = 'Pavel Padinker'
 
 class BattleManager():
-    def __init__(self, actions_manager):
+    def __init__(self, actions_manager, db_manager):
         self.actions_manager = actions_manager
         self.battle_bots = {
-            "En" : BattleBot(actions_manager, "En"),
-            "Ru" : BattleBot(actions_manager, "Ru")
+            "En" : BattleBot(actions_manager, db_manager, "En"),
+            "Ru" : BattleBot(actions_manager, db_manager, "Ru")
         }
         for battle_bot in self.battle_bots.values():
             battle_bot.start()

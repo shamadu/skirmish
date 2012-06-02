@@ -15,7 +15,7 @@ var initialize = function () {
     characterInfoUpdater.poll();
 
     width = $("#sideBar").width();
-    $("#contentDiv").css('left', width + 5 + 'px');
+    $("#contentDiv").css('left', width + 10 + 'px');
 
     showBattle();
     $("#battleAnchor").click(showBattle);
@@ -98,8 +98,6 @@ var characterInfoUpdater = {
             $("#levelLabel_battle").text(characterInfo[2]);
             $("#HPLabel_battle").text(characterInfo[3]);
             $("#MPLabel_battle").text(characterInfo[4]);
-
-            $("#shopGoldLabel").text(characterInfo[16]);
         }
         // character stuff update
         else if (action.type == 1) {
@@ -364,7 +362,7 @@ var battleBotUpdater = {
         // can do turn
         else if(action.type == 5) {
             removeDivAction();
-            showDivAction(action.div_action);
+            showDivAction(action.div_action, action.turn_info);
         }
         // can cancel
         else if(action.type == 6) {
@@ -384,16 +382,9 @@ var battleBotUpdater = {
         // message action
         else if(action.type == 9) {
             message = {};
-            if(action.message_number == 2 || action.message_number == 3)
-            {
-                message["body"] = messages[action.message_number].f(action.round);
-            }
-            else
-            {
-                message["body"] = messages[action.message_number];
-            }
+            message["body"] = action.battle_message;
             message["from"] = "bot";
-            addTextTo("#tabChat >div>div.active>textarea", format_message(message))
+            addTextTo("#tabChat >div>div.active>div", format_message(message))
         }
 
         battleBotUpdater.errorSleepTime = 500;

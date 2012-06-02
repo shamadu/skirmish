@@ -29,6 +29,23 @@ error_messages = {
     4 : _("Invitation has been sent")
 }
 
+battle_messages = {
+    0 : _("Registration has been started"),
+    1 : _("Registration has been ended"),
+    2 : _("Round {0} has been started"),
+    3 : _("Round {0} has been ended"),
+    4 : _("Game has been ended"),
+    5 : _("Game can't be started, not enough players"),
+    6 : _("{0} attacked {1} with {2} and damaged him for {3}hp({4}hp) [{5}/{6}]"),
+    7 : _("{0} tried to attack {1} with {2}, but couldn't break protection({3})"),
+    8 : _("{0} makes critical hit!"),
+    9 : _("{0} is dead"),
+    10 : _("{0} ran from skirmish"),
+    11 : _("Team {0} win"),
+    12 : _("{0} win"),
+    13 : _("Nobody win"),
+}
+
 locales = OrderedDict([
     ("en_US", "English"),
     ("ru", u"Русский")
@@ -61,56 +78,21 @@ main_abilities = [
     _("Defence")
 ]
 
-spells = {
-    # warrior
-    0 : {
-        1 : [_("Berserk Fury"), _("Disarmament")]
-    },
-    # guardian
-    1 : {
-        1 : [_("Armor"), _("Shield Block")]
-    },
-    # archer
-    2 : {
-        1 : [_("Evasion"), _("Berserk Fury")]
-    },
-    # rogue
-    3 : {
-        1 : [_("Evasion"), _("Trip")]
-    },
-    # mage
-    4 : {
-        1 : [_("Frost Needle"), _("Fire Spark")]
-    },
-    # priest
-    5 : {
-        1 : [_("Prayer for Attack"), _("Prayer for Protection")]
-    },
-    # warlock
-    6 : {
-        1 : [_("Curse of Weakness"), _("Leech Life")]
-    },
-    # necromancer
-    7 : {
-        1 : [_("Infection"), _("Stench")]
-    }
-    }
-
 def get_classes(locale):
     result = dict()
     for class_id in classes.keys():
         result[class_id] = locale.translate(classes[class_id])
     return result
 
-def get_class_name(classID, locale):
-    return locale.translate(classes[classID])
+def get_class_name(class_id, locale):
+    return locale.translate(classes[class_id])
 
-def get_attack_count(classID, level):
+def get_attack_count(class_id, level):
     attack_count = 1
-    if 3 == classID:
+    if 3 == class_id:
         if level > 5:
             attack_count = 2
-    elif 2 == classID:
+    elif 2 == class_id:
         if level > 7:
             attack_count = 4
         elif level > 5:
@@ -120,14 +102,14 @@ def get_attack_count(classID, level):
 
     return attack_count
 
-def get_defence_count(classID, level):
+def get_defence_count(class_id, level):
     defence_count = 1
-    if 0 == classID:
+    if 0 == class_id:
         if level > 7:
             defence_count = 3
         elif level > 5:
             defence_count = 2
-    elif 1 == classID:
+    elif 1 == class_id:
         if level > 7:
             defence_count = 4
         elif level > 5:
@@ -137,26 +119,26 @@ def get_defence_count(classID, level):
 
     return defence_count
 
-def get_spell_count(classID, level):
+def get_spell_count(class_id, level):
     spell_count = 1
     # TODO: add level condition - 4 or 5 or smth else
-    if 5 == classID or 6 == classID:
+    if 5 == class_id or 6 == class_id:
         spell_count = 2
 
     return spell_count
 
-def get_ability_name(classID, locale):
+def get_ability_name(class_id, locale):
     ability_name = ""
-    if classID < 4:
+    if class_id < 4:
         ability_name = locale.translate(ability_names[0])
     else:
         ability_name = locale.translate(ability_names[1])
 
     return ability_name
 
-def get_substance_name(classID, locale):
+def get_substance_name(class_id, locale):
     substance_name = ""
-    if classID < 4:
+    if class_id < 4:
         substance_name = locale.translate(substance_names[0])
     else:
         substance_name = locale.translate(substance_names[1])
@@ -164,37 +146,37 @@ def get_substance_name(classID, locale):
     return substance_name
 
 def get_mp_count(character):
-    if character.classID < 4:
+    if character.class_id < 4:
         return character.dexterity*3
     else:
         return character.wisdom*1.7
 
 def get_hp_count(character):
-    return character.level + character.strength
+    return character.level + character.strength + character.constitution
 
 # return default parameters : str, dex, int, wis, con
-def get_default_parameters(classID):
+def get_default_parameters(class_id):
     parameters = []
-    if classID == 0: # Warrior
+    if class_id == 0: # Warrior
         parameters = [8, 4, 3, 3, 5]
-    elif classID == 1: # Guardian
+    elif class_id == 1: # Guardian
         parameters = [5, 3, 3, 3, 8]
-    elif classID == 2: # Archer
+    elif class_id == 2: # Archer
         parameters = [5, 7, 3, 3, 5]
-    elif classID == 3: # Rogue
+    elif class_id == 3: # Rogue
         parameters = [6, 6, 3, 3, 5]
-    elif classID == 4: # Mage
+    elif class_id == 4: # Mage
         parameters = [3, 3, 8, 5, 4]
-    elif classID == 5: # Priest
+    elif class_id == 5: # Priest
         parameters = [3, 3, 5, 8, 4]
-    elif classID == 6: # Warlock
+    elif class_id == 6: # Warlock
         parameters = [3, 3, 7, 6, 4]
-    elif classID == 7: # Necromancer
+    elif class_id == 7: # Necromancer
         parameters = [3, 3, 6, 7, 4]
     return parameters
 
 def get_regeneration(character):
-    if character.classID < 4:
+    if character.class_id < 4:
         return 0.4*character.dexterity + 0.3*character.strength
     else:
         return 0.4*character.wisdom + 0.3*character.intellect
@@ -214,32 +196,39 @@ def get_magic_defence(character):
 def get_armor(character):
     return character.dexterity*3 + character.strength*6
 
-def get_spell_length(character):
+def get_spell_duration(character):
     return character.intellect/3
 
-def get_damage(character_to_attack, character_to_defence):
-    min_damage = items_manager.items[character_to_attack.current_weapon_id].min_dmg
-    max_damage = items_manager.items[character_to_attack.current_weapon_id].max_dmg
+def get_damage(character_to_attack, attack_percent, character_to_defence):
+    min_damage = items_manager.items[character_to_attack.current_weapon_id].min_damage
+    max_damage = items_manager.items[character_to_attack.current_weapon_id].max_damage
     weapon_damage = random.uniform(min_damage, max_damage)
     damage = max(0.90 + (character_to_attack.strength / 100), 1) ** 2 * weapon_damage
-    absorb = max(character_to_defence.armor * 0.01)
-    return damage*absorb
+    absorb = character_to_defence.armor * 0.001
+    return round((damage*attack_percent) - damage*absorb, 2)
 
-def is_hit(character_to_attack, attack_percent, character_to_defence, defence_percent):
-    if (attack_percent*character_to_attack.attack)/(defence_percent*character_to_defence.defence) > 1.5: # definitely not hit
-        return True
-    elif random.random() < 2 - (attack_percent*character_to_attack.attack)/(defence_percent*character_to_defence.defence):
+def is_hit(character_to_attack, attack_percent, defenders):
+    defence = 0.001 # attack 1 on 1% should hit player without defence at all
+    for defender in defenders:
+        defence += defender[0].defence*defender[1]
+    if random.uniform(0.8, 1.3) < (attack_percent*character_to_attack.attack)/defence:
         return True
     return False
 
-def is_critical_damage(character_to_attack, character_to_defence):
+def is_critical_hit(character_to_attack, character_to_defence):
     return random.random() < character_to_attack.dexterity/1000
 
+def is_critical_magic_hit(character_to_attack, character_to_defence):
+    return random.random() < character_to_attack.intellect/1000
+
 def get_experience_for_damage(damage):
-    return damage * 10
+    return round(damage * 10)
 
 def get_experience_for_spell_damage(damage):
-    return damage * 15
+    return round(damage * 15)
+
+def get_experience_for_spell_heal(damage):
+    return round(damage * 15)
 
 def get_experience_for_defence(damage):
-    return damage * 10
+    return round(damage * 5)

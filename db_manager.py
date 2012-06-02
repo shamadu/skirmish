@@ -10,7 +10,7 @@ class DBManager():
         self.db.execute('create table if not exists characters '
                         '(id integer(11) primary key not null auto_increment unique, '
                         'name text, '
-                        'classID integer, '
+                        'class_id integer, '
                         'level integer default 1, '
                         'strength integer default 1, '
                         'dexterity integer default 1, '
@@ -39,6 +39,8 @@ class DBManager():
 
     def update_character(self, user_name):
         character = self.get_character(user_name)
+        character.health = smarty.get_hp_count(character)
+        character.mana = smarty.get_mp_count(character)
         character.current_weapon_id = int(character.weapon.split(",")[0])
         character.attack = smarty.get_attack(character)
         character.defence = smarty.get_defence(character)
@@ -56,15 +58,15 @@ class DBManager():
     def get_character(self, name):
         return self.db.get("select * from characters where name = %s", name)
 
-    def create_character(self, name, classID):
+    def create_character(self, name, class_id):
         if not self.get_character(name):
-            default_parameters = smarty.get_default_parameters(int(classID))
-            default_stuff = items_manager.get_default_stuff(int(classID))
-            self.db.execute("insert into characters (name, classID, strength, dexterity, intellect, wisdom, constitution, "
+            default_parameters = smarty.get_default_parameters(int(class_id))
+            default_stuff = items_manager.get_default_stuff(int(class_id))
+            self.db.execute("insert into characters (name, class_id, strength, dexterity, intellect, wisdom, constitution, "
                             "weapon, shield, head, body, left_hand, right_hand, legs, feet, cloak, spells) values "
                             "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 , name
-                , classID
+                , class_id
                 , str(default_parameters[0])
                 , str(default_parameters[1])
                 , str(default_parameters[2])
@@ -97,10 +99,18 @@ class DBManager():
 
     def change_character_field(self, user_name, field_name, field_value):
         self.db.execute("update characters set {0}=%s where name=%s".format(field_name), field_value, user_name)
+
+    def change_character_field_update(self, user_name, field_name, field_value):
+        self.change_character_field(user_name, field_name, field_value)
         self.update_character(user_name)
 
     def change_character_fields(self, user_name, fields):
         if len(fields) > 0:
             fields_str = ", ".join("{0}='{1}'".format(key, str(fields[key])) for key in fields.keys())
             self.db.execute("update characters set {0} where name=%s".format(fields_str), user_name)
+
+    def change_character_fields_update(self, user_name, fields):
+        if len(fields) > 0:
+            self.change_character_fields(user_name, fields)
             self.update_character(user_name)
+
