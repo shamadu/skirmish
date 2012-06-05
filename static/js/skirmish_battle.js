@@ -39,7 +39,7 @@ var leaveButtonClick = function () {
 };
 
 var resize_battle = function() {
-    width = $("#characterInfoTable").width();
+    width = $("#divMain").width();
     $("#divChat").css('right', width + 15 + 'px');
 
     width = $("#divUsers").width();
@@ -63,9 +63,19 @@ var keyPress = function(event) {
     if ((event.which == 10 || event.which == 13 )) {
         if(event.ctrlKey) {
             $("#sendTextArea").val($("#sendTextArea").val() + "\n");
-            $("#sendTextArea").focus();
+            //browserIsIE
+            if (this.createTextRange) {
+                var range = this.createTextRange();
+                range.collapse(false);
+                range.select();
+            }
+            else {
+                $("#sendTextArea").focus();
+                $("#sendTextArea").animate({ scrollTop: $("#sendTextArea").prop("scrollHeight") - $("#sendTextArea").height() }, 0);
+            }
         }
         else {
+            event.preventDefault();
             sendFunc();
         }
     }

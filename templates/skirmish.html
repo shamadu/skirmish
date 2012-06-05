@@ -42,21 +42,22 @@
     </div>
     <div id="contentDiv" class="mainContentDiv">
         <div id="baseInfoBar" class="baseInfoBar divCenter">
-            {{ _("Gold") }}<label id="goldLabel"></label>
+            <table id="characterInfoTable" class="characterInfoTable">
+                <tr>
+                    <td>{{ _("Name") }}</td><td><label id="nameLabel_battle"></label></td>
+                    <td>{{ _("Class") }}</td><td><label id="classLabel_battle"></label></td>
+                    <td>{{ _("Level") }}</td><td><label id="levelLabel_battle"></label></td>
+                    <td>{{ _("Health") }}</td><td><label id="HPLabel_battle"></label></td>
+                    <td>{{ substance }}</td><td><label id="MPLabel_battle"></label></td>
+                    <td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td>
+                </tr>
+            </table>
         </div>
         <div id="battleDivContainer" class="contentDiv">
             <div id="divMain" class="divMain">
                 <div class="divCenter">
-                    <button id="logoutButton" style="margin:0 5px 0 0;">{{ _("Logout") }}</button><button id="dropButton">{{ _("Drop") }}</button>
-                </div>
-                <table id="characterInfoTable" class="characterInfoTable">
-                    <tr><td>{{ _("Name") }}</td><td><label id="nameLabel_battle"></label></td></tr>
-                    <tr><td>{{ _("Class") }}</td><td><label id="classLabel_battle"></label></td></tr>
-                    <tr><td>{{ _("Level") }}</td><td><label id="levelLabel_battle"></label></td></tr>
-                    <tr><td>{{ _("Health") }}</td><td><label id="HPLabel_battle"></label></td></tr>
-                    <tr><td>{{ substance }}</td><td><label id="MPLabel_battle"></label></td></tr>
-                </table>
-                <div class="divCenter">
+                    <p><button id="logoutButton" style="margin:0 5px 0 0;">{{ _("Logout") }}</button></p>
+                    <p><button id="dropButton">{{ _("Drop") }}</button></p>
                     <p><button id="joinButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Join") }}</button><button id="leaveButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Leave") }}</button></p>
                 </div>
             </div>

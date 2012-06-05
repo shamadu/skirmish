@@ -174,7 +174,7 @@ var messager = {
     onSuccess: function(response) {
         var message = $.parseJSON(response);
         if(message.to == "all") {
-            addTextTo($("#tabChat >div>div.active>textarea"), format_message(message))
+            addTextTo($("#tabChat >div>div.active>div"), format_message(message))
         }
 
         messager.errorSleepTime = 500;

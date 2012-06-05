@@ -7,11 +7,8 @@
 }
 
 .baseInfoBar label {
-    position: absolute;
     width: auto;
     display: inline;
-    margin-left: 10px;
-    margin-right: 10px;
 }
 
 .commonSelect {
@@ -30,7 +27,7 @@
     height: auto;
     left: 5px;
     right: 5px;
-    top: 5px;
+    top: 0px;
     bottom: 5px;
 }
 
@@ -40,7 +37,7 @@
     height: auto;
     left: 0;
     right: 0;
-    top: 15px;
+    top: 20px;
     bottom: 0;
 }
 
@@ -91,7 +88,7 @@
     bottom: 20px;
     top: auto;
     width: 300px;
-    height: 20px;
+    height: 30px;
 }
 
 .sendButton {
