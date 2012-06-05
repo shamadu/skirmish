@@ -25,6 +25,7 @@ class BattleBot(Thread):
         self.long_spells = list()
         self.long_affect_victim_spells = dict()
         self.long_affect_attacker_spells = dict()
+        self.long_after_attack_spells = dict()
         self.turn_done_count = 0
         self.dead_users = dict()
         self.ran_users = list()
@@ -39,6 +40,8 @@ class BattleBot(Thread):
         for spell_actions in self.long_affect_victim_spells.values():
             del spell_actions[:]
         for spell_actions in self.long_affect_attacker_spells.values():
+            del spell_actions[:]
+        for spell_actions in self.long_after_attack_spells.values():
             del spell_actions[:]
         del self.long_spells[:]
         self.victims.clear()
@@ -108,12 +111,16 @@ class BattleBot(Thread):
         self.round_start_long_spells()
 
         # get and process spells with type 3 - over time spells which affects victim of attack
-        self.apply_long_affect_victim_spells(actions[2])
-        self.round_start_long_affect_victim_spells()
+        self.apply_long_affect_attack_spells(self.get_spells_by_type(actions[2], 3), self.long_affect_victim_spells)
+        self.round_start_long_affect_attack_spells(self.long_affect_victim_spells)
 
         # get and process spells with type 5 - over time spells which affects attacker
-        self.apply_long_affect_attacker_spells(actions[2])
-        self.round_start_long_affect_attacker_spells()
+        self.apply_long_affect_attack_spells(self.get_spells_by_type(actions[2], 5), self.long_affect_attacker_spells)
+        self.round_start_long_affect_attack_spells(self.long_affect_attacker_spells)
+
+        # get and process spells with type 6 - over time spells which affects attacker
+        self.apply_long_affect_attack_spells(self.get_spells_by_type(actions[2], 6), self.long_after_attack_spells)
+        self.round_start_long_affect_attack_spells(self.long_after_attack_spells)
 
         # direct damage
         self.process_direct_spell_actions(actions[2], 1)
@@ -126,8 +133,9 @@ class BattleBot(Thread):
         self.process_regeneration_actions(actions[3])
 
         self.round_end_long_spells()
-        self.round_end_long_affect_victim_spells()
-        self.round_end_long_affect_attacker_spells()
+        self.round_end_long_affect_attack_spells(self.long_affect_victim_spells)
+        self.round_end_long_affect_attack_spells(self.long_affect_attacker_spells)
+        self.round_end_long_affect_attack_spells(self.long_after_attack_spells)
 
         for user in self.skirmish_users.values():
             if user.character.health <= 0:
@@ -169,7 +177,7 @@ class BattleBot(Thread):
 
             self.reset()
 
-    # check spells which cold affect attack, line phantoms, paralyze, etc.
+    # check spells which could affect attack, like phantoms, paralyze, etc.
     def process_affect_attack_spells(self, attack_action):
         who_character = self.skirmish_users[attack_action.who].character
         whom_character = self.skirmish_users[attack_action.whom].character
@@ -191,6 +199,15 @@ class BattleBot(Thread):
                         break
         return spell_stop_attack
 
+    # check spells which be applied after attack, like mirror, plague, second life, etc.
+    def process_after_attack_spells(self, attack_action, damage):
+        who_character = self.skirmish_users[attack_action.who].character
+        if attack_action.whom in self.long_after_attack_spells.keys():
+            for spell_action in self.long_after_attack_spells[attack_action.whom]:
+                spell_action.process_after_attack(who_character, damage)
+                for online_user in self.location_users.values():
+                    online_user.send_skirmish_action(self.actions_manager.text_spell_action(spell_action.get_after_attack_message(online_user.locale)))
+
     def process_attack_defence_actions(self, attack_actions, defence_actions):
         for action in attack_actions: # attack
             if not self.process_affect_attack_spells(action): # spells didn't help, calculate hit
@@ -201,27 +218,28 @@ class BattleBot(Thread):
                 who_character = self.skirmish_users[action.who].character
                 whom_character = self.skirmish_users[action.whom].character
                 if smarty.is_hit(who_character, action.percent, defenders):
-                    amount = smarty.get_damage(who_character, action.percent, whom_character)
+                    damage = smarty.get_damage(who_character, action.percent, whom_character)
                     if smarty.is_critical_hit(who_character, whom_character):
                         self.critical_hit(action.who)
-                        amount *= 1.5
-                    whom_character.health -= amount
+                        damage *= 1.5
+                    whom_character.health -= damage
                     experience = 0
                     if who_character.name != whom_character.name:
-                        experience = smarty.get_experience_for_damage(amount)
+                        experience = smarty.get_experience_for_damage(damage)
                         who_character.experience += experience
                         if whom_character.health <= 0 and not action.whom in self.victims.keys():
                             self.victims[action.whom] = action.who
-                    self.succeeded_attack(action.who, action.whom, amount, whom_character.health, experience, who_character.experience)
+                    self.succeeded_attack(action.who, action.whom, damage, whom_character.health, experience, who_character.experience)
+                    self.process_after_attack_spells(action, damage)
                 else: # not hit - set exp to defenders
-                    amount = smarty.get_damage(who_character, action.percent, whom_character)
+                    damage = smarty.get_damage(who_character, action.percent, whom_character)
                     if smarty.is_critical_hit(who_character, whom_character):
-                        amount *= 1.5
+                        damage *= 1.5
                     all_defence = 0
                     for defender in defenders:
                         if who_character.name != defender[0].name:
                             all_defence += defender[0].defence
-                    all_experience = smarty.get_experience_for_defence(amount)
+                    all_experience = smarty.get_experience_for_defence(damage)
                     defence_experience = list()
                     for def_action in defence_actions: # defence
                         if def_action.whom == action.whom:
@@ -253,33 +271,23 @@ class BattleBot(Thread):
             else:
                 self.failed_spell_low_mana(spell_action)
 
-    def apply_long_affect_victim_spells(self, spell_actions):
-        turn_actions = self.get_spells_by_type(spell_actions, 3)
-        for turn_action in turn_actions:
+    def apply_long_affect_attack_spells(self, spell_actions, spells_container):
+        for turn_action in spell_actions:
             spell_action = spells_manager.spells_action_classes[turn_action.spell_id]()
             spell_action.init(self.skirmish_users[turn_action.who].character, self.skirmish_users[turn_action.whom].character)
             if spell_action.consume_mana():
                 if spell_action.is_hit(turn_action.percent):
                     whom_name = spell_action.whom_character.name
-                    if not whom_name in self.long_affect_victim_spells.keys():
-                        self.long_affect_victim_spells[whom_name] = list()
-                    self.long_affect_victim_spells[whom_name].append(spell_action)
-                else:
-                    self.failed_spell(spell_action)
-            else:
-                self.failed_spell_low_mana(spell_action)
-
-    def apply_long_affect_attacker_spells(self, spell_actions):
-        turn_actions = self.get_spells_by_type(spell_actions, 5)
-        for turn_action in turn_actions:
-            spell_action = spells_manager.spells_action_classes[turn_action.spell_id]()
-            spell_action.init(self.skirmish_users[turn_action.who].character, self.skirmish_users[turn_action.whom].character)
-            if spell_action.consume_mana():
-                if spell_action.is_hit(turn_action.percent):
-                    whom_name = spell_action.whom_character.name
-                    if not whom_name in self.long_affect_attacker_spells.keys():
-                        self.long_affect_attacker_spells[whom_name] = list()
-                    self.long_affect_attacker_spells[whom_name].append(spell_action)
+                    if not whom_name in spells_container.keys():
+                        spells_container[whom_name] = list()
+                    position = len(spells_container[whom_name]) # insert at the end if there is no the same spell. Replace the same spell otherwise
+                    for i in range(len(spells_container[whom_name])):
+                        if spells_container[whom_name][i].spell_info.id == spell_action.spell_info.id:
+                            spells_container[whom_name][i].on_effect_end()
+                            spells_container[whom_name].pop(i)
+                            position = i
+                            break
+                    spells_container[whom_name].insert(position, spell_action)
                 else:
                     self.failed_spell(spell_action)
             else:
@@ -291,15 +299,8 @@ class BattleBot(Thread):
             for online_user in self.location_users.values():
                 online_user.send_skirmish_action(self.actions_manager.text_spell_action(spell_action.get_message(online_user.locale)))
 
-    def round_start_long_affect_victim_spells(self):
-        for spell_actions in self.long_affect_victim_spells.values():
-            for spell_action in spell_actions:
-                spell_action.round_start()
-                for online_user in self.location_users.values():
-                    online_user.send_skirmish_action(self.actions_manager.text_spell_action(spell_action.get_message(online_user.locale)))
-
-    def round_start_long_affect_attacker_spells(self):
-        for spell_actions in self.long_affect_attacker_spells.values():
+    def round_start_long_affect_attack_spells(self, spells_container):
+        for spell_actions in spells_container.values():
             for spell_action in spell_actions:
                 spell_action.round_start()
                 for online_user in self.location_users.values():
@@ -310,17 +311,11 @@ class BattleBot(Thread):
             if spell_action.round_end():
                 self.long_spells.remove(spell_action)
 
-    def round_end_long_affect_victim_spells(self):
-        for spell_actions in self.long_affect_victim_spells.values():
+    def round_end_long_affect_attack_spells(self, spells_container):
+        for spell_actions in spells_container.values():
             for spell_action in spell_actions:
                 if spell_action.round_end():
-                    self.long_affect_victim_spells[spell_action.whom_character.name].remove(spell_action)
-
-    def round_end_long_affect_attacker_spells(self):
-        for spell_actions in self.long_affect_attacker_spells.values():
-            for spell_action in spell_actions:
-                if spell_action.round_end():
-                    self.long_affect_attacker_spells[spell_action.whom_character.name].remove(spell_action)
+                    spells_container[spell_action.whom_character.name].remove(spell_action)
 
     def process_direct_spell_actions(self, spell_actions, type):
         turn_actions = self.get_spells_by_type(spell_actions, type)
