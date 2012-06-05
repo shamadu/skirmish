@@ -29,6 +29,7 @@ class OnlineUserInfo():
         self.locale = locale
         self.location = "En"
         self.turn_info_string = ""
+        self.is_in_skirmish = False
 
     def set_user_callback(self, user_callback):
         self.counter = 10

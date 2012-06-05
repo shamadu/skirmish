@@ -65,10 +65,11 @@ class BattleBot(Thread):
                 if len(self.skirmish_users) > 1:
                     self.phase = 1
                     self.registration_ended()
-                    self.game_started()
                 else:
                     self.game_cant_start()
             elif self.phase > 0 and self.counter == 1:
+                if self.phase == 1: # first round
+                    self.game_started()
                 self.round_started()
             elif self.phase > 0 and (self.counter == smarty.turn_time or self.turn_done_count == len(self.skirmish_users)):
                 self.counter = 0
@@ -391,6 +392,7 @@ class BattleBot(Thread):
         self.actions_manager.round_ended(self.skirmish_users)
 
     def game_started(self):
+        self.actions_manager.game_started(self.skirmish_users)
         for user_name in self.skirmish_users.keys():
             self.characters[user_name] = copy.copy(self.skirmish_users[user_name].character)
             self.skirmish_users[user_name].character.experience = 0

@@ -101,46 +101,52 @@ var addTextTo = function(element_id, message) {
     element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
 };
 
-var showDivAction = function(divAction, turn_info) {
-    if($("#divAction").length == 0) {
-        $("#divMain").append(divAction);
-        resize_battle();
+var addDivAction = function(divAction) {
+    $("#divMain").append(divAction);
+    resize_battle();
+    $("#cancelButton").attr('disabled', 'true');
 
-        $("#cancelButton").attr('disabled', 'true');
+    $("#divAction input[type=text]").keyup(function(){
+        value = $(this).val();
+        lastChar = value.charAt(value.length - 1);
+        if(lastChar > '9' || lastChar < '0') {
+            $(this).val(value.substring(0, value.length - 1))
+        }
+    });
 
-        $("#divAction input[type=text]").keyup(function(){
-            value = $(this).val();
-            lastChar = value.charAt(value.length - 1);
-            if(lastChar > '9' || lastChar < '0') {
-                $(this).val(value.substring(0, value.length - 1))
-            }
-        });
+    $("#divAction input[type=text]").change(function(){
+        if(!checkTurnSum($(this))) {
+            window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
+        }
+    });
 
-        $("#divAction input[type=text]").change(function(){
-            if(!checkTurnSum($(this))) {
-                window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
-            }
-        });
+    $("#divAction select.spell_select").change(function(){
+        if($("option:selected", this).hasClass("self")) {
+            $(".user_select option[value=\"" + $("#nameLabel_battle").text() + "\"]", $(this).parent()).attr("selected", "selected");
+            $(".user_select", $(this).parent()).attr('disabled', 'true');
+        }
+        else {
+            $(".user_select", $(this).parent()).removeAttr('disabled');
+        }
+    });
 
-        $("#divAction select.spell_select").change(function(){
-            if($("option:selected", this).hasClass("self")) {
-                $(".user_select option[value=\"" + $("#nameLabel_battle").text() + "\"]", $(this).parent()).attr("selected", "selected");
-                $(".user_select", $(this).parent()).attr('disabled', 'true');
-            }
-            else {
-                $(".user_select", $(this).parent()).removeAttr('disabled');
-            }
-        });
+    $("#resetButton").click(resetButtonClick);
 
-        $("#resetButton").click(resetButtonClick);
+    $("#doButton").click(doButtonClick);
 
-        $("#doButton").click(doButtonClick);
+    $("#cancelButton").click(cancelButtonClick);
 
-        $("#cancelButton").click(cancelButtonClick);
-    }
+    height = $("#divAction").height();
+    $("#divAction").height(0);
+    $("#divAction").animate({ height: height }, 1000);
+};
+
+var enableDivAction = function() {
     $("#divAction input,#divAction select,#divAction button").removeAttr('disabled');
     $("#cancelButton").attr('disabled', true);
+};
 
+var showTurnInfo = function(turn_info) {
     if (turn_info) {
         turn_infos = turn_info.split(",");
         attack_count = 0;
@@ -189,9 +195,6 @@ var showDivAction = function(divAction, turn_info) {
 
 
 var disableDivAction = function(divAction, turn_info) {
-    if($("#divAction").length == 0) {
-        showDivAction(divAction, turn_info);
-    }
     $("#divAction input,#divAction select,#divAction button").attr('disabled', true);
     $("#cancelButton").removeAttr('disabled');
 };
@@ -230,8 +233,10 @@ var checkTurnSum = function(element) {
 };
 
 var removeDivAction = function(divAction) {
-    $("#divAction").remove();
-    resize_battle()
+    $("#divAction").animate({ height: 0 }, 1000, function() {
+        $("#divAction").remove();
+        resize_battle()
+    });
 };
 
 var doButtonClick = function() {

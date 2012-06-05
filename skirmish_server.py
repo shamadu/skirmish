@@ -121,7 +121,8 @@ class MainHandler(BaseHandler):
         else:
             if not self.current_user in self.actions_manager.online_users.keys():
                 self.actions_manager.add_online_user(self.current_user, self.locale)
-            self.db_manager.update_character(self.current_user)
+            if not self.actions_manager.online_users[self.current_user].is_in_skirmish:
+                self.db_manager.update_character(self.current_user)
             self.actions_manager.user_enter(self.current_user)
 
             database = items_manager.get_all(self.locale)
@@ -270,10 +271,8 @@ class PollBotHandler(BaseHandler):
             return
 
         result = {}
-        if action.type == 5 or action.type == 6 or action.type == 7:
+        if action.type == 1:
             result["type"] = action.type
-            if "turn_info" in action.args.keys():
-                result["turn_info"] = action.args["turn_info"]
             result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
         else:
             result = action.args

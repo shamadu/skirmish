@@ -347,8 +347,21 @@ var battleBotUpdater = {
 
     onSuccess: function(response) {
         var action = $.parseJSON(response);
+        // add turn div
+        if(action.type == 1) {
+            addDivAction(action.div_action);
+        }
+        // set skirmish users
+        else if(action.type == 2) {
+            $("#divAction .user_select").each(function(){
+               $(this).empty();
+                for (user_name in action.skirmish_users){
+                    $(this).append("<option value=\"" + user_name + "\">" + user_name + "</option>");
+                }
+            });
+        }
         // can join
-        if(action.type == 3) {
+        else if(action.type == 3) {
             $("#joinButton").removeAttr('disabled');
             $("#joinButton").show();
             $("#leaveButton").hide();
@@ -361,17 +374,32 @@ var battleBotUpdater = {
         }
         // can do turn
         else if(action.type == 5) {
-            removeDivAction();
-            showDivAction(action.div_action, action.turn_info);
+            enableDivAction();
+            if (action.turn_info) {
+                showTurnInfo(action.turn_info);
+            }
+            // set self spells
+            $("#divAction select.spell_select option:selected").each(function(){
+                if($(this).hasClass("self")) {
+                    $(".user_select option[value=\"" + $("#nameLabel_battle").text() + "\"]", $(this).parent().parent()).attr("selected", "selected");
+                    $(".user_select", $(this).parent().parent()).attr('disabled', 'true');
+                }
+            });
         }
         // can cancel
         else if(action.type == 6) {
-            disableDivAction(action.div_action, action.turn_info);
+            disableDivAction();
+            if (action.turn_info) {
+                showTurnInfo(action.turn_info);
+            }
         }
         // wait for results
         else if(action.type == 7) {
-            disableDivAction(action.div_action, action.turn_info);
+            disableDivAction();
             $("#cancelButton").attr('disabled', true);
+            if (action.turn_info) {
+                showTurnInfo(action.turn_info);
+            }
         }
         // reset to initial
         else if(action.type == 8) {

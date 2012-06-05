@@ -62,6 +62,8 @@ class ActionsManager:
         return Action(4, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user.user_name, "team_name" : user.character.team_name}})
 
     # skirmish action types are:
+    # 1 - add turn div
+    # 2 - set skirmish users
     # 3 - can join
     # 4 - can leave
     # 5 - can do turn
@@ -69,6 +71,12 @@ class ActionsManager:
     # 7 - wait for result
     # 8 - reset to initial
     # 9 - message action
+    def add_turn_div_action(self, user_name, skirmish_users):
+        return Action(1, self.div_args(user_name, skirmish_users))
+
+    def set_turn_users_action(self, skirmish_users):
+        return Action(2, {"skirmish_users" : skirmish_users.keys()})
+
     def can_join_action(self):
         return Action(3, {})
 
@@ -76,13 +84,13 @@ class ActionsManager:
         return Action(4, {})
 
     def can_do_turn_action(self, user_name, skirmish_users):
-        return Action(5, self.div_args(user_name, skirmish_users))
+        return Action(5, {"turn_info" : skirmish_users[user_name].get_turn_string()})
 
     def can_cancel_turn_action(self, user_name, skirmish_users):
-        return Action(6, self.div_args(user_name, skirmish_users))
+        return Action(6, {"turn_info" : skirmish_users[user_name].get_turn_string()})
 
     def wait_for_result_action(self, user_name, skirmish_users):
-        return Action(7, self.div_args(user_name, skirmish_users))
+        return Action(7, {"turn_info" : skirmish_users[user_name].get_turn_string()})
 
     def reset_to_initial_action(self):
         return Action(8, {})
@@ -105,9 +113,8 @@ class ActionsManager:
         actions[3] = smarty.get_substance_name(user.character.class_id, user.locale) , 0
         return {
             "actions" : actions,
-            "users" : skirmish_users.keys(),
-            "spells" : spells_manager.get_spells(user.character, user.locale),
-            "turn_info" : user.get_turn_string()
+            "users" : {},
+            "spells" : spells_manager.get_spells(user.character, user.locale)
         }
 
     # character action types are:
@@ -243,22 +250,30 @@ class ActionsManager:
     def skirmish_user_added(self, user_name):
         self.send_skirmish_action_to_user(user_name, self.can_leave_action())
         self.send_user_action_to_all(self.location_users[self.online_users[user_name].location], self.add_skirmish_user_action(user_name))
+        self.online_users[user_name].is_in_skirmish = True
 
     def skirmish_user_removed(self, location, user_name):
         if self.online_users[user_name].location == location: # user still in the same location
             self.send_skirmish_action_to_user(user_name, self.reset_to_initial_action())
         self.send_user_action_to_all(self.location_users[location], self.remove_skirmish_user_action(user_name))
+        self.online_users[user_name].is_in_skirmish = False
 
     def skirmish_user_left(self, user_name):
         self.send_skirmish_action_to_user(user_name, self.can_join_action())
         self.send_user_action_to_all(self.location_users[self.online_users[user_name].location], self.remove_skirmish_user_action(user_name))
+        self.online_users[user_name].is_in_skirmish = False
 
     def registration_started(self, location_users):
         for online_user in location_users.values():
             online_user.send_skirmish_action(self.can_join_action())
 
+    def game_started(self, skirmish_users):
+        for skirmish_user in skirmish_users.keys():
+            self.send_skirmish_action_to_user(skirmish_user, self.add_turn_div_action(skirmish_user, skirmish_users))
+
     def round_started(self, skirmish_users):
         for user_name in skirmish_users.keys():
+            skirmish_users[user_name].send_skirmish_action(self.set_turn_users_action(skirmish_users))
             skirmish_users[user_name].send_skirmish_action(self.can_do_turn_action(user_name, skirmish_users))
 
     def round_ended(self, skirmish_users):
@@ -307,6 +322,9 @@ class ActionsManager:
                 self.send_skirmish_action_to_user(user_name, self.can_leave_action())
         # if round is in progress
         elif phase > 0:
+            if user_name in skirmish_users:
+                self.send_skirmish_action_to_user(user_name, self.add_turn_div_action(user_name, skirmish_users))
+                self.send_skirmish_action_to_user(user_name, self.set_turn_users_action(skirmish_users))
             # if it's time to do the turn
             if counter < smarty.turn_time:
                 # and if user is in skirmish and the turn isn't done, send "can do turn" action
