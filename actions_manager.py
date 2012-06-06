@@ -250,18 +250,18 @@ class ActionsManager:
     def skirmish_user_added(self, user_name):
         self.send_skirmish_action_to_user(user_name, self.can_leave_action())
         self.send_user_action_to_all(self.location_users[self.online_users[user_name].location], self.add_skirmish_user_action(user_name))
-        self.online_users[user_name].is_in_skirmish = True
 
     def skirmish_user_removed(self, location, user_name):
         if self.online_users[user_name].location == location: # user still in the same location
             self.send_skirmish_action_to_user(user_name, self.reset_to_initial_action())
         self.send_user_action_to_all(self.location_users[location], self.remove_skirmish_user_action(user_name))
-        self.online_users[user_name].is_in_skirmish = False
 
     def skirmish_user_left(self, user_name):
         self.send_skirmish_action_to_user(user_name, self.can_join_action())
         self.send_user_action_to_all(self.location_users[self.online_users[user_name].location], self.remove_skirmish_user_action(user_name))
-        self.online_users[user_name].is_in_skirmish = False
+
+    def skirmish_user_ran(self, user_name, skirmish_users):
+        skirmish_users[user_name].send_skirmish_action(self.reset_to_initial_action())
 
     def registration_started(self, location_users):
         for online_user in location_users.values():
@@ -305,7 +305,6 @@ class ActionsManager:
         self.battle_manager.user_enter(user_name)
 
     def user_enter_users_manager(self, user_name):
-        # TODO: skirmish users could differs for different battle bots
         location = self.online_users[user_name].location
         online_users = self.location_users[location]
         skirmish_users = self.battle_manager.battle_bots[location].skirmish_users
@@ -315,26 +314,29 @@ class ActionsManager:
         # if registration is in progress
         if phase == 0:
             # and if user is not in skirmish, send "can join" action
-            if not user_name in skirmish_users.keys():
+            if self.online_users[user_name].state == 0:
                 self.send_skirmish_action_to_user(user_name, self.can_join_action())
             # and if user is in skirmish, send "can leave" action
-            else:
+            elif self.online_users[user_name].state == 1:
                 self.send_skirmish_action_to_user(user_name, self.can_leave_action())
         # if round is in progress
         elif phase > 0:
-            if user_name in skirmish_users:
+            if self.online_users[user_name].state == 1:
                 self.send_skirmish_action_to_user(user_name, self.add_turn_div_action(user_name, skirmish_users))
                 self.send_skirmish_action_to_user(user_name, self.set_turn_users_action(skirmish_users))
+            if self.online_users[user_name].state == 2: # user ran
+                self.skirmish_user_ran(user_name, skirmish_users)
             # if it's time to do the turn
             if counter < smarty.turn_time:
-                # and if user is in skirmish and the turn isn't done, send "can do turn" action
-                if user_name in skirmish_users and not skirmish_users[user_name].is_turn_done():
-                    self.send_skirmish_action_to_user(user_name, self.can_do_turn_action(user_name, skirmish_users))
-                # and if user is in skirmish and the turn is done, send "can cancel turn" action
-                elif user_name in skirmish_users and skirmish_users[user_name].is_turn_done():
-                    self.send_skirmish_action_to_user(user_name, self.can_cancel_turn_action(user_name, skirmish_users))
+                # if user is in skirmish and the turn isn't done, send "can do turn" action
+                if self.online_users[user_name].state == 1:
+                    if not skirmish_users[user_name].is_turn_done():
+                        self.send_skirmish_action_to_user(user_name, self.can_do_turn_action(user_name, skirmish_users))
+                    # if user is in skirmish and the turn is done, send "can cancel turn" action
+                    else:
+                        self.send_skirmish_action_to_user(user_name, self.can_cancel_turn_action(user_name, skirmish_users))
             # all turns were done and if user is in skirmish and the turn is done, send "can cancel turn" action
-            elif user_name in skirmish_users and skirmish_users[user_name].is_turn_done():
+            elif self.online_users[user_name].state == 1 and skirmish_users[user_name].is_turn_done():
                 self.send_skirmish_action_to_user(user_name, self.wait_for_result_action(user_name, skirmish_users))
 
     def user_enter_characters_manager(self, user_name, team_members):

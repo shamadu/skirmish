@@ -16,9 +16,6 @@ class BattleManager():
     def online_users(self):
         return self.actions_manager.online_users
 
-    def remove_from_skirmish(self, user_name):
-        self.battle_bots[self.online_users[user_name].location].remove_from_skirmish(user_name)
-
     def subscribe(self, user_name, callback):
         self.online_users[user_name].set_skirmish_callback(callback)
 

@@ -121,7 +121,7 @@ class MainHandler(BaseHandler):
         else:
             if not self.current_user in self.actions_manager.online_users.keys():
                 self.actions_manager.add_online_user(self.current_user, self.locale)
-            if not self.actions_manager.online_users[self.current_user].is_in_skirmish:
+            if self.actions_manager.online_users[self.current_user].state != 1:
                 self.db_manager.update_character(self.current_user)
             self.actions_manager.user_enter(self.current_user)
 

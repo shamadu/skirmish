@@ -26,10 +26,14 @@ class OnlineUserInfo():
         self.character_callback = None
         self.character_cache = deque()
         self.character = {} # will be filled by db_manager
+        # 0 - default, alive
+        # 1 - in skirmish, alive
+        # 2 - ran from skirmish, alive
+        # 3 - dead
+        self.state = 0
         self.locale = locale
         self.location = "En"
         self.turn_info_string = ""
-        self.is_in_skirmish = False
 
     def set_user_callback(self, user_callback):
         self.counter = 10

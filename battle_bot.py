@@ -71,7 +71,8 @@ class BattleBot(Thread):
                 if self.phase == 1: # first round
                     self.game_started()
                 self.round_started()
-            elif self.phase > 0 and (self.counter == smarty.turn_time or self.turn_done_count == len(self.skirmish_users)):
+            elif self.phase > 0 and (self.counter == smarty.turn_time
+                                     or len(self.ran_users) + self.turn_done_count == len(self.skirmish_users)):
                 self.counter = 0
                 self.phase += 1
                 self.turn_done_count = 0
@@ -104,7 +105,7 @@ class BattleBot(Thread):
             if skirmish_user.is_turn_done(): # process user's turn
                 for action in skirmish_user.get_turn_info():
                     actions[action.type].append(action)
-            else: # remove users from skirmish
+            elif not user_name in self.ran_users: # if not ran yet - mark as ran now
                 self.ran_users.append(user_name)
 
         # get and process spells with type 4 - Buf/debuf, over time heal and damage, etc.
@@ -142,6 +143,7 @@ class BattleBot(Thread):
             if user.character.health <= 0:
                 self.dead_users[user.user_name] = user
                 self.remove_from_skirmish(user.user_name)
+                self.skirmish_users[user.user_name].state = 3 # dead
                 self.user_is_dead(user.user_name)
                 if user.user_name in self.victims.keys():
                     self.characters[self.victims[user.user_name]].gold += user.character.level + 1
@@ -150,6 +152,7 @@ class BattleBot(Thread):
 
         for user_name in self.ran_users:
             if user_name not in self.dead_users.keys():
+                self.skirmish_users[user_name].state = 2 # ran
                 self.remove_from_skirmish(user_name)
                 self.user_ran(user_name)
 
@@ -174,6 +177,7 @@ class BattleBot(Thread):
             else:
                 self.game_win_nobody()
             for user_name in self.skirmish_users.keys():
+                self.skirmish_users[user_name].state = 0 # default
                 self.remove_from_skirmish(user_name)
 
             self.reset()
@@ -352,12 +356,21 @@ class BattleBot(Thread):
     def user_join(self, user_name):
         if self.phase == 0 and user_name not in self.skirmish_users.keys():
             self.skirmish_users[user_name] = self.online_users[user_name]
+            self.skirmish_users[user_name].state = 1 # is in skirmish
             self.actions_manager.skirmish_user_added(user_name)
 
     def user_leave(self, user_name):
         if self.phase == 0:
             self.actions_manager.skirmish_user_left(user_name)
             self.skirmish_users.pop(user_name)
+            self.skirmish_users[user_name].state = 0 # default
+        else:
+            if self.skirmish_users[user_name].is_turn_done(): # if did turn - reset it
+                self.skirmish_users[user_name].reset_turn()
+                self.turn_done_count -= 1
+            self.ran_users.append(user_name)
+            self.skirmish_users[user_name].state = 2 # ran
+            self.actions_manager.skirmish_user_ran(user_name, self.skirmish_users)
 
     def user_turn(self, user_name, turn_info):
         if self.phase > 0 and user_name in self.skirmish_users:
