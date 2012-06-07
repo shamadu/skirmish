@@ -211,8 +211,8 @@ var pollUpdater = {
         else if(action.type == 2) {
             $("#divAction .user_select").each(function(){
                $(this).empty();
-                for (user_name in action.skirmish_users){
-                    $(this).append("<option value=\"" + user_name + "\">" + user_name + "</option>");
+                for (i = 0; i < action.skirmish_users.length; ++i){
+                    $(this).append("<option value=\"" + action.skirmish_users[i] + "\">" + action.skirmish_users[i] + "</option>");
                 }
             });
         }
