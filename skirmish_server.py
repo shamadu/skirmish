@@ -5,7 +5,7 @@ import tornado.web
 import tornado.httpserver
 import tornado.database
 import tornado.locale
-from actions_manager import ActionsManager
+from users_holder import UsersHolder
 from battle_manager import BattleManager
 from db_manager import DBManager
 import items_manager
@@ -53,25 +53,24 @@ class SkirmishApplication(tornado.web.Application):
             host="127.0.0.1:3306", database="users",
             user="root", password="passw0rd")
 
-        self.actions_manager = ActionsManager()
-        self.db_manager = DBManager(self.db, self.actions_manager)
+        self.users_holder = UsersHolder()
+        self.db_manager = DBManager(self.db, self.users_holder)
+        self.characters_manager = CharactersManager(self.db_manager, self.users_holder)
+        self.battle_manager = BattleManager(self.users_holder, self.db_manager, self.characters_manager)
 
-        self.users_manager = UsersManager(self.db_manager, self.actions_manager)
+        self.users_manager = UsersManager(self.db_manager, self.users_holder, self.battle_manager)
         self.users_manager.start()
 
-        self.battle_manager = BattleManager(self.actions_manager, self.db_manager)
-
-        self.characters_manager = CharactersManager(self.db_manager, self.actions_manager)
         self.messager = Messager()
 
-        self.actions_manager.users_manager = self.users_manager
-        self.actions_manager.characters_manager = self.characters_manager
-        self.actions_manager.battle_manager = self.battle_manager
+        self.users_holder.users_manager = self.users_manager
+        self.users_holder.characters_manager = self.characters_manager
+        self.users_holder.battle_manager = self.battle_manager
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
-    def actions_manager(self):
-        return self.application.actions_manager
+    def users_holder(self):
+        return self.application.users_holder
 
     @property
     def characters_manager(self):
@@ -106,7 +105,7 @@ def user_online(method):
     """Decorate methods with this to check if user online and add if not"""
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
-        if self.current_user in self.actions_manager.online_users.keys():
+        if self.current_user in self.users_holder.online_users.keys():
             return method(self, *args, **kwargs)
         else:
             return
@@ -119,11 +118,11 @@ class MainHandler(BaseHandler):
         if not character: # no such user - redirect to creation
             self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
         else:
-            if not self.current_user in self.actions_manager.online_users.keys():
-                self.actions_manager.add_online_user(self.current_user, self.locale)
-            if self.actions_manager.online_users[self.current_user].state != 1:
+            if not self.current_user in self.users_holder.online_users.keys():
+                self.users_manager.add_online_user(self.current_user, self.locale)
+            if self.users_holder.online_users[self.current_user].state != 1:
                 self.db_manager.update_character(self.current_user)
-            self.actions_manager.user_enter(self.current_user)
+            self.users_holder.user_enter(self.current_user)
 
             database = items_manager.get_all(self.locale)
             database.update(spells_manager.get_all_spells(self.locale))
@@ -177,6 +176,7 @@ class CharacterHandler(BaseHandler):
         if self.get_argument("action") == 'drop':
             self.db_manager.remove_character(self.current_user)
         elif self.get_argument("action") == 'change_location':
+            self.battle_manager.user_leave(self.current_user)
             self.users_manager.change_location(self.current_user, self.get_argument("location"))
         elif self.get_argument("action") == 'put_on':
             if not self.characters_manager.put_on_item(self.current_user, self.get_argument("thing_id")):

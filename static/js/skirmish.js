@@ -210,14 +210,6 @@ var onlineUsersUpdater = {
         else if(action.type == 2) {
             removeOnlineUser(action.user, true);
         }
-        // add skirmish user
-        else if(action.type == 3) {
-            addSkirmishUser(action.skirmish_user);
-        }
-        // remove skirmish user
-        else if(action.type == 4) {
-            removeSkirmishUser(action.skirmish_user);
-        }
 
         onlineUsersUpdater.errorSleepTime = 500;
         window.setTimeout(onlineUsersUpdater.poll, 0);
@@ -413,6 +405,14 @@ var battleBotUpdater = {
             message["body"] = action.battle_message;
             message["from"] = "bot";
             addTextTo("#tabChat >div>div.active>div", format_message(message))
+        }
+        // add skirmish user
+        else if(action.type == 10) {
+            addSkirmishUser(action.skirmish_user);
+        }
+        // remove skirmish user
+        else if(action.type == 11) {
+            removeSkirmishUser(action.skirmish_user);
         }
 
         battleBotUpdater.errorSleepTime = 500;

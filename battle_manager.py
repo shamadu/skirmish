@@ -3,18 +3,18 @@ from battle_bot import BattleBot
 __author__ = 'Pavel Padinker'
 
 class BattleManager():
-    def __init__(self, actions_manager, db_manager):
-        self.actions_manager = actions_manager
+    def __init__(self, users_holder, db_manager, characters_manager):
+        self.users_holder = users_holder
         self.battle_bots = {
-            "En" : BattleBot(actions_manager, db_manager, "En"),
-            "Ru" : BattleBot(actions_manager, db_manager, "Ru")
+            "En" : BattleBot(users_holder, db_manager, characters_manager, "En"),
+            "Ru" : BattleBot(users_holder, db_manager, characters_manager, "Ru")
         }
         for battle_bot in self.battle_bots.values():
             battle_bot.start()
 
     @property
     def online_users(self):
-        return self.actions_manager.online_users
+        return self.users_holder.online_users
 
     def subscribe(self, user_name, callback):
         self.online_users[user_name].set_skirmish_callback(callback)
@@ -37,3 +37,4 @@ class BattleManager():
 
     def user_enter(self, user_name):
         self.battle_bots[self.online_users[user_name].location].user_enter(user_name)
+

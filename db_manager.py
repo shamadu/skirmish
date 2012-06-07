@@ -4,9 +4,9 @@ import smarty
 __author__ = 'PavelP'
 
 class DBManager():
-    def __init__(self, db, actions_manager):
+    def __init__(self, db, users_holder):
         self.db = db
-        self.actions_manager = actions_manager
+        self.online_users = users_holder.online_users
         self.db.execute('create table if not exists characters '
                         '(id integer(11) primary key not null auto_increment unique, '
                         'name text, '
@@ -47,7 +47,7 @@ class DBManager():
         character.magic_attack = smarty.get_magic_attack(character)
         character.magic_defence = smarty.get_magic_defence(character)
         character.armor = smarty.get_armor(character)
-        self.actions_manager.update_character(user_name, character)
+        self.online_users[user_name].character = character
 
     def get_user(self, login):
         return self.db.get("select * from users where login = %s", login)
