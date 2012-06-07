@@ -29,11 +29,9 @@ class SkirmishApplication(tornado.web.Application):
             (r'/login', LoginHandler,),
             (r'/logout', LogoutHandler,),
             (r'/create', CreateCharacterHandler,),
-            (r'/bot/battle', BattleBotHandler,),
-            (r'/bot/poll', PollBotHandler,),
-            (r'/users/poll', PollUsersHandler,),
+            (r'/battle_bot', BattleBotHandler,),
+            (r'/poll', PollBotHandler,),
             (r'/message/poll', PollMessageHandler,),
-            (r'/info/poll', PollCharacterInfoHandler,),
             (r'/message/new', NewMessageHandler,),
             (r'/character', CharacterHandler,),
             (r'/shop', ShopHandler,),
@@ -200,51 +198,6 @@ class CharacterHandler(BaseHandler):
         elif self.get_argument("action") == "learn_spell":
             self.characters_manager.learn_spell(self.current_user, self.get_argument("spell_id"))
 
-class PollCharacterInfoHandler(BaseHandler):
-    @tornado.web.authenticated
-    @tornado.web.asynchronous
-    @user_online
-    def post(self, *args, **kwargs):
-        self.characters_manager.subscribe(self.current_user, self.on_action)
-
-    def on_action(self, action):
-        if self.request.connection.stream.closed():
-            return
-
-        result = {}
-        if action.type == 2:
-            result["type"] = action.args["type"]
-            result["spells_div"] = self.render_string("spells_table.html",
-                spells=action.args["spells"],
-                spells_to_learn=action.args["spells_to_learn"],
-                substance_name=action.args["substance_name"])
-        elif action.type == 3:
-            result = action.args
-            result["team_div"] = self.render_string("create_team.html")
-        elif action.type == 4:
-            result["type"] = action.type
-            result["team_div"] = self.render_string("team_info.html",
-                user_name=self.current_user,
-                team_name=action.args["team_name"],
-                team_gold=action.args["team_gold"],
-                members=action.args["members"])
-        elif action.type == 5:
-            result = action.args
-            result["invitation_div"] = self.render_string("team_invitation.html",
-                user_name=action.args["user_name"],
-                team_name=action.args["team_name"])
-        else:
-            result = action.args
-
-        def finish_request():
-            if not self.request.connection.stream.closed():
-                self.finish(result)
-
-        tornado.ioloop.IOLoop.instance().add_callback(finish_request)
-
-    def on_connection_close(self):
-        self.characters_manager.unsubscribe(self.current_user)
-
 class BattleBotHandler(BaseHandler):
     @tornado.web.authenticated
     @user_online
@@ -263,7 +216,7 @@ class PollBotHandler(BaseHandler):
     @user_online
     @tornado.web.asynchronous
     def post(self, *args, **kwargs):
-        self.battle_manager.subscribe(self.current_user, self.on_action)
+        self.users_holder.online_users[self.current_user].set_callback(self.on_action)
 
     def on_action(self, action):
         # Closed client connection
@@ -274,6 +227,27 @@ class PollBotHandler(BaseHandler):
         if action.type == 1:
             result["type"] = action.type
             result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
+        elif action.type == 202:
+            result["type"] = action.args["type"]
+            result["spells_div"] = self.render_string("spells_table.html",
+                spells=action.args["spells"],
+                spells_to_learn=action.args["spells_to_learn"],
+                substance_name=action.args["substance_name"])
+        elif action.type == 203:
+            result = action.args
+            result["team_div"] = self.render_string("create_team.html")
+        elif action.type == 204:
+            result["type"] = action.type
+            result["team_div"] = self.render_string("team_info.html",
+                user_name=self.current_user,
+                team_name=action.args["team_name"],
+                team_gold=action.args["team_gold"],
+                members=action.args["members"])
+        elif action.type == 205:
+            result = action.args
+            result["invitation_div"] = self.render_string("team_invitation.html",
+                user_name=action.args["user_name"],
+                team_name=action.args["team_name"])
         else:
             result = action.args
 
@@ -284,30 +258,8 @@ class PollBotHandler(BaseHandler):
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
 
     def on_connection_close(self):
-        self.battle_manager.unsubscribe(self.current_user)
-
-class PollUsersHandler(BaseHandler):
-    @tornado.web.authenticated
-    @user_online
-    @tornado.web.asynchronous
-    def post(self, *args, **kwargs):
-        self.users_manager.subscribe(self.current_user, self.on_users_changed)
-
-    def on_users_changed(self, action):
-        # Closed client connection
-        if self.request.connection.stream.closed():
-            return
-
-        result = action.args
-
-        def finish_request():
-            if not self.request.connection.stream.closed():
-                self.finish(result)
-
-        tornado.ioloop.IOLoop.instance().add_callback(finish_request)
-
-    def on_connection_close(self):
-        self.users_manager.unsubscribe(self.current_user)
+        if self.current_user in self.users_holder.online_users:
+            self.users_holder.online_users[self.current_user].set_callback(None)
 
 class PollMessageHandler(BaseHandler):
     @tornado.web.authenticated

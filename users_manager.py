@@ -1,18 +1,16 @@
 from threading import Thread
 import time
 from users_holder import Action
-from online_user_info import OnlineUserInfo
+from users_holder import OnlineUserInfo
 import smarty
 
 __author__ = 'Pavel Padinker'
 
 class UsersManager(Thread):
 # user action types are:
-# 0 - show all online and skirmish users
-# 1 - add new user
-# 2 - remove online user
-# 3 - add skirmish users
-# 4 - remove skirmish users
+# 100 - show all online and skirmish users
+# 101 - add new user
+# 102 - remove online user
     def initial_users_action(self, online_users, skirmish_users):
         online_user_non_skirmish = list()
         for user_name in online_users.keys():
@@ -24,13 +22,13 @@ class UsersManager(Thread):
                 skirmish_users_list.append(user_name)
             else:
                 skirmish_users_list.append("%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : skirmish_users[user_name].character.team_name})
-        return Action(0, {"online_users" : ','.join(online_user_non_skirmish), "skirmish_users" : ','.join(skirmish_users_list)})
+        return Action(100, {"online_users" : ','.join(online_user_non_skirmish), "skirmish_users" : ','.join(skirmish_users_list)})
 
     def user_online_action(self, user_name):
-        return Action(1, {"user" : user_name})
+        return Action(101, {"user" : user_name})
 
     def user_offline_action(self, user_name):
-        return Action(2, {"user" : user_name})
+        return Action(102, {"user" : user_name})
 
     def __init__(self, db_manager, users_holder, battle_manager):
         Thread.__init__(self)
@@ -49,7 +47,7 @@ class UsersManager(Thread):
     def run(self):
         while 1:
             for user_name in self.online_users.keys():
-                if not self.online_users[user_name].user_callback and not self.online_users[user_name].skirmish_callback and not self.online_users[user_name].character_callback:
+                if not self.online_users[user_name].callback:
                     if not self.online_users[user_name].counter:
                         self.user_logout(user_name)
                     else:
@@ -82,18 +80,11 @@ class UsersManager(Thread):
         if user_name in self.online_users.keys():
             self.remove_online_user(user_name)
 
-    def subscribe(self, user_name, callback):
-        self.online_users[user_name].set_user_callback(callback)
-
-    def unsubscribe(self, user_name):
-        if user_name in self.online_users:
-            self.online_users[user_name].set_user_callback(None)
-
     def user_enter(self, user_name):
         location = self.online_users[user_name].location
         online_users = self.location_users[location]
         skirmish_users = self.battle_manager.battle_bots[location].skirmish_users
-        self.online_users[user_name].send_user_action(self.initial_users_action(online_users, skirmish_users))
+        self.online_users[user_name].send_action(self.initial_users_action(online_users, skirmish_users))
 
     def change_location(self, user_name, location):
         online_users = self.location_users[self.online_users[user_name].location]
@@ -123,4 +114,4 @@ class UsersManager(Thread):
 
     def send_action_to_all(self, online_users, action):
         for online_user in online_users.values():
-            online_user.send_user_action(action)
+            online_user.send_action(action)

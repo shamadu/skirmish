@@ -265,7 +265,7 @@ class BattleBot(Thread):
                 if not spell_action.is_succeed_attack(who_character, whom_character):
                     spell_stop_attack = True
                     for online_user in self.location_users.values():
-                        online_user.send_skirmish_action(self.text_spell_action(spell_action.get_attack_message(online_user.locale)))
+                        online_user.send_action(self.text_spell_action(spell_action.get_attack_message(online_user.locale)))
                     break
         if not spell_stop_attack:
             if attack_action.whom in self.long_affect_victim_spells.keys():
@@ -273,7 +273,7 @@ class BattleBot(Thread):
                     if not spell_action.is_succeed_attack(who_character, whom_character):
                         spell_stop_attack = True
                         for online_user in self.location_users.values():
-                            online_user.send_skirmish_action(self.text_spell_action(spell_action.get_attack_message(online_user.locale)))
+                            online_user.send_action(self.text_spell_action(spell_action.get_attack_message(online_user.locale)))
                         break
         return spell_stop_attack
 
@@ -284,7 +284,7 @@ class BattleBot(Thread):
             for spell_action in self.long_after_attack_spells[attack_action.whom]:
                 spell_action.process_after_attack(who_character, damage)
                 for online_user in self.location_users.values():
-                    online_user.send_skirmish_action(self.text_spell_action(spell_action.get_after_attack_message(online_user.locale)))
+                    online_user.send_action(self.text_spell_action(spell_action.get_after_attack_message(online_user.locale)))
 
     def process_attack_defence_actions(self, attack_actions, defence_actions):
         for action in attack_actions: # attack
@@ -375,14 +375,14 @@ class BattleBot(Thread):
         for spell_action in self.long_spells:
             spell_action.round_start()
             for online_user in self.location_users.values():
-                online_user.send_skirmish_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
+                online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
 
     def round_start_long_affect_attack_spells(self, spells_container):
         for spell_actions in spells_container.values():
             for spell_action in spell_actions:
                 spell_action.round_start()
                 for online_user in self.location_users.values():
-                    online_user.send_skirmish_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
+                    online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
 
     def round_end_long_spells(self):
         for spell_action in self.long_spells:
@@ -407,7 +407,7 @@ class BattleBot(Thread):
                     elif type == 2: # heal
                         spell_action.process(turn_action.percent, self.characters[turn_action.whom].health)
                     for online_user in self.location_users.values():
-                        online_user.send_skirmish_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
+                        online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
                     if self.skirmish_users[turn_action.whom].character.health <= 0 and not turn_action.whom in self.victims.keys():
                         self.victims[turn_action.whom] = turn_action.who
                 else:
@@ -494,7 +494,7 @@ class BattleBot(Thread):
     def registration_started(self):
         self.send_text_action_to_users(self.location_users, 0, None) # registration has been started
         for online_user in self.location_users.values():
-            online_user.send_skirmish_action(self.can_join_action())
+            online_user.send_action(self.can_join_action())
 
     def registration_ended(self):
         self.send_text_action_to_users(self.location_users, 1, None) # registration has been ended
@@ -502,15 +502,15 @@ class BattleBot(Thread):
     def round_started(self):
         self.send_text_action_to_users(self.location_users, 2, self.phase) # round has been started
         for user_name in self.skirmish_users.keys():
-            self.skirmish_users[user_name].send_skirmish_action(self.set_turn_users_action(self.skirmish_users))
-            self.skirmish_users[user_name].send_skirmish_action(self.can_do_turn_action(user_name, self.skirmish_users))
+            self.skirmish_users[user_name].send_action(self.set_turn_users_action(self.skirmish_users))
+            self.skirmish_users[user_name].send_action(self.can_do_turn_action(user_name, self.skirmish_users))
         for skirmish_user in self.skirmish_users.values():
             skirmish_user.reset_turn()
 
     def round_ended(self):
         self.send_text_action_to_users(self.location_users, 3, self.phase) # round has been ended
         for user_name in self.skirmish_users.keys():
-            self.skirmish_users[user_name].send_skirmish_action(self.wait_for_result_action(user_name, self.skirmish_users))
+            self.skirmish_users[user_name].send_action(self.wait_for_result_action(user_name, self.skirmish_users))
 
     def game_started(self):
         for skirmish_user in self.skirmish_users.keys():
@@ -542,7 +542,7 @@ class BattleBot(Thread):
                 new_health,
                 experience,
                 full_experience)
-            online_user.send_skirmish_action(text_action)
+            online_user.send_action(text_action)
 
     def failed_attack(self, who, whom, def_experiences):
         for online_user in self.location_users.values():
@@ -553,7 +553,7 @@ class BattleBot(Thread):
                 whom,
                 items_manager.get_current_weapon_name(self.location_users[who].character, online_user.locale),
                 def_experiences)
-            online_user.send_skirmish_action(text_action)
+            online_user.send_action(text_action)
 
     def critical_hit(self, who):
         self.send_text_action_to_users(self.location_users, 8, who)
@@ -575,15 +575,15 @@ class BattleBot(Thread):
 
     def failed_spell(self, spell_action):
         for online_user in self.location_users.values():
-            online_user.send_skirmish_action(self.text_spell_action(spell_action.get_failed_message(online_user.locale)))
+            online_user.send_action(self.text_spell_action(spell_action.get_failed_message(online_user.locale)))
 
     def failed_spell_low_mana(self, spell_action):
         for online_user in self.location_users.values():
-            online_user.send_skirmish_action(self.text_spell_action(spell_action.get_low_mana_message(online_user.locale)))
+            online_user.send_action(self.text_spell_action(spell_action.get_low_mana_message(online_user.locale)))
 
     def send_text_action_to_users(self, online_users, message_number, *args):
         for online_user in online_users.values():
-            online_user.send_skirmish_action(self.text_action(smarty.battle_messages[message_number], online_user.locale, *args))
+            online_user.send_action(self.text_action(smarty.battle_messages[message_number], online_user.locale, *args))
 
     def skirmish_user_added(self, user_name):
         self.send_action_to_user(user_name, self.can_leave_action())
@@ -591,8 +591,8 @@ class BattleBot(Thread):
 
     def send_action_to_user(self, user_name, action):
         if user_name in self.online_users.keys():
-            self.online_users[user_name].send_skirmish_action(action)
+            self.online_users[user_name].send_action(action)
 
     def send_action_to_all(self, action):
         for online_user in self.location_users.values():
-            online_user.send_skirmish_action(action)
+            online_user.send_action(action)

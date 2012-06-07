@@ -29,12 +29,12 @@ var dropButtonClick = function () {
 };
 
 var joinButtonClick = function () {
-    $.postJSON('/bot/battle', {'action' : 'join'}, function() {
+    $.postJSON('/battle_bot', {'action' : 'join'}, function() {
     });
 };
 
 var leaveButtonClick = function () {
-    $.postJSON('/bot/battle', {'action' : 'leave'}, function() {
+    $.postJSON('/battle_bot', {'action' : 'leave'}, function() {
     });
 };
 
@@ -272,7 +272,7 @@ var doButtonClick = function() {
             }
         });
         if (turnInfo) {
-            $.postJSON('/bot/battle', {'action' : 'turn do', 'turn_info' : turnInfo}, function(){
+            $.postJSON('/battle_bot', {'action' : 'turn do', 'turn_info' : turnInfo}, function(){
             });
         }
         else {
@@ -282,7 +282,7 @@ var doButtonClick = function() {
 };
 
 var cancelButtonClick = function() {
-    $.postJSON('/bot/battle', {'action' : 'turn cancel'}, function(){
+    $.postJSON('/battle_bot', {'action' : 'turn cancel'}, function(){
     });
 };
 

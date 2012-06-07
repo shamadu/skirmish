@@ -7,11 +7,12 @@ __author__ = 'Pavel Padinker'
 
 class CharactersManager:
     # character action types are:
-    # 0 - character info
-    # 1 - character stuff
-    # 2 - create team
-    # 3 - team info
-    # 4 - invite to team
+    # 200 - character info
+    # 201 - character stuff
+    # 202 - create team
+    # 203 - can create team
+    # 204 - team info
+    # 205 - invite to team
     def character_info_action(self, user_name):
         character = self.online_users[user_name].character
         team_name = character.team_name
@@ -39,12 +40,12 @@ class CharactersManager:
             team_name,
             str(character.rank_in_team)
         ]
-        return Action(0, {"character_info" : ":".join(character_info)})
+        return Action(200, {"character_info" : ":".join(character_info)})
 
     def character_stuff_action(self, user_name):
         character = self.online_users[user_name].character
         locale = self.online_users[user_name].locale
-        return Action(1, {
+        return Action(201, {
             # <id1>:<name1>,<id2>:<name2>:...
             "weapon" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.weapon, locale)),
             "shield" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.shield, locale)),
@@ -60,17 +61,17 @@ class CharactersManager:
     def character_spells_action(self, user_name):
         character = self.online_users[user_name].character
         locale = self.online_users[user_name].locale
-        return Action(2, {
+        return Action(202, {
             "spells" : spells_manager.get_spells(character, locale),
             "spells_to_learn" : spells_manager.get_spells_to_learn(character, locale),
             "substance_name" : smarty.get_substance_name(character.class_id, locale)
         })
 
     def can_create_team_action(self):
-        return Action(3, {})
+        return Action(203, {})
 
     def team_info_action(self, team_members):
-        return Action(4, {
+        return Action(204, {
             "team_name" : self.online_users[team_members.keys()[0]].character.team_name,
             # TODO: add team gold in special team table
             "team_gold" : 0,
@@ -78,7 +79,7 @@ class CharactersManager:
         })
 
     def invite_action(self, user_name, team_name):
-        return Action(5, {
+        return Action(205, {
             "user_name" : user_name,
             "team_name" : team_name,
             })
@@ -250,13 +251,6 @@ class CharactersManager:
             self.send_character_spells(user_name)
             self.send_character_info(user_name)
 
-    def subscribe(self, user_name, callback):
-        self.online_users[user_name].set_character_callback(callback)
-
-    def unsubscribe(self, user_name):
-        if user_name in self.online_users:
-            self.online_users[user_name].set_character_callback(None)
-
     def user_enter(self, user_name):
         self.send_character_info(user_name)
         self.send_character_stuff(user_name)
@@ -270,25 +264,25 @@ class CharactersManager:
             self.send_can_create_team(user_name)
 
     def send_can_create_team(self, user_name):
-        self.online_users[user_name].send_character_action(self.can_create_team_action())
+        self.online_users[user_name].send_action(self.can_create_team_action())
 
     def send_character_info(self, user_name):
-        self.online_users[user_name].send_character_action(self.character_info_action(user_name))
+        self.online_users[user_name].send_action(self.character_info_action(user_name))
 
     def send_character_stuff(self, user_name):
-        self.online_users[user_name].send_character_action(self.character_stuff_action(user_name))
+        self.online_users[user_name].send_action(self.character_stuff_action(user_name))
 
     def send_character_spells(self, user_name):
-        self.online_users[user_name].send_character_action(self.character_spells_action(user_name))
+        self.online_users[user_name].send_action(self.character_spells_action(user_name))
 
     def send_team_info_to_user(self, user_name, team_members):
-        self.online_users[user_name].send_character_action(self.team_info_action(team_members))
+        self.online_users[user_name].send_action(self.team_info_action(team_members))
 
     def send_team_info_to_members(self, team_members):
         action = self.team_info_action(team_members)
         for member_name in team_members.keys():
             if member_name in self.online_users.keys():
-                self.online_users[member_name].send_character_action(action)
+                self.online_users[member_name].send_action(action)
 
     def send_invite(self, invite_user_name, user_name, team_name):
-        self.online_users[invite_user_name].send_character_action(self.invite_action(user_name, team_name))
+        self.online_users[invite_user_name].send_action(self.invite_action(user_name, team_name))

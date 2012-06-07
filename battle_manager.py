@@ -16,13 +16,6 @@ class BattleManager():
     def online_users(self):
         return self.users_holder.online_users
 
-    def subscribe(self, user_name, callback):
-        self.online_users[user_name].set_skirmish_callback(callback)
-
-    def unsubscribe(self, user_name):
-        if user_name in self.online_users:
-            self.online_users[user_name].set_skirmish_callback(None)
-
     def user_join(self, user_name):
         self.battle_bots[self.online_users[user_name].location].user_join(user_name)
 
