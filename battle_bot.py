@@ -324,7 +324,7 @@ class BattleBot(Thread):
                             def_experience = 0
                             def_character = self.skirmish_users[def_action.who].character
                             if def_action.who != action.who:
-                                def_experience = all_experience*(def_character.defence/all_defence)
+                                def_experience = round(all_experience*(def_character.defence/all_defence))
                                 def_character.experience += def_experience
                             defence_experience.append("{0}[{1}/{2}]".format(def_action.who, def_experience, def_character.experience))
                     self.failed_attack(action.who, action.whom, ",".join(defence_experience))
