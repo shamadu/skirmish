@@ -12,7 +12,7 @@ var initialize_character = function() {
 
 var putOnFunc = function() {
     this_select = this;
-    $.postJSON('/character', {"action" : "put_on", "thing_id" : $("option:selected", this).val()}, function(response) {
+    $.postJSON('/action', {"action" : "put_on", "thing_id" : $("option:selected", this).val()}, function(response) {
         if (response == "false") {
             $("option:first", this_select).attr("selected", "selected");
         }
@@ -29,6 +29,6 @@ var addThings = function(things, select) {
 };
 
 var learnSpellFunc = function() {
-    $.postJSON('/character', {"action" : "learn_spell", "spell_id" : $(this).attr("spell_id")}, function(response) {
+    $.postJSON('/action', {"action" : "learn_spell", "spell_id" : $(this).attr("spell_id")}, function(response) {
     });
 }

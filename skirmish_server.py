@@ -27,15 +27,10 @@ class SkirmishApplication(tornado.web.Application):
             (r"/(favicon\.ico)", web.StaticFileHandler, {"path": "static"}),
             (r"/(robots\.txt)", web.StaticFileHandler, {"path": ""}),
             (r'/login', LoginHandler,),
-            (r'/logout', LogoutHandler,),
             (r'/create', CreateCharacterHandler,),
-            (r'/battle_bot', BattleBotHandler,),
             (r'/poll', PollBotHandler,),
             (r'/message/poll', PollMessageHandler,),
-            (r'/message/new', NewMessageHandler,),
-            (r'/character', CharacterHandler,),
-            (r'/shop', ShopHandler,),
-            (r'/db', ItemsDBHandler,),
+            (r'/action', ActionHandler,),
         ]
         settings = {
             "cookie_secret" : "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
@@ -156,18 +151,10 @@ class LoginHandler(BaseHandler):
 class CreateCharacterHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self, *args, **kwargs):
-        class_id = self.get_argument("class_id")
         # insert the new character
-        self.db_manager.create_character(self.current_user, class_id)
+        self.db_manager.create_character(self.current_user, self.get_argument("class_id"))
 
-class LogoutHandler(BaseHandler):
-    @tornado.web.authenticated
-    @user_online
-    def post(self, *args, **kwargs):
-        self.users_manager.user_logout(self.current_user)
-        self.clear_cookie("login")
-
-class CharacterHandler(BaseHandler):
+class ActionHandler(BaseHandler):
     @tornado.web.authenticated
     @user_online
     def post(self, *args, **kwargs):
@@ -197,19 +184,48 @@ class CharacterHandler(BaseHandler):
             self.characters_manager.user_leave_team(self.current_user)
         elif self.get_argument("action") == "learn_spell":
             self.characters_manager.learn_spell(self.current_user, self.get_argument("spell_id"))
-
-class BattleBotHandler(BaseHandler):
-    @tornado.web.authenticated
-    @user_online
-    def post(self, *args, **kwargs):
-        if self.get_argument("action") == 'join':
+        elif self.get_argument("action") == 'join':
             self.battle_manager.user_join(self.current_user)
         elif self.get_argument("action") == 'leave':
             self.battle_manager.user_leave(self.current_user)
-        elif self.get_argument("action") == 'turn do':
+        elif self.get_argument("action") == 'turn_do':
             self.battle_manager.user_turn(self.current_user, self.get_argument("turn_info"))
-        elif self.get_argument("action") == 'turn cancel':
+        elif self.get_argument("action") == 'turn_cancel':
             self.battle_manager.user_turn_cancel(self.current_user)
+        elif self.get_argument("action") == 'logout':
+            self.users_manager.user_logout(self.current_user)
+            self.clear_cookie("login")
+        elif self.get_argument("action") == 'new_message':
+            message = {
+                "from": self.current_user,
+                "to": self.get_argument("to"),
+                "body": self.get_argument("body"),
+                }
+            self.messager.new_message(message)
+        elif self.get_argument("action") == 'shop_get_item':
+            item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
+            self.write(self.render_string("item_description.html",
+                item=item,
+                group_name=items_manager.get_item_group_name(item.type, self.locale),
+                buy_button=True,
+                can_buy=(self.users_manager.online_users[self.current_user].character.gold >= item.price)))
+        elif self.get_argument("action") == 'buy_item':
+            self.characters_manager.buy_item(self.current_user, self.get_argument("item_id"))
+        elif self.get_argument("action") == 'db_get_item':
+            id = int(self.get_argument("item_id"))
+            if id >= items_manager.build_id(10, 0) and id < items_manager.build_id(18, 0):
+                spell = spells_manager.get_spell(id, self.locale)
+                self.write(self.render_string("spell_description.html",
+                    spell=spell,
+                    group_name=smarty.get_class_name(spell.class_id, self.locale),
+                    substance_name=smarty.get_substance_name(spell.class_id, self.locale)))
+            else:
+                item = items_manager.get_item(id, self.locale)
+                self.write(self.render_string("item_description.html",
+                    item=item,
+                    group_name=items_manager.get_item_group_name(item.type, self.locale),
+                    buy_button=False,
+                    can_buy=False))
 
 class PollBotHandler(BaseHandler):
     @tornado.web.authenticated
@@ -281,51 +297,6 @@ class PollMessageHandler(BaseHandler):
 
     def on_connection_close(self):
         self.messager.unsubscribe(self.current_user)
-
-class NewMessageHandler(BaseHandler):
-    @tornado.web.authenticated
-    @user_online
-    def post(self, *args, **kwargs):
-        message = {
-            "from": self.current_user,
-            "to": self.get_argument("to"),
-            "body": self.get_argument("body"),
-            }
-        self.messager.new_message(message)
-
-class ShopHandler(BaseHandler):
-    @tornado.web.authenticated
-    @user_online
-    def post(self, *args, **kwargs):
-        if self.get_argument("action") == 'get_item':
-            item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
-            self.write(self.render_string("item_description.html",
-                item=item,
-                group_name=items_manager.get_item_group_name(item.type, self.locale),
-                buy_button=True,
-                can_buy=(self.users_manager.online_users[self.current_user].character.gold >= item.price)))
-        elif self.get_argument("action") == 'buy_item':
-            self.characters_manager.buy_item(self.current_user, self.get_argument("item_id"))
-
-class ItemsDBHandler(BaseHandler):
-    @tornado.web.authenticated
-    @user_online
-    def post(self, *args, **kwargs):
-        if self.get_argument("action") == 'get_item':
-            id = int(self.get_argument("item_id"))
-            if id >= items_manager.build_id(10, 0) and id < items_manager.build_id(18, 0):
-                spell = spells_manager.get_spell(id, self.locale)
-                self.write(self.render_string("spell_description.html",
-                    spell=spell,
-                    group_name=smarty.get_class_name(spell.class_id, self.locale),
-                    substance_name=smarty.get_substance_name(spell.class_id, self.locale)))
-            else:
-                item = items_manager.get_item(id, self.locale)
-                self.write(self.render_string("item_description.html",
-                    item=item,
-                    group_name=items_manager.get_item_group_name(item.type, self.locale),
-                    buy_button=False,
-                    can_buy=False))
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")

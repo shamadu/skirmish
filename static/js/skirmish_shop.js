@@ -49,7 +49,7 @@ var initialize_dropDown = function(dropDown, clickHandler) {
 
 var getShopItemFunc = function() {
     if ($("#shopItemDescriptions div[item_id=" + $(">a", this).attr('item_id') + "]").length == 0) {
-        $.postJSON('/shop', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
+        $.postJSON('/action', {"action" : "shop_get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
             $("#shopItemDescriptions").append(response);
             $("#shopItemDescriptions >div:last").width($("#shopItemDescriptions >div:last >table").width());
             $("#shopItemDescriptions >div:last >button.close").click(closeDescription);
@@ -60,7 +60,7 @@ var getShopItemFunc = function() {
 
 var getDBItemFunc = function() {
     if ($("#dbItemDescriptions div[item_id=" + $(">a", this).attr('item_id') + "]").length == 0) {
-        $.postJSON('/db', {"action" : "get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
+        $.postJSON('/action', {"action" : "db_get_item", "item_id" : $(">a", this).attr('item_id')}, function(response) {
             $("#dbItemDescriptions").append(response);
             $("#dbItemDescriptions >div:last").width($("#dbItemDescriptions >div:last >table").width());
             $("#dbItemDescriptions >div:last >button.close").click(closeDescription);
@@ -73,7 +73,7 @@ var closeDescription = function() {
 };
 
 var buyItem = function() {
-    $.postJSON('/shop', {"action" : "buy_item", "item_id" : $(this).attr('item_id')}, function(response) {
+    $.postJSON('/action', {"action" : "buy_item", "item_id" : $(this).attr('item_id')}, function(response) {
     });
     $(this).closest("div").remove();
 };

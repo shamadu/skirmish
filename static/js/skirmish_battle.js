@@ -17,24 +17,24 @@ var initialize_battle = function () {
 
     $('a[data-toggle="tab"]').on('shown', function (tab) {
         removeDivAction();
-        $.postJSON('/character', {"action" : "change_location", "location" : $(this).html()}, function() {
+        $.postJSON('/action', {"action" : "change_location", "location" : $(this).html()}, function() {
         });
     });
 };
 
 var dropButtonClick = function () {
-    $.postJSON('/character', {"action" : "drop"}, function() {
+    $.postJSON('/action', {"action" : "drop"}, function() {
         window.location.href='/';
     });
 };
 
 var joinButtonClick = function () {
-    $.postJSON('/battle_bot', {'action' : 'join'}, function() {
+    $.postJSON('/action', {'action' : 'join'}, function() {
     });
 };
 
 var leaveButtonClick = function () {
-    $.postJSON('/battle_bot', {'action' : 'leave'}, function() {
+    $.postJSON('/action', {'action' : 'leave'}, function() {
     });
 };
 
@@ -48,12 +48,13 @@ var resize_battle = function() {
 
 var sendFunc = function() {
     data = {
+        "action" : "new_message",
         'to' : 'all',
         'body' : $("#sendTextArea").val()
     };
     $("#sendTextArea").val("");
     $("#sendTextArea").focus();
-    $.postJSON('message/new', data, function() {
+    $.postJSON('/action', data, function() {
     });
 };
 
@@ -272,7 +273,7 @@ var doButtonClick = function() {
             }
         });
         if (turnInfo) {
-            $.postJSON('/battle_bot', {'action' : 'turn do', 'turn_info' : turnInfo}, function(){
+            $.postJSON('/action', {'action' : 'turn_do', 'turn_info' : turnInfo}, function(){
             });
         }
         else {
@@ -282,7 +283,7 @@ var doButtonClick = function() {
 };
 
 var cancelButtonClick = function() {
-    $.postJSON('/battle_bot', {'action' : 'turn cancel'}, function(){
+    $.postJSON('/action', {'action' : 'turn_cancel'}, function(){
     });
 };
 

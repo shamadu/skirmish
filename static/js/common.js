@@ -33,7 +33,7 @@ jQuery.getJSON = function(url, args, callback) {
 };
 
 var logoutFunc = function () {
-    $.postJSON('/logout', {}, function() {
+    $.postJSON('/action', {"action" : "logout"}, function() {
         window.location.href='/login';
     });
 };
