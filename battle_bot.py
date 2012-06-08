@@ -217,7 +217,7 @@ class BattleBot(Thread):
                 self.dead_users[user.user_name] = user
                 self.skirmish_users[user.user_name].state = 3 # dead
                 self.remove_from_skirmish(user.user_name)
-                self.user_is_dead(user.user_name)
+                self.send_text_action_to_users(self.location_users, 9, user.user_name) # user is dead
                 if user.user_name in self.victims.keys():
                     self.characters[self.victims[user.user_name]].gold += user.character.level + 1
             else:
@@ -227,7 +227,7 @@ class BattleBot(Thread):
             if user_name not in self.dead_users.keys():
                 self.skirmish_users[user_name].state = 2 # ran
                 self.remove_from_skirmish(user_name)
-                self.user_ran(user_name)
+                self.send_text_action_to_users(self.location_users, 10, user_name) # user ran
 
     def process_game_result(self):
         # if there is just users of one team - end game
@@ -244,11 +244,11 @@ class BattleBot(Thread):
         if (len(teams) < 2 and len(users_no_team) == 0) or (len(teams) == 0 and len(users_no_team) < 2): # process game result
             self.game_ended()
             if len(teams) == 1:
-                self.game_win_team("{0}({1})".format(teams[0], ",".join(self.skirmish_users.keys())))
+                self.send_text_action_to_users(self.location_users, 11, "{0}({1})".format(teams[0], ",".join(self.skirmish_users.keys()))) # game win team
             elif len(users_no_team) == 1:
-                self.game_win_user("{0}".format(users_no_team[0]))
+                self.send_text_action_to_users(self.location_users, 12, users_no_team[0]) # game win user
             else:
-                self.game_win_nobody()
+                self.send_text_action_to_users(self.location_users, 13) # game win nobody
             for user_name in self.skirmish_users.keys():
                 self.skirmish_users[user_name].state = 0 # default
                 self.remove_from_skirmish(user_name)
@@ -298,7 +298,7 @@ class BattleBot(Thread):
                 if smarty.is_hit(who_character, action.percent, defenders):
                     damage = smarty.get_damage(who_character, action.percent, whom_character)
                     if smarty.is_critical_hit(who_character, whom_character):
-                        self.critical_hit(action.who)
+                        self.send_text_action_to_users(self.location_users, 8, action.who) # critical hit
                         damage *= 1.5
                     whom_character.health -= damage
                     experience = 0
@@ -421,7 +421,22 @@ class BattleBot(Thread):
             who_character.mana += smarty.get_regeneration(who_character)*action.percent
 
     def remove_from_skirmish(self, user_name):
-        self.db_manager.change_character_field_update(user_name, "experience", self.characters[user_name].experience + self.skirmish_users[user_name].character.experience)
+        character = self.characters[user_name]
+        bonus_fields = {
+            "experience" : character.experience + self.skirmish_users[user_name].character.experience,
+        }
+        level = 0
+        while smarty.level_up_experiences[character.level + level] < character.experience + self.skirmish_users[user_name].character.experience: # then lvl up
+            level += 1
+        if level > 0:
+            bonus_fields.update({
+                "level" : character.level + level,
+                "strength" : character.strength + level,
+                "dexterity" : character.dexterity + level,
+                "intellect" : character.intellect + level,
+                "wisdom" : character.wisdom + level,
+                })
+        self.db_manager.change_character_fields_update(character.name, bonus_fields)
         self.characters_manager.send_character_info(user_name)
         if self.online_users[user_name].location == self.location: # user still in the same location
             self.send_action_to_user(user_name, self.reset_to_initial_action())
@@ -554,24 +569,6 @@ class BattleBot(Thread):
                 items_manager.get_current_weapon_name(self.location_users[who].character, online_user.locale),
                 def_experiences)
             online_user.send_action(text_action)
-
-    def critical_hit(self, who):
-        self.send_text_action_to_users(self.location_users, 8, who)
-
-    def user_is_dead(self, who):
-        self.send_text_action_to_users(self.location_users, 9, who)
-
-    def user_ran(self, who):
-        self.send_text_action_to_users(self.location_users, 10, who)
-
-    def game_win_team(self, who):
-        self.send_text_action_to_users(self.location_users, 11, who)
-
-    def game_win_user(self, who):
-        self.send_text_action_to_users(self.location_users, 12, who)
-
-    def game_win_nobody(self):
-        self.send_text_action_to_users(self.location_users, 13)
 
     def failed_spell(self, spell_action):
         for online_user in self.location_users.values():

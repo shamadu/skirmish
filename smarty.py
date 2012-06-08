@@ -78,6 +78,24 @@ main_abilities = [
     _("Defence")
 ]
 
+level_up_experiences = {
+    1 : 1000,
+    2 : 2000,
+    3 : 4000,
+    4 : 8000,
+    5 : 16000,
+    6 : 32000,
+    7 : 64000,
+    8 : 128000,
+    9 : 256000,
+    10 : 512000,
+    11 : 1024000,
+    12 : 2048000,
+    13 : 4096000,
+    14 : 8192000,
+    15 : 16384000,
+}
+
 def get_classes(locale):
     result = dict()
     for class_id in classes.keys():
