@@ -21,6 +21,31 @@ var initialize = function () {
     $("#teamAnchor").click(showTeam);
     $("#shopAnchor").click(showShop);
     $("#dbAnchor").click(showDB);
+
+    // hide menu if opened
+    $(document.body).click(function(){
+       if ($(".vmenu :visible")) {
+           $('.vmenu').hide();
+       }
+    });
+    // initialize right click user context menu
+    $('.skirmishUserLabel').live('contextmenu',function(e){
+       $("#vmenu").css({ left: e.pageX, top: e.pageY, zIndex: '101' }).show();
+        return false;
+    });
+
+    $('.vmenu .first_li').live('click',function() {
+        alert($(this).text());
+        $('.vmenu').hide();
+    });
+
+    $(".first_li").hover(function () {
+                $(this).css({backgroundColor : '#E0EDFE' , cursor : 'pointer'});
+                $(this).css({cursor : 'default'});
+            },
+            function () {
+                $(this).css('background-color' , '#fff' );
+            });
 };
 
 var showBattle = function() {
