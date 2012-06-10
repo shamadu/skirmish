@@ -13,24 +13,34 @@
 
 <body>
 <table width="200" border="0" align="center" class="characterTable">
-  <tr>
-    <td>{{ _("Name") }}</td>
-    <td><label id="nameLabel"  style="margin: auto;">{{ name }}</label></td>
-  </tr>
-  <tr>
+    <tr>
+        <td>{{ _("Name") }}</td>
+        <td><label id="nameLabel"  style="margin: auto;">{{ name }}</label></td>
+    </tr>
+    <tr>
+        <td>{{ _("Race") }}</td>
+        <td>
+            <select id="raceMenu" style="margin: auto;">
+                {% for race_id in races.keys() %}
+                <option value="{{ race_id }}">{{ races[race_id] }}</option>
+                {% end %}
+            </select>
+        </td>
+    </tr>
+    <tr>
     <td>{{ _("Class") }}</td>
-    <td>
-     <select id="classMenu" style="margin: auto;">
-         {% for class_id in classes.keys() %}
-         <option value="{{ class_id }}">{{ classes[class_id] }}</option>
-         {% end %}
-     </select>
-    </td>
-  </tr>
-  <tr>
+        <td>
+         <select id="classMenu" style="margin: auto;">
+             {% for class_id in classes.keys() %}
+             <option value="{{ class_id }}">{{ classes[class_id] }}</option>
+             {% end %}
+         </select>
+        </td>
+    </tr>
+    <tr>
       <td></td>
     <td><div style="width: 150px; margin:5px 10px 5px 10px"><button id="createButton" style="margin:0 2px 0 2px">{{ _("Create") }}</button><button id="logoutButton" style="margin:0 2px 0 2px">{{ _("Logout") }}</button></div></td>
-  </tr>
+    </tr>
 </table>
 <script type="text/javascript">initialize();</script>
 </body>

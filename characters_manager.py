@@ -21,6 +21,7 @@ class CharactersManager:
         locale = self.online_users[user_name].locale
         character_info = [
             character.name,
+            smarty.get_race_name(character.race_id, locale),
             smarty.get_class_name(character.class_id, locale),
             str(character.level),
             str(character.health),

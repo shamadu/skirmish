@@ -69,6 +69,12 @@ classes = {
     7 : _('Necromancer'),
     }
 
+races = {
+    0 : _("Human"),
+    1 : _("Orc"),
+    2 : _("Elf"),
+}
+
 ability_names = [
     _("Skill"),
     _("Spell")
@@ -115,8 +121,17 @@ def get_classes(locale):
         result[class_id] = locale.translate(classes[class_id])
     return result
 
+def get_races(locale):
+    result = dict()
+    for race_id in races.keys():
+        result[race_id] = locale.translate(races[race_id])
+    return result
+
 def get_class_name(class_id, locale):
     return locale.translate(classes[class_id])
+
+def get_race_name(race_id, locale):
+    return locale.translate(races[race_id])
 
 def get_attack_count(class_id, level):
     attack_count = 1
@@ -186,7 +201,7 @@ def get_hp_count(character):
     return character.level + character.strength + character.constitution
 
 # return default parameters : str, dex, int, wis, con
-def get_default_parameters(class_id):
+def get_default_parameters(race_id, class_id):
     parameters = []
     if class_id == 0: # Warrior
         parameters = [8, 4, 3, 3, 5]
@@ -204,6 +219,14 @@ def get_default_parameters(class_id):
         parameters = [3, 3, 7, 6, 4]
     elif class_id == 7: # Necromancer
         parameters = [3, 3, 6, 7, 4]
+
+    if race_id == 0: # human
+        parameters[2] += 1
+        parameters[3] += 1
+    elif race_id == 1: # orc
+        parameters[0] += 2
+    elif race_id == 2: # elf
+        parameters[1] += 2
     return parameters
 
 def get_regeneration(character):

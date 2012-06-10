@@ -143,10 +143,10 @@ var addOnlineUser = function(user, fromServer) {
 
 var createSkirmishUserLabel = function(user_name, team_name) {
     if (team_name) {
-        return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "[" + team_name + "]</label>";
+        return "<label value=\"" + user_name + "\" class=\"skirmishUserLabel\">" + user_name + "[" + team_name + "]</label>";
     }
     else {
-        return "<label value=\"" + user_name + "\" style=\"color:red\">" + user_name + "</label>";
+        return "<label value=\"" + user_name + "\" class=\"skirmishUserLabel\">" + user_name + "</label>";
     }
 };
 
@@ -293,30 +293,32 @@ var pollUpdater = {
         else if (action.type == 200) {
             var characterInfo = action.character_info.split(":");
             $("#nameLabel").text(characterInfo[0]);
-            $("#classLabel").text(characterInfo[1]);
-            $("#levelLabel").text(characterInfo[2]);
-            $("#HPLabel").text(characterInfo[3]);
-            $("#MPLabel").text(characterInfo[4]);
-            $("#strengthLabel").text(characterInfo[5]);
-            $("#dexterityLabel").text(characterInfo[6]);
-            $("#intellectLabel").text(characterInfo[7]);
-            $("#wisdomLabel").text(characterInfo[8]);
-            $("#constitutionLabel").text(characterInfo[9]);
-            $("#attackLabel").text(characterInfo[10]);
-            $("#defenceLabel").text(characterInfo[11]);
-            $("#magicAttackLabel").text(characterInfo[12]);
-            $("#magicDefenceLabel").text(characterInfo[13]);
-            $("#armorLabel").text(characterInfo[14]);
-            $("#experienceLabel").text(characterInfo[15]);
-            $("#goldLabel").text(characterInfo[16]);
-            $("#teamLabel").text(characterInfo[17]);
-            $("#rankLabel").text(characterInfo[18]);
+            $("#raceLabel").text(characterInfo[1]);
+            $("#classLabel").text(characterInfo[2]);
+            $("#levelLabel").text(characterInfo[3]);
+            $("#HPLabel").text(characterInfo[4]);
+            $("#MPLabel").text(characterInfo[5]);
+            $("#strengthLabel").text(characterInfo[6]);
+            $("#dexterityLabel").text(characterInfo[7]);
+            $("#intellectLabel").text(characterInfo[8]);
+            $("#wisdomLabel").text(characterInfo[9]);
+            $("#constitutionLabel").text(characterInfo[10]);
+            $("#attackLabel").text(characterInfo[11]);
+            $("#defenceLabel").text(characterInfo[12]);
+            $("#magicAttackLabel").text(characterInfo[13]);
+            $("#magicDefenceLabel").text(characterInfo[14]);
+            $("#armorLabel").text(characterInfo[15]);
+            $("#experienceLabel").text(characterInfo[16]);
+            $("#goldLabel").text(characterInfo[17]);
+            $("#teamLabel").text(characterInfo[18]);
+            $("#rankLabel").text(characterInfo[19]);
 
             $("#nameLabel_battle").text(characterInfo[0]);
-            $("#classLabel_battle").text(characterInfo[1]);
-            $("#levelLabel_battle").text(characterInfo[2]);
-            $("#HPLabel_battle").text(characterInfo[3]);
-            $("#MPLabel_battle").text(characterInfo[4]);
+            $("#raceLabel_battle").text(characterInfo[1]);
+            $("#classLabel_battle").text(characterInfo[2]);
+            $("#levelLabel_battle").text(characterInfo[3]);
+            $("#HPLabel_battle").text(characterInfo[4]);
+            $("#MPLabel_battle").text(characterInfo[5]);
         }
         // character stuff update
         else if (action.type == 201) {

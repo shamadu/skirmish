@@ -10,6 +10,7 @@ class DBManager():
         self.db.execute('create table if not exists characters '
                         '(id integer(11) primary key not null auto_increment unique, '
                         'name text, '
+                        'race_id integer, '
                         'class_id integer, '
                         'level integer default 1, '
                         'strength integer default 1, '
@@ -20,7 +21,7 @@ class DBManager():
                         'experience bigint default 1, '
                         'gold integer default 1, '
                         'team_name text default null, '
-                        'rank_in_team int default 0, '
+                        'rank_in_team integer default 0, '
         # weapon, shield and all clothes = comma-separated text, first is id of wearing thing, other - in backpack
                         'weapon text, '
                         'shield text, '
@@ -36,7 +37,7 @@ class DBManager():
                         "(id integer(11) primary key not null auto_increment unique, "
                         "login text, "
                         "password text,"
-                        "location int default 0)")
+                        "location integer default 0)")
 
     def update_character(self, user_name):
         character = self.get_character(user_name)
@@ -62,14 +63,15 @@ class DBManager():
     def get_character(self, name):
         return self.db.get("select * from characters where name = %s", name)
 
-    def create_character(self, name, class_id):
+    def create_character(self, name, race_id, class_id):
         if not self.get_character(name):
-            default_parameters = smarty.get_default_parameters(int(class_id))
+            default_parameters = smarty.get_default_parameters(int(race_id), int(class_id))
             default_stuff = items_manager.get_default_stuff(int(class_id))
-            self.db.execute("insert into characters (name, class_id, strength, dexterity, intellect, wisdom, constitution, "
+            self.db.execute("insert into characters (name, race_id, class_id, strength, dexterity, intellect, wisdom, constitution, "
                             "weapon, shield, head, body, left_hand, right_hand, legs, feet, cloak, spells) values "
-                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 , name
+                , race_id
                 , class_id
                 , str(default_parameters[0])
                 , str(default_parameters[1])

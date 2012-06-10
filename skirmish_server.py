@@ -9,7 +9,6 @@ from users_holder import UsersHolder
 from battle_manager import BattleManager
 from db_manager import DBManager
 import items_manager
-from smarty import get_classes
 import smarty
 import spells_manager
 from users_manager import UsersManager
@@ -112,7 +111,10 @@ class MainHandler(BaseHandler):
         if self.db_manager.get_user(self.current_user):
             character = self.db_manager.get_character(self.current_user)
             if not character: # no such user - redirect to creation
-                self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
+                self.render("create_character.html",
+                    name=self.current_user,
+                    classes=smarty.get_classes(self.locale),
+                    races=smarty.get_races(self.locale))
             else:
                 if not self.current_user in self.users_holder.online_users.keys():
                     self.users_manager.add_online_user(self.current_user, self.locale)
@@ -159,7 +161,7 @@ class CreateCharacterHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self, *args, **kwargs):
         # insert the new character
-        self.db_manager.create_character(self.current_user, self.get_argument("class_id"))
+        self.db_manager.create_character(self.current_user, self.get_argument("race_id"), self.get_argument("class_id"))
 
 class ActionHandler(BaseHandler):
     @tornado.web.authenticated

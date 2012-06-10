@@ -23,6 +23,10 @@
     color: red;
 }
 
+.skirmishUserLabel {
+    color: red;
+}
+
 .mainContentDiv {
     position: absolute;
     width: auto;
