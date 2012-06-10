@@ -2,7 +2,7 @@
 {% comment group_name (text name of group), substance_name %}
 <div item_id="{{ spell.id }}" class="well itemDescriptionDiv">
     <button class="close">&times;</button>
-    <table class="characterInfoTable itemDescriptionTable">
+    <table class="commonTable itemDescriptionTable">
         <tr><td>{{ spell.name }}</td><td>{{ group_name }}</td><td>{{ _("{0} gold").format(spell.price) }}</td><td>{{ _("{0} {1}").format(spell.mana, substance_name.lower()) }}</td></tr>
         <tr><td colspan="3">{{ spell.description }}</td></tr>
     </table>

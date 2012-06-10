@@ -15,10 +15,14 @@ var initialize_battle = function () {
     $("#joinButton").click(joinButtonClick);
     $("#leaveButton").click(leaveButtonClick);
 
-    $('a[data-toggle="tab"]').on('shown', function (tab) {
-        removeDivAction();
-        $.postJSON('/action', {"action" : "change_location", "location" : $(this).html()}, function() {
-        });
+    $("#locationSelect").change(changeLocationFunc);
+    $("#mainTextAreaName").html($("#locationSelect option:selected").html());
+};
+
+var changeLocationFunc = function() {
+    removeDivAction();
+    $.postJSON('/action', {"action" : "change_location", "location" : $("option:selected", this).val()}, function() {
+        $("#mainTextAreaName").html($("#locationSelect option:selected").html());
     });
 };
 

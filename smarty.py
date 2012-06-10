@@ -12,6 +12,13 @@ rest_time = 1
 registration_time = 5
 turn_time = 25
 
+locations = {
+    0 : _("Training Camp"),
+    1 : _("Underworld"),
+    2 : _("Airii Forest"),
+    3 : _("Corutarr"),
+}
+
 team_ranks = {
     0 : "Leader",
     1 : "Officer",
@@ -95,6 +102,12 @@ level_up_experiences = {
     14 : 8192000,
     15 : 16384000,
 }
+
+def get_locations(locale):
+    result = dict()
+    for location_id in locations.keys():
+        result[location_id] = locale.translate(locations[location_id])
+    return result
 
 def get_classes(locale):
     result = dict()

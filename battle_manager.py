@@ -1,14 +1,14 @@
 from battle_bot import BattleBot
+import smarty
 
 __author__ = 'Pavel Padinker'
 
 class BattleManager():
     def __init__(self, users_holder, db_manager, characters_manager):
         self.users_holder = users_holder
-        self.battle_bots = {
-            "En" : BattleBot(users_holder, db_manager, characters_manager, "En"),
-            "Ru" : BattleBot(users_holder, db_manager, characters_manager, "Ru")
-        }
+        self.battle_bots = dict()
+        for location in smarty.locations:
+            self.battle_bots[location] = BattleBot(users_holder, db_manager, characters_manager, location)
         for battle_bot in self.battle_bots.values():
             battle_bot.start()
 

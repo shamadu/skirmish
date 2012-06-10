@@ -2,7 +2,7 @@
 {% comment group_name (text name of group), can_buy if user has enough money, buy_button if buy button should be added %}
 <div item_id="{{ item.id }}" class="well itemDescriptionDiv">
     <button class="close">&times;</button>
-    <table class="characterInfoTable itemDescriptionTable">
+    <table class="commonTable itemDescriptionTable">
         <tr><td>{{ item.name }}</td><td>{{ group_name }}</td><td>{{ _("{0} gold").format(item.price) }}</td></tr>
         <tr><td colspan="3">{{ item.description }}</td></tr>
         {% if item.id > 0 %}

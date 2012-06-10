@@ -268,7 +268,7 @@ var pollUpdater = {
             message = {};
             message["body"] = action.battle_message;
             message["from"] = "bot";
-            addTextTo("#tabChat >div>div.active>div", format_message(message))
+            addTextTo("#mainTextArea", format_message(message))
         }
         // add skirmish user
         else if(action.type == 10) {

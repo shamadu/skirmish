@@ -123,7 +123,8 @@ class MainHandler(BaseHandler):
                 login=self.current_user,
                 substance=smarty.get_substance_name(character.class_id, self.locale),
                 shop=items_manager.get_shop(self.locale),
-                database=database)
+                database=database,
+                locations=smarty.get_locations(self.locale))
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated
@@ -162,7 +163,7 @@ class ActionHandler(BaseHandler):
             self.db_manager.remove_character(self.current_user)
         elif self.get_argument("action") == 'change_location':
             self.battle_manager.user_leave(self.current_user)
-            self.users_manager.change_location(self.current_user, self.get_argument("location"))
+            self.users_manager.change_location(self.current_user, int(self.get_argument("location")))
         elif self.get_argument("action") == 'put_on':
             if not self.characters_manager.put_on_item(self.current_user, self.get_argument("thing_id")):
                 self.write("false")

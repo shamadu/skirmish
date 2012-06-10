@@ -1,4 +1,5 @@
 from collections import deque
+import smarty
 
 __author__ = 'PavelP'
 
@@ -34,7 +35,7 @@ class OnlineUserInfo():
         # 3 - dead
         self.state = 0
         self.locale = locale
-        self.location = "En"
+        self.location = 0
         self.turn_info_string = ""
 
     def set_callback(self, callback):
@@ -81,10 +82,9 @@ class OnlineUserInfo():
 class UsersHolder:
     def __init__(self):
         self.online_users = dict()
-        self.location_users = {
-            "En" : dict(),
-            "Ru" : dict()
-            }
+        self.location_users = dict()
+        for location in smarty.locations:
+            self.location_users[location] = dict()
         self.users_manager = None
         self.characters_manager = None
         self.battle_manager = None

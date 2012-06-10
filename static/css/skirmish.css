@@ -14,6 +14,8 @@
 .commonSelect {
     margin: auto;
     width: auto;
+    height: 25px;
+    padding: 3px;
 }
 
 .errorLabel {
@@ -37,7 +39,7 @@
     height: auto;
     left: 0;
     right: 0;
-    top: 20px;
+    top: 30px;
     bottom: 0;
 }
 
@@ -107,6 +109,11 @@
     text-align: center;
 }
 
+.divCenter Table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .textArea {
     position: absolute;
     width: 100%;
@@ -114,30 +121,26 @@
     overflow : auto
 }
 
-.characterInfoTable {
+.commonTable {
     width: 100%;
     border : 0;
 }
 
-.characterInfoTable tr,
-.teamInfoTable tr {
+.commonTable tr{
     vertical-align : middle;
     text-align: center;
 }
 
-.characterInfoTable td,
-.teamInfoTable td {
+.commonTable td{
     vertical-align : middle;
     padding: 1px 5px 1px 5px;
 }
 
-.teamInfoTable {
+.autoWidthTable {
     width: auto;
-    border : 0;
 }
 
-.characterInfoTable label,
-.teamInfoTable label {
+.commonTable label{
     margin-bottom: 0;
     margin-top: 0;
 }

@@ -1,4 +1,7 @@
-{% comment login = string user name, sunstance = string substance name, shop = shop content ordereddict(section_name, ordereddict(id, name)), database - the same for all objects %}
+{% comment login = string user name, sunstance = string substance name %}
+{% comment shop = shop content ordereddict(section_name, ordereddict(id, name)), %}
+{% comment database - the same as shop, but for all objects %}
+{% comment locations - dict of location_id:location_name %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -42,7 +45,7 @@
     </div>
     <div id="contentDiv" class="mainContentDiv">
         <div id="baseInfoBar" class="baseInfoBar divCenter">
-            <table id="characterInfoTable" class="characterInfoTable">
+            <table class="commonTable autoWidthTable">
                 <tr>
                     <td>{{ _("Name") }}</td><td><label id="nameLabel_battle"></label></td>
                     <td>{{ _("Class") }}</td><td><label id="classLabel_battle"></label></td>
@@ -50,6 +53,15 @@
                     <td>{{ _("Health") }}</td><td><label id="HPLabel_battle"></label></td>
                     <td>{{ substance }}</td><td><label id="MPLabel_battle"></label></td>
                     <td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td>
+                    <td>{{ _("Location") }}</td>
+                    <td>
+                        <select id="locationSelect" class="commonSelect">
+                        {% for location_id in locations.keys() %}
+                            <option value="{{ location_id }}">{{ locations[location_id] }}</option>
+                        {% end %}
+                        </select>
+                    </td>
+                    <td></td>
                 </tr>
             </table>
         </div>
@@ -70,15 +82,15 @@
                 </div>
                 <div id="tabChat" class="tabbable">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#1" data-toggle="tab">En</a></li>
+                        <li class="active"><a id="mainTextAreaName" href="#1" data-toggle="tab">En</a></li>
                         <li><a href="#2" data-toggle="tab">Ru</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="1">
-                            <div id="enTextArea" class="textArea"></div>
+                            <div id="mainTextArea" class="textArea"></div>
                         </div>
                         <div class="tab-pane" id="2">
-                            <div id="ruTextArea" class="textArea"></div>
+                            <div id="someTextArea" class="textArea"></div>
                         </div>
                     </div>
                     <div class="divSend">
@@ -93,7 +105,7 @@
             <table class="tableContentHolder">
                 <tr>
                     <td>
-                        <table id="fullCharacterInfoTable" class="characterInfoTable">
+                        <table class="commonTable">
                             <tr><td>{{ _("Name") }}</td><td><label id="nameLabel"></label></td></tr>
                             <tr><td>{{ _("Class") }}</td><td><label id="classLabel"></label></td></tr>
                             <tr><td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td></tr>
@@ -115,7 +127,7 @@
                         </table>
                     </td>
                     <td>
-                        <table id="characterStuffTable" class="characterInfoTable">
+                        <table id="characterStuffTable" class="commonTable">
                             <tr><td>{{ _("Weapon") }}</td><td><select id="weaponSelect" class="commonSelect"></select></td></tr>
                             <tr><td>{{ _("Shield") }}</td><td><select id="shieldSelect" class="commonSelect"></select></td></tr>
                             <tr><td>{{ _("Head") }}</td><td><select id="headSelect" class="commonSelect"></select></td></tr>
