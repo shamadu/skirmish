@@ -35,7 +35,8 @@ class DBManager():
         self.db.execute("create table if not exists users "
                         "(id integer(11) primary key not null auto_increment unique, "
                         "login text, "
-                        "password text)")
+                        "password text,"
+                        "location int default 0)")
 
     def update_character(self, user_name):
         character = self.get_character(user_name)
@@ -54,6 +55,9 @@ class DBManager():
 
     def add_user(self, login, password):
         self.db.execute("insert into users (login, password) values (%s, %s)", login, password)
+
+    def update_user_location(self, login, location):
+        self.db.execute("update users set location=%s where login = %s", location, login);
 
     def get_character(self, name):
         return self.db.get("select * from characters where name = %s", name)

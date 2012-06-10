@@ -107,24 +107,30 @@ def user_online(method):
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        character = self.db_manager.get_character(self.current_user)
-        if not character: # no such user - redirect to creation
-            self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
-        else:
-            if not self.current_user in self.users_holder.online_users.keys():
-                self.users_manager.add_online_user(self.current_user, self.locale)
-            if self.users_holder.online_users[self.current_user].state != 1:
-                self.db_manager.update_character(self.current_user)
-            self.users_holder.user_enter(self.current_user)
+        # there is such user in db, double check after authentication
+        # add bans, etc here
+        if self.db_manager.get_user(self.current_user):
+            character = self.db_manager.get_character(self.current_user)
+            if not character: # no such user - redirect to creation
+                self.render("create_character.html", name=self.current_user, classes=get_classes(self.locale))
+            else:
+                if not self.current_user in self.users_holder.online_users.keys():
+                    self.users_manager.add_online_user(self.current_user, self.locale)
+                if self.users_holder.online_users[self.current_user].state != 1:
+                    self.db_manager.update_character(self.current_user)
+                self.users_holder.user_enter(self.current_user)
 
-            database = items_manager.get_all(self.locale)
-            database.update(spells_manager.get_all_spells(self.locale))
-            self.render("skirmish.html",
-                login=self.current_user,
-                substance=smarty.get_substance_name(character.class_id, self.locale),
-                shop=items_manager.get_shop(self.locale),
-                database=database,
-                locations=smarty.get_locations(self.locale))
+                database = items_manager.get_all(self.locale)
+                database.update(spells_manager.get_all_spells(self.locale))
+                self.render("skirmish.html",
+                    location=self.users_holder.online_users[self.current_user].location,
+                    substance=smarty.get_substance_name(character.class_id, self.locale),
+                    shop=items_manager.get_shop(self.locale),
+                    database=database,
+                    locations=smarty.get_locations(self.locale))
+        else:
+            self.clear_all_cookies()
+            self.redirect("/")
 
 class StaticJSHandler(BaseHandler):
     @tornado.web.authenticated

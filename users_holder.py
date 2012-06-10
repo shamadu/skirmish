@@ -23,7 +23,7 @@ class TurnAction:
         self.percent = float(percent)/100
 
 class OnlineUserInfo():
-    def __init__(self, user_name, locale):
+    def __init__(self, user_name, location, locale):
         self.user_name = user_name
         self.counter = 10
         self.callback = None
@@ -35,7 +35,7 @@ class OnlineUserInfo():
         # 3 - dead
         self.state = 0
         self.locale = locale
-        self.location = 0
+        self.location = location
         self.turn_info_string = ""
 
     def set_callback(self, callback):

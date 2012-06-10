@@ -97,12 +97,14 @@ class UsersManager(Thread):
         self.users_holder.user_enter(user_name)
 
     def add_online_user(self, user_name, locale):
-        online_users = self.location_users[0]
+        user = self.db_manager.get_user(user_name)
+        online_users = self.location_users[user.location]
         self.send_action_to_all(online_users, self.user_online_action(user_name))
-        self.online_users[user_name] = OnlineUserInfo(user_name, locale)
-        self.location_users[0][user_name] = self.online_users[user_name]
+        self.online_users[user_name] = OnlineUserInfo(user_name, user.location, locale)
+        self.location_users[user.location][user_name] = self.online_users[user_name]
 
     def remove_online_user(self, user_name):
+        self.db_manager.update_user_location(user_name, self.online_users[user_name].location)
         online_users = self.location_users[self.online_users[user_name].location]
         self.send_action_to_all(online_users, self.user_offline_action(user_name))
         self.online_users.pop(user_name)
