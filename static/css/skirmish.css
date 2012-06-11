@@ -257,3 +257,20 @@
     border-top: 1px ridge #aaa;
     margin: 1px 0
 }
+
+button.tabClose {
+    font-size: 15px;
+    padding: 0 5px 0 5px;
+    float: none;
+}
+
+.skirmish-tabs >li >a {
+    background-color: #f0f0f0;
+    border-color: #eeeeee #eeeeee #dddddd;
+    padding: 5px 0 5px 5px;
+}
+
+.skirmish-tabs >li.mainTab >a {
+    padding-right: 5px;
+    height: 20px;
+}

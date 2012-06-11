@@ -56,6 +56,16 @@ var initialize = function () {
     });
 
     $("#inviteMenuItem").click(inviteToTeamFunc);
+    $("#privateChatMenuItem").click(openPrivateChatFunc);
+
+    $('#tabChat a[data-toggle="tab"]').live('show', function (e) {
+        $("#tabChat").data("previousTab", e.relatedTarget);
+    });
+
+    $(".tabClose").live('click', function(){
+        $(this).parent().parent().remove();
+        $($("#tabChat").data("previousTab")).tab('show');
+    });
 };
 
 var showBattle = function() {
@@ -99,6 +109,10 @@ var inviteToTeamFunc = function() {
         var res = $.parseJSON(response);
         window.alert(res.msg);
     });
+};
+
+var openPrivateChatFunc = function() {
+    $("#tabChat >ul").append("<li><a href=\"#" + $("#vmenu").data("user_name") + "\" data-toggle=\"tab\">" + $("#vmenu").data("user_name") + "<button class=\"close tabClose\">&times;</button></a></li>");
 };
 
 var messager = {
