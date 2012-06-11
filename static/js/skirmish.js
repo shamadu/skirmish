@@ -58,13 +58,23 @@ var initialize = function () {
     $("#inviteMenuItem").click(inviteToTeamFunc);
     $("#privateChatMenuItem").click(openPrivateChatFunc);
 
-    $('#tabChat a[data-toggle="tab"]').live('show', function (e) {
+    // store previous tab to use if close event is called
+    $('#tabChat a[data-toggle="tab"]').live('shown', function (e) {
         $("#tabChat").data("previousTab", e.relatedTarget);
     });
 
     $(".tabClose").live('click', function(){
+        // if tab is the same as previous - we are closing active tab, make active next tab
+        element = $("#tabChat").data("previousTab")
+        if ($(element).length > 0) {
+            $($("#tabChat").data("previousTab")).tab('show');
+        }
+        // we are closing non active tab, restore active (as now active is removed element)
+        else {
+            $("#tabChat a:first").tab('show');
+        }
+        // remove this tab from list
         $(this).parent().parent().remove();
-        $($("#tabChat").data("previousTab")).tab('show');
     });
 };
 
