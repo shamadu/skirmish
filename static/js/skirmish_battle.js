@@ -47,7 +47,7 @@ var resize_battle = function() {
     $("#divChat").css('right', width + 15 + 'px');
 
     width = $("#divUsers").width();
-    $("#tabChat").css('right', width + 15 + 'px');
+    $("#tabChat").css('right', width + 5 + 'px');
 };
 
 var sendFunc = function() {

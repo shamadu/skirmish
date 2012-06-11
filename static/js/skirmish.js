@@ -29,23 +29,33 @@ var initialize = function () {
        }
     });
     // initialize right click user context menu
-    $('.skirmishUserLabel').live('contextmenu',function(e){
-       $("#vmenu").css({ left: e.pageX, top: e.pageY, zIndex: '101' }).show();
-        return false;
-    });
-
     $('.vmenu .first_li').live('click',function() {
-        alert($(this).text());
         $('.vmenu').hide();
     });
 
     $(".first_li").hover(function () {
-                $(this).css({backgroundColor : '#E0EDFE' , cursor : 'pointer'});
-                $(this).css({cursor : 'default'});
+                $(this).css({backgroundColor : '#EEE'});
             },
             function () {
-                $(this).css('background-color' , '#fff' );
+                $(this).css('background-color' , '#FFF' );
             });
+
+    $("#divOnlineUsers label, #divSkirmishUsers label").live({
+        mouseenter : function () {
+            $(this).css({backgroundColor : '#EEE'});
+        },
+        mouseleave : function () {
+            $(this).css('background-color' , '#FFF' );
+        },
+        contextmenu : function(e){
+            // add info about user name to context menu to use it in menu items
+            $("#vmenu").data("user_name", $(this).attr('value'));
+            $("#vmenu").css({ left: e.pageX + 1, top: e.pageY + 1, zIndex: '101' }).show();
+            return false;
+        }
+    });
+
+    $("#inviteMenuItem").click(inviteToTeamFunc);
 };
 
 var showBattle = function() {
@@ -84,6 +94,13 @@ var showDB = function() {
     $("#dbAnchor").parent().attr("class", "active");
 };
 
+var inviteToTeamFunc = function() {
+    $.postJSON('/action', {"action" : "invite_team", "user_name" : $("#vmenu").data("user_name")}, function(response) {
+        var res = $.parseJSON(response);
+        window.alert(res.msg);
+    });
+};
+
 var messager = {
     errorSleepTime: 500,
 
@@ -110,7 +127,7 @@ var messager = {
 };
 
 var createOnlineUserLabel = function(user_name) {
-    return "<label value=\"" + user_name + "\">" + user_name + "</label>";
+    return "<label value=\"" + user_name + "\" class=\"onlineUserLabel\">" + user_name + "</label>";
 };
 
 var initialOnlineUsers = function(users) {
@@ -120,18 +137,12 @@ var initialOnlineUsers = function(users) {
     for (i = 0; i < online_users.length && online_users[i]; ++i) {
         pollUpdater.online_users.push(online_users[i]);
         $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]));
-        $("#inviteUserSelect").append("<option value=\"" + online_users[i] + "\">" + online_users[i] + "</option>");
     }
     resize_battle();
 };
 
 var removeOnlineUser = function(user, fromServer) {
     $("#divOnlineUsers label[value=\"" + user + "\"]").remove();
-    $("#inviteUserSelect option[value=\"" + user + "\"]").remove();
-    if($("#inviteUserSelect option").length == 0) {
-        $("#inviteDiv").hide();
-    }
-
     if (fromServer) {
         pollUpdater.online_users.pop(user);
         resize_battle();
@@ -149,17 +160,7 @@ var addOnlineUser = function(user, fromServer) {
     });
     if (!inserted) {
         $("#divOnlineUsers").append(createOnlineUserLabel(user));
-        $("#inviteUserSelect").append("<option value=\"" + user + "\">" + user + "</option>");
     }
-    else{
-        $("#inviteUserSelect option").each(function(){
-            if ($(this).text() > user) {
-                $(this).before("<option value=\"" + user + "\">" + user + "</option>");
-            }
-        });
-    }
-
-    $("#inviteDiv").show();
     if (fromServer) {
         pollUpdater.online_users.push(user);
         resize_battle();
@@ -335,8 +336,21 @@ var pollUpdater = {
             $("#armorLabel").text(characterInfo[15]);
             $("#experienceLabel").text(characterInfo[16]);
             $("#goldLabel").text(characterInfo[17]);
-            $("#teamLabel").text(characterInfo[18]);
-            $("#rankLabel").text(characterInfo[19]);
+            if (characterInfo[18]){
+                $("#teamLabel").text(characterInfo[18]);
+                $("#rankLabel").text(characterInfo[19]);
+                if (characterInfo[19] > 1) {
+                    $("#inviteMenuItem").hide();
+                }
+                else {
+                    $("#inviteMenuItem").show();
+                }
+            }
+            else {
+                $("#teamLabel").text("No team");
+                $("#rankLabel").text("No rank");
+                $("#inviteMenuItem").hide();
+            }
 
             $("#nameLabel_battle").text(characterInfo[0]);
             $("#raceLabel_battle").text(characterInfo[1]);

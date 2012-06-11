@@ -9,18 +9,11 @@ var initialize_create_team = function () {
 };
 
 var initialize_team_info = function () {
-    $("#divOnlineUsers label").each(function(){
-        $("#inviteUserSelect").append("<option value=\"" + $(this).html() + "\">" + $(this).html() + "</option>")
-    });
-    $("#inviteUserButton").click(inviteUserFunc);
     $("#leaveTeamButton").click(leaveTeamFunc);
 
     $("#divTeam button[class=promoteButton]").click(promoteFunc);
     $("#divTeam button[class=demoteButton]").click(demoteFunc);
     $("#divTeam button[class=removeButton]").click(removeFunc);
-    if($("#inviteUserSelect option").length == 0) {
-        $("#inviteDiv").hide();
-    }
 };
 
 var initialize_team_invitation = function(user_name, team_name) {
@@ -50,13 +43,6 @@ var demoteFunc = function() {
 
 var removeFunc = function() {
     $.postJSON('/action', {"action" : "remove_team", "user_name" : $(this).attr("user_name")}, function() {
-    });
-};
-
-var inviteUserFunc = function() {
-    $.postJSON('/action', {"action" : "invite_team", "user_name" : $("#inviteUserSelect option:selected").html()}, function(response) {
-        var res = $.parseJSON(response);
-        window.alert(res.msg);
     });
 };
 

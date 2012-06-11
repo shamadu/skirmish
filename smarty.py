@@ -33,7 +33,8 @@ error_messages = {
     1 : _("Character already has team"),
     2 : _("Can't log in, wrong login or password"),
     3 : _("You can't invite %(user_name)s. This user already has a team"),
-    4 : _("Invitation has been sent")
+    4 : _("Invitation has been sent"),
+    5 : _("You can't invite user to team")
 }
 
 battle_messages = {

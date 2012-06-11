@@ -153,7 +153,7 @@ class CharactersManager:
             "msg" : ""
         }
         user_boss = self.online_users[user_name].character
-        if user_boss.rank_in_team < 2:
+        if user_boss.team_name and user_boss.rank_in_team < 2:
             user_for_inviting = self.online_users[invite_user_name].character
             if not user_for_inviting.team_name:
                 self.send_invite(invite_user_name, user_name, user_boss.team_name)
@@ -161,6 +161,9 @@ class CharactersManager:
             else:
                 invite_response["error"] = "True"
                 invite_response["msg"] = self.online_users[user_name].locale.translate(smarty.error_messages[3]) % {"user_name" : invite_user_name}
+        else:
+            invite_response["error"] = "True"
+            invite_response["msg"] = self.online_users[user_name].locale.translate(smarty.error_messages[5])
 
         return invite_response
 

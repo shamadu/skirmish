@@ -23,6 +23,12 @@
     color: red;
 }
 
+.onlineUserLabel,
+.skirmishUserLabel {
+    min-width: 50px;
+    text-align: center;
+}
+
 .skirmishUserLabel {
     color: red;
 }
@@ -233,29 +239,21 @@
 }
 
 .vmenu {
-    border:1px solid #aaa;
-    position:absolute;
-    background:#fff;
-    display:none;
-    font-size:0.75em;
+    border: 1px solid #aaa;
+    position: absolute;
+    background: #fff;
+    display: none;
+    font-size: 0.75em;
 }
 
 .vmenu .first_li {
-    width:auto;
-    display:block;
-    padding:2px 5px;
-    cursor:pointer
+    width: auto;
+    display: block;
+    padding: 2px 5px;
+    cursor: default;
 }
 
 .vmenu .sep_li {
     border-top: 1px ridge #aaa;
-    margin:1px 0
-}
-
-.vmenu .fill_title {
-    font-size:11px;
-    font-weight:bold;
-    /height:15px;
-    /overflow:hidden;
-    word-wrap:break-word;
+    margin: 1px 0
 }
