@@ -65,8 +65,7 @@ var initialize = function () {
 
     $(".tabClose").live('click', function(){
         // if tab is the same as previous - we are closing active tab, make active next tab
-        element = $("#tabChat").data("previousTab")
-        if ($(element).length > 0) {
+        if ($("#tabChat").data("previousTab")) {
             $($("#tabChat").data("previousTab")).tab('show');
         }
         // we are closing non active tab, restore active (as now active is removed element)
@@ -75,6 +74,7 @@ var initialize = function () {
         }
         // remove this tab from list
         $(this).parent().parent().remove();
+        $("#tabChat").data("previousTab", null);
     });
 };
 
