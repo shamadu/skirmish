@@ -16,13 +16,24 @@ var initialize_battle = function () {
     $("#leaveButton").click(leaveButtonClick);
 
     $("#locationSelect").change(changeLocationFunc);
-    $("#mainTextAreaName").html($("#locationSelect option:selected").html());
+    onChangeLocation();
 };
+
+var onChangeLocation = function() {
+    location_name = $("#locationSelect option:selected").html();
+    $("#battleTab").html(location_name);
+    message = {};
+    message["body"] = messages[2].format(location_name);
+    message["from"] = "bot";
+    element = $("#battleTextArea");
+    element.html(format_message(message));
+    element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
+}
 
 var changeLocationFunc = function() {
     removeDivAction();
     $.postJSON('/action', {"action" : "change_location", "location" : $("option:selected", this).val()}, function() {
-        $("#mainTextAreaName").html($("#locationSelect option:selected").html());
+        onChangeLocation()
     });
 };
 
@@ -58,6 +69,12 @@ var sendFunc = function() {
     };
     $("#sendTextArea").val("");
     $("#sendTextArea").focus();
+
+    if (!$("#tabChat li.active").hasClass("mainTab")) {
+        data["to"] = $("#tabChat li.active >a>span").html();
+        addTextTo("#tabChat div.active >div", format_private_message(data));
+    }
+
     $.postJSON('/action', data, function() {
     });
 };
@@ -104,7 +121,44 @@ var format_message = function(message) {
     body_lines = message.body.split("\n");
     message_formatted = "";
     for(line in body_lines){
-        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]<" + message.from + ">: " + body_lines[line] + "<br>";
+        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]"
+        if (message.from) {
+            message_formatted += "[" + message.from + "]:"
+        }
+
+        message_formatted += " " + body_lines[line] + "<br>";
+    }
+
+    return message_formatted;
+};
+
+var format_private_message = function(message) {
+    today = new Date();
+    hours = today.getHours();
+    if(hours < 10) {
+        hours = "0" + hours;
+    }
+    minutes = today.getMinutes();
+    if(minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    seconds = today.getSeconds();
+    if(seconds < 10) {
+        seconds = "0" + seconds;
+    }
+
+    body_lines = message.body.split("\n");
+    message_formatted = "";
+    for(line in body_lines){
+        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]"
+        if (message.from) {
+            message_formatted += "<<:"
+        }
+        else {
+            message_formatted += ">>:"
+        }
+
+        message_formatted += " " + body_lines[line] + "<br>";
     }
 
     return message_formatted;

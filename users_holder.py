@@ -36,6 +36,7 @@ class OnlineUserInfo():
         self.state = 0
         self.locale = locale
         self.location = location
+        self.opened_chats = list() # users' names
         self.turn_info_string = ""
 
     def set_callback(self, callback):

@@ -30,6 +30,9 @@ class UsersManager(Thread):
     def user_offline_action(self, user_name):
         return Action(102, {"user" : user_name})
 
+    def open_chat_action(self, user_name, message):
+        return Action(103, {"user" : user_name, "message" : message})
+
     def __init__(self, db_manager, users_holder, battle_manager):
         Thread.__init__(self)
         self.db_manager = db_manager
@@ -85,6 +88,8 @@ class UsersManager(Thread):
         online_users = self.location_users[location]
         skirmish_users = self.battle_manager.battle_bots[location].skirmish_users
         self.online_users[user_name].send_action(self.initial_users_action(online_users, skirmish_users))
+        for chat_user_name in self.online_users[user_name].opened_chats:
+            self.online_users[user_name].send_action(self.open_chat_action(chat_user_name, ""))
 
     def change_location(self, user_name, location):
         online_users = self.location_users[self.online_users[user_name].location]
@@ -117,3 +122,12 @@ class UsersManager(Thread):
     def send_action_to_all(self, online_users, action):
         for online_user in online_users.values():
             online_user.send_action(action)
+
+    def open_chat(self, user_name, chat_user_name, message):
+        if user_name != chat_user_name and chat_user_name not in self.online_users[user_name].opened_chats:
+            self.online_users[user_name].opened_chats.append(chat_user_name)
+            self.online_users[user_name].send_action(self.open_chat_action(chat_user_name, message))
+
+    def close_chat(self, user_name, chat_user_name):
+        if chat_user_name in self.online_users[user_name].opened_chats:
+            self.online_users[user_name].opened_chats.remove(chat_user_name)

@@ -235,6 +235,10 @@ class ActionHandler(BaseHandler):
                     group_name=items_manager.get_item_group_name(item.type, self.locale),
                     buy_button=False,
                     can_buy=False))
+        elif self.get_argument("action") == 'open_chat':
+            self.users_manager.open_chat(self.current_user, self.get_argument("user_name"), self.get_argument("message", ""))
+        elif self.get_argument("action") == 'close_chat':
+            self.users_manager.close_chat(self.current_user, self.get_argument("user_name"))
 
 class PollBotHandler(BaseHandler):
     @tornado.web.authenticated

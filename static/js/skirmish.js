@@ -63,19 +63,7 @@ var initialize = function () {
         $("#tabChat").data("previousTab", e.relatedTarget);
     });
 
-    $(".tabClose").live('click', function(){
-        // if tab is the same as previous - we are closing active tab, make active next tab
-        if ($("#tabChat").data("previousTab")) {
-            $($("#tabChat").data("previousTab")).tab('show');
-        }
-        // we are closing non active tab, restore active (as now active is removed element)
-        else {
-            $("#tabChat a:first").tab('show');
-        }
-        // remove this tab from list
-        $(this).parent().parent().remove();
-        $("#tabChat").data("previousTab", null);
-    });
+    $(".tabClose").live('click', closePrivateChatFunc);
 };
 
 var showBattle = function() {
@@ -121,8 +109,43 @@ var inviteToTeamFunc = function() {
     });
 };
 
+var openPrivateChat = function(userName, message) {
+    if ($("#" + userName + "Tab").length == 0) {
+        $("#tabChat >ul").append(
+                "<li>" +
+                        "<a id=\"" + userName + "Tab\" href=\"#" + userName + "Pane\" data-toggle=\"tab\">" +
+                        "<span>" + userName + "</span>" +
+                        "<button class=\"close tabClose\">&times;</button></a>" +
+                        "</li>");
+        $("#tabChat >div.tab-content").append(
+                "<div class=\"tab-pane\" id=\"" + userName + "Pane\">" +
+                        "<div id=\"" + userName + "TextArea\" class=\"textArea\"></div>" +
+                        "</div>"
+        );
+        $("#" + userName + "Tab").tab('show');
+    }
+    addTextTo("#" + userName + "TextArea", message)
+};
+
 var openPrivateChatFunc = function() {
-    $("#tabChat >ul").append("<li><a href=\"#" + $("#vmenu").data("user_name") + "\" data-toggle=\"tab\">" + $("#vmenu").data("user_name") + "<button class=\"close tabClose\">&times;</button></a></li>");
+    $.postJSON('/action', {"action" : "open_chat", "user_name" : $("#vmenu").data("user_name")}, function(response) {
+    });
+};
+
+var closePrivateChatFunc = function() {
+    $.postJSON('/action', {"action" : "close_chat", "user_name" : $(">span", $(this).parent()).html()}, function(response) {
+    });
+    // if tab is the same as previous - we are closing active tab, make active next tab
+    if ($("#tabChat").data("previousTab")) {
+        $($("#tabChat").data("previousTab")).tab('show');
+    }
+    // we are closing non active tab, restore active (as now active is removed element)
+    else {
+        $("#tabChat a:first").tab('show');
+    }
+    // remove this tab from list
+    $(this).parent().parent().remove();
+    $("#tabChat").data("previousTab", null);
 };
 
 var messager = {
@@ -135,7 +158,16 @@ var messager = {
     onSuccess: function(response) {
         var message = $.parseJSON(response);
         if(message.to == "all") {
-            addTextTo($("#tabChat >div>div.active>div"), format_message(message))
+            addTextTo("#commonTextArea", format_message(message))
+        }
+        else {
+            if ($("#" + message.from + "Tab").length == 0) {
+                $.postJSON('/action', {"action" : "open_chat", "user_name" : message.from, "message" : format_private_message(message)}, function(response) {
+                });
+            }
+            else {
+                addTextTo("#" + message.from + "TextArea", format_private_message(message))
+            }
         }
 
         messager.errorSleepTime = 500;
@@ -318,7 +350,7 @@ var pollUpdater = {
             message = {};
             message["body"] = action.battle_message;
             message["from"] = "bot";
-            addTextTo("#mainTextArea", format_message(message))
+            addTextTo("#battleTextArea", format_message(message))
         }
         // add skirmish user
         else if(action.type == 10) {
@@ -338,6 +370,9 @@ var pollUpdater = {
         }
         else if(action.type == 102) {
             removeOnlineUser(action.user, true);
+        }
+        else if(action.type == 103) {
+            openPrivateChat(action.user, action.message);
         }
         // character info update
         else if (action.type == 200) {

@@ -87,14 +87,21 @@
                 </div>
                 <div id="tabChat" class="tabbable">
                     <ul class="nav nav-tabs skirmish-tabs">
-                        <li class="mainTab active"><a id="mainTextAreaName" href="#1" data-toggle="tab">{Location_name}</a></li>
+                        <li class="mainTab active">
+                            <a id="battleTab" href="#battlePane" data-toggle="tab">
+                                <span>{Location_name}</span>
+                            </a></li>
+                        <li class="mainTab">
+                            <a id="commonTab" href="#commonPane" data-toggle="tab">
+                                <span>{{ _("Common") }}</span>
+                            </a></li>
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane active" id="1">
-                            <div id="mainTextArea" class="textArea"></div>
+                        <div class="tab-pane active" id="battlePane">
+                            <div id="battleTextArea" class="textArea"></div>
                         </div>
-                        <div class="tab-pane" id="2">
-                            <div id="someTextArea" class="textArea"></div>
+                        <div class="tab-pane" id="commonPane">
+                            <div id="commonTextArea" class="textArea"></div>
                         </div>
                     </div>
                     <div class="divSend">

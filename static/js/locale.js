@@ -17,3 +17,4 @@ String.prototype.format = String.prototype.f = function() {
 var messages = new Object();
 messages[0] = {{ '"%s"' % _("Incorrect percentage of the action. Incorrect values were changed to 0") }};
 messages[1] = {{ '"%s"' % _("Nothing to do. Please do your turn") }};
+messages[2] = {{ '"%s"' % _("You just has joined location {0}") }};
