@@ -12,6 +12,11 @@ rest_time = 1
 registration_time = 5
 turn_time = 25
 
+key_words = [
+    "battle",
+    "location"
+]
+
 locations = {
     0 : _("Training Camp"),
     1 : _("Underworld"),

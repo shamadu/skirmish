@@ -17,18 +17,24 @@ var initialize_battle = function () {
 
     $("#locationSelect").change(changeLocationFunc);
     onChangeLocation();
+
+    window.blinker = setInterval(function() {
+        $(".blink").animate({opacity:0.5},500,"linear",function(){
+            $(this).animate({opacity:1},500);
+        });
+    }, 1000);
 };
 
 var onChangeLocation = function() {
     location_name = $("#locationSelect option:selected").html();
-    $("#battleTab").html(location_name);
+    $("#locationTab").html(location_name);
+    $("#locationTextArea").html("");
     message = {};
     message["body"] = messages[2].format(location_name);
-    message["from"] = "bot";
     element = $("#battleTextArea");
     element.html(format_message(message));
     element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
-}
+};
 
 var changeLocationFunc = function() {
     removeDivAction();
@@ -72,7 +78,7 @@ var sendFunc = function() {
 
     if (!$("#tabChat li.active").hasClass("mainTab")) {
         data["to"] = $("#tabChat li.active >a>span").html();
-        addTextTo("#tabChat div.active >div", format_private_message(data));
+        addTextTo("#tabChat li.active >a", format_private_message(data));
     }
 
     $.postJSON('/action', data, function() {
@@ -164,8 +170,13 @@ var format_private_message = function(message) {
     return message_formatted;
 };
 
-var addTextTo = function(element_id, message) {
-    element = $(element_id);
+var addTextTo = function(tab_element_id, message) {
+    tab_element = $(tab_element_id);
+    if (!tab_element.parent().hasClass("active"))
+    {
+        tab_element.addClass("blink");
+    }
+    element = $(">div", tab_element.attr("href"));
     element.html(element.html() + message);
     element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
 };

@@ -89,19 +89,21 @@
                     <ul class="nav nav-tabs skirmish-tabs">
                         <li class="mainTab active">
                             <a id="battleTab" href="#battlePane" data-toggle="tab">
-                                <span>{Location_name}</span>
-                            </a></li>
+                                <span>{{ _("Battle") }}</span>
+                            </a>
+                        </li>
                         <li class="mainTab">
-                            <a id="commonTab" href="#commonPane" data-toggle="tab">
-                                <span>{{ _("Common") }}</span>
-                            </a></li>
+                            <a id="locationTab" href="#locationPane" data-toggle="tab">
+                                <span>{Location_name}</span>
+                            </a>
+                        </li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="battlePane">
                             <div id="battleTextArea" class="textArea"></div>
                         </div>
-                        <div class="tab-pane" id="commonPane">
-                            <div id="commonTextArea" class="textArea"></div>
+                        <div class="tab-pane" id="locationPane">
+                            <div id="locationTextArea" class="textArea"></div>
                         </div>
                     </div>
                     <div class="divSend">

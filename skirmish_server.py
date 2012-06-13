@@ -53,7 +53,7 @@ class SkirmishApplication(tornado.web.Application):
         self.users_manager = UsersManager(self.db_manager, self.users_holder, self.battle_manager)
         self.users_manager.start()
 
-        self.messager = Messager()
+        self.messager = Messager(self.users_holder.online_users, self.users_holder.location_users)
 
         self.users_holder.users_manager = self.users_manager
         self.users_holder.characters_manager = self.characters_manager
@@ -210,7 +210,7 @@ class ActionHandler(BaseHandler):
                 "to": self.get_argument("to"),
                 "body": self.get_argument("body"),
                 }
-            self.messager.new_message(message)
+            self.messager.new_message(self.current_user, message)
         elif self.get_argument("action") == 'shop_get_item':
             item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
             self.write(self.render_string("item_description.html",

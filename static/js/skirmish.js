@@ -60,7 +60,12 @@ var initialize = function () {
 
     // store previous tab to use if close event is called
     $('#tabChat a[data-toggle="tab"]').live('shown', function (e) {
+        if ($(this).hasClass("blink"))
+        {
+            $(this).removeClass("blink");
+        }
         $("#tabChat").data("previousTab", e.relatedTarget);
+        $("#sendTextArea").focus();
     });
 
     $(".tabClose").live('click', closePrivateChatFunc);
@@ -124,7 +129,7 @@ var openPrivateChat = function(userName, message) {
         );
         $("#" + userName + "Tab").tab('show');
     }
-    addTextTo("#" + userName + "TextArea", message)
+    addTextTo("#" + userName + "Tab", message)
 };
 
 var openPrivateChatFunc = function() {
@@ -158,7 +163,7 @@ var messager = {
     onSuccess: function(response) {
         var message = $.parseJSON(response);
         if(message.to == "all") {
-            addTextTo("#commonTextArea", format_message(message))
+            addTextTo("#locationTab", format_message(message))
         }
         else {
             if ($("#" + message.from + "Tab").length == 0) {
@@ -166,7 +171,7 @@ var messager = {
                 });
             }
             else {
-                addTextTo("#" + message.from + "TextArea", format_private_message(message))
+                addTextTo("#" + message.from + "Tab", format_private_message(message))
             }
         }
 
@@ -349,8 +354,7 @@ var pollUpdater = {
         else if(action.type == 9) {
             message = {};
             message["body"] = action.battle_message;
-            message["from"] = "bot";
-            addTextTo("#battleTextArea", format_message(message))
+            addTextTo("#battleTab", format_message(message))
         }
         // add skirmish user
         else if(action.type == 10) {
