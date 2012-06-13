@@ -59,10 +59,15 @@ var initialize = function () {
 
     // store previous tab to use if close event is called
     $('#tabChat a[data-toggle="tab"]').live('shown', function (e) {
+        // stop blinking if blinking (there has been new unread message)
         if ($(this).hasClass("blink"))
         {
             $(this).removeClass("blink");
         }
+        // go to the end of chat
+        element = $(">div", $(this).attr("href"));
+        element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
+        // save previous tab to return to it if this on would be closed
         $("#tabChat").data("previousTab", e.relatedTarget);
         $("#sendTextArea").focus();
     });
