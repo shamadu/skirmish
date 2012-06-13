@@ -9,7 +9,6 @@ var initialize = function () {
     initialize_character();
     initialize_shop();
     initialize_DB();
-    messager.poll();
     pollUpdater.poll();
 
     width = $("#sideBar").width();
@@ -151,40 +150,6 @@ var closePrivateChatFunc = function() {
     // remove this tab from list
     $(this).parent().parent().remove();
     $("#tabChat").data("previousTab", null);
-};
-
-var messager = {
-    errorSleepTime: 500,
-
-    poll: function() {
-        $.postJSON('/message/poll', {}, messager.onSuccess, messager.onError);
-    },
-
-    onSuccess: function(response) {
-        var message = $.parseJSON(response);
-        if(message.to == "all") {
-            addTextTo("#locationTab", format_message(message))
-        }
-        else {
-            if ($("#" + message.from + "Tab").length == 0) {
-                $.postJSON('/action', {"action" : "open_chat", "user_name" : message.from, "message" : format_private_message(message)}, function(response) {
-                });
-            }
-            else {
-                addTextTo("#" + message.from + "Tab", format_private_message(message))
-            }
-        }
-
-        messager.errorSleepTime = 500;
-        window.setTimeout(messager.poll, 0);
-        $("#serverStatus").html("Connected");
-    },
-
-    onError: function() {
-        $("#serverStatus").html("Disconnected");
-        messager.errorSleepTime *= 2;
-        window.setTimeout(messager.poll, messager.errorSleepTime);
-    }
 };
 
 var createOnlineUserLabel = function(user_name) {
@@ -477,12 +442,30 @@ var pollUpdater = {
             $("#divInvitationContent").append(action.invitation_div);
             initialize_team_invitation(action.user_name, action.team_name);
         }
+        // text message
+        else if (action.type == 300){
+            message = action;
+            if(message.to == "all") {
+                addTextTo("#locationTab", format_message(message))
+            }
+            else {
+                if ($("#" + message.from + "Tab").length == 0) {
+                    $.postJSON('/action', {"action" : "open_chat", "user_name" : message.from, "message" : format_private_message(message)}, function(response) {
+                    });
+                }
+                else {
+                    addTextTo("#" + message.from + "Tab", format_private_message(message))
+                }
+            }
+        }
 
         pollUpdater.errorSleepTime = 500;
         window.setTimeout(pollUpdater.poll, 0);
+        $("#serverStatus").html("Connected");
     },
 
     onError: function() {
+        $("#serverStatus").html("Disconnected");
         pollUpdater.errorSleepTime *= 2;
         window.setTimeout(pollUpdater.poll, pollUpdater.errorSleepTime);
     }

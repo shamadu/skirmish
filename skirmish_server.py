@@ -28,7 +28,6 @@ class SkirmishApplication(tornado.web.Application):
             (r'/login', LoginHandler,),
             (r'/create', CreateCharacterHandler,),
             (r'/poll', PollBotHandler,),
-            (r'/message/poll', PollMessageHandler,),
             (r'/action', ActionHandler,),
         ]
         settings = {
@@ -289,27 +288,6 @@ class PollBotHandler(BaseHandler):
     def on_connection_close(self):
         if self.current_user in self.users_holder.online_users:
             self.users_holder.online_users[self.current_user].set_callback(None)
-
-class PollMessageHandler(BaseHandler):
-    @tornado.web.authenticated
-    @user_online
-    @tornado.web.asynchronous
-    def post(self, *args, **kwargs):
-        self.messager.subscribe(self.current_user, self.on_new_message)
-
-    def on_new_message(self, message):
-        # Closed client connection
-        if self.request.connection.stream.closed():
-            return
-
-        def finish_request():
-            if not self.request.connection.stream.closed():
-                self.finish(message)
-
-        tornado.ioloop.IOLoop.instance().add_callback(finish_request)
-
-    def on_connection_close(self):
-        self.messager.unsubscribe(self.current_user)
 
 def main():
     tornado.locale.load_gettext_translations("locale", "skirmish")
