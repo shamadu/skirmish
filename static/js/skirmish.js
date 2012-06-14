@@ -294,7 +294,7 @@ var pollUpdater = {
             // set self spells
             $("#divAction select.spell_select option:selected").each(function(){
                 if($(this).hasClass("self")) {
-                    $(".user_select option[value=\"" + $("#nameLabel_battle").text() + "\"]", $(this).parent().parent()).attr("selected", "selected");
+                    $(".user_select option[value=\"" + $("#nameLabel_topBar").text() + "\"]", $(this).parent().parent()).attr("selected", "selected");
                     $(".user_select", $(this).parent().parent()).attr('disabled', 'true');
                 }
             });
@@ -385,12 +385,31 @@ var pollUpdater = {
                 $("#inviteMenuItem").hide();
             }
 
-            $("#nameLabel_battle").text(characterInfo[0]);
-            $("#raceLabel_battle").text(characterInfo[1]);
-            $("#classLabel_battle").text(characterInfo[2]);
-            $("#levelLabel_battle").text(characterInfo[3]);
-            $("#HPLabel_battle").text(characterInfo[4]);
-            $("#MPLabel_battle").text(characterInfo[5]);
+            $("#nameLabel_topBar").text(characterInfo[0]);
+            $("#raceLabel_topBar").text(characterInfo[1]);
+            $("#classLabel_topBar").text(characterInfo[2]);
+            $("#levelLabel_topBar").text(characterInfo[3]);
+            $("#HPLabel_topBar").text(characterInfo[4]);
+            $("#MPLabel_topBar").text(characterInfo[5]);
+
+            var battleCharacterInfo = action.battle_character_info.split(":");
+            $("#battleHPLabel").text(battleCharacterInfo[0]);
+            $("#battleMPLabel").text(battleCharacterInfo[1]);
+            $("#battleStrengthLabel").text(battleCharacterInfo[2]);
+            $("#battleDexterityLabel").text(battleCharacterInfo[3]);
+            $("#battleIntellectLabel").text(battleCharacterInfo[4]);
+            $("#battleWisdomLabel").text(battleCharacterInfo[5]);
+            $("#battleConstitutionLabel").text(battleCharacterInfo[6]);
+            $("#battleAttackLabel").text(battleCharacterInfo[7]);
+            $("#battleDefenceLabel").text(battleCharacterInfo[8]);
+            $("#battleMagicAttackLabel").text(battleCharacterInfo[9]);
+            $("#battleMagicDefenceLabel").text(battleCharacterInfo[10]);
+            $("#battleArmorLabel").text(battleCharacterInfo[11]);
+            $("#battleExperienceLabel").text(battleCharacterInfo[12]);
+            $("#battleGoldLabel").text(battleCharacterInfo[13]);
+
+            $("#healthBar").width(battleCharacterInfo[0]/characterInfo[4] * 100 + "%");
+            $("#manaBar").width(battleCharacterInfo[1]/characterInfo[5] * 100 + "%");
         }
         // character stuff update
         else if (action.type == 201) {
@@ -456,7 +475,7 @@ var pollUpdater = {
             // not to all
             else {
                 // message from yourself
-                if (message.from == $("#nameLabel_battle").text()) {
+                if (message.from == $("#nameLabel_topBar").text()) {
                     addTextTo("#" + message.to + "Tab", format_private_message(message, false))
                 }
                 // message from another user

@@ -41,7 +41,29 @@ class CharactersManager:
             team_name,
             str(character.rank_in_team)
         ]
-        return Action(200, {"character_info" : ":".join(character_info)})
+
+        # if there is battle character - use it
+        if self.online_users[user_name].battle_character:
+            battle_character = self.online_users[user_name].battle_character
+        else: # use common character
+            battle_character = self.online_users[user_name].character
+        battle_character_info = [
+            str(battle_character.health),
+            str(battle_character.mana),
+            str(battle_character.strength),
+            str(battle_character.dexterity),
+            str(battle_character.intellect),
+            str(battle_character.wisdom),
+            str(battle_character.constitution),
+            str(battle_character.attack),
+            str(battle_character.defence),
+            str(battle_character.magic_attack),
+            str(battle_character.magic_defence),
+            str(battle_character.armor),
+            str(battle_character.experience),
+            str(battle_character.gold)
+        ]
+        return Action(200, {"character_info" : ":".join(character_info), "battle_character_info" : ":".join(battle_character_info)})
 
     def character_stuff_action(self, user_name):
         character = self.online_users[user_name].character

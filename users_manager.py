@@ -94,7 +94,7 @@ class UsersManager(Thread):
     def change_location(self, user_name, location):
         online_users = self.location_users[self.online_users[user_name].location]
         self.send_action_to_all(online_users, self.user_offline_action(user_name))
-        if user_name not in self.battle_manager.battle_bots[location].skirmish_users.keys():
+        if user_name not in self.battle_manager.battle_bots[location].battle_users.keys():
             self.send_action_to_all(self.location_users[location], self.user_online_action(user_name))
         self.location_users[self.online_users[user_name].location].pop(user_name)
         self.location_users[location][user_name] = self.online_users[user_name]

@@ -44,15 +44,31 @@
         </ul>
     </div>
     <div id="contentDiv" class="mainContentDiv">
-        <div id="baseInfoBar" class="baseInfoBar divCenter">
-            <table class="commonTable autoWidthTable">
+        <div id="topInfoBar" class="topInfoBar divCenter">
+            <table class="commonTable autoWidth">
                 <tr>
-                    <td>{{ _("Name") }}</td><td><label id="nameLabel_battle"></label></td>
-                    <td>{{ _("Race") }}</td><td><label id="raceLabel_battle"></label></td>
-                    <td>{{ _("Class") }}</td><td><label id="classLabel_battle"></label></td>
-                    <td>{{ _("Level") }}</td><td><label id="levelLabel_battle"></label></td>
-                    <td>{{ _("Health") }}</td><td><label id="HPLabel_battle"></label></td>
-                    <td>{{ substance }}</td><td><label id="MPLabel_battle"></label></td>
+                    <td>{{ _("Name") }}</td><td><label id="nameLabel_topBar"></label></td>
+                    <td>{{ _("Race") }}</td><td><label id="raceLabel_topBar"></label></td>
+                    <td>{{ _("Class") }}</td><td><label id="classLabel_topBar"></label></td>
+                    <td>{{ _("Level") }}</td><td><label id="levelLabel_topBar"></label></td>
+                    <td style="width: auto;">
+                        <div>
+                            <div class="progress progressBarBase">
+                                <div id="healthBar" class="bar healthBar"
+                                     style="width: 1%;">
+                                </div>
+                            </div>
+                            <label class="progress-bar-label" id="HPLabel_topBar"></label>
+                        </div>
+                        <div>
+                            <div class="progress progressBarBase">
+                                <div id="manaBar" class="bar {{ substance.lower() }}Bar"
+                                     style="width: 1%;">
+                                </div>
+                            </div>
+                            <label class="progress-bar-label" id="MPLabel_topBar"></label>
+                        </div>
+                    </td>
                     <td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td>
                     <td>{{ _("Location") }}</td>
                     <td>
@@ -119,25 +135,25 @@
                 <tr>
                     <td>
                         <table class="commonTable">
-                            <tr><td>{{ _("Name") }}</td><td><label id="nameLabel"></label></td></tr>
-                            <tr><td>{{ _("Race") }}</td><td><label id="raceLabel"></label></td></tr>
-                            <tr><td>{{ _("Class") }}</td><td><label id="classLabel"></label></td></tr>
-                            <tr><td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td></tr>
-                            <tr><td>{{ _("Health") }}</td><td><label id="HPLabel"></label></td></tr>
-                            <tr><td>{{ substance }}</td><td><label id="MPLabel"></label></td></tr>
-                            <tr><td>{{ _("Strength") }}</td><td><label id="strengthLabel"></label></td></tr>
-                            <tr><td>{{ _("Dexterity") }}</td><td><label id="dexterityLabel"></label></td></tr>
-                            <tr><td>{{ _("Intellect") }}</td><td><label id="intellectLabel"></label></td></tr>
-                            <tr><td>{{ _("Wisdom") }}</td><td><label id="wisdomLabel"></label></td></tr>
-                            <tr><td>{{ _("Constitution") }}</td><td><label id="constitutionLabel"></label></td></tr>
-                            <tr><td>{{ _("Attack") }}</td><td><label id="attackLabel"></label></td></tr>
-                            <tr><td>{{ _("Defence") }}</td><td><label id="defenceLabel"></label></td></tr>
-                            <tr><td>{{ _("Magic attack") }}</td><td><label id="magicAttackLabel"></label></td></tr>
-                            <tr><td>{{ _("Magic defence") }}</td><td><label id="magicDefenceLabel"></label></td></tr>
-                            <tr><td>{{ _("Armor") }}</td><td><label id="armorLabel"></label></td></tr>
-                            <tr><td>{{ _("Experience") }}</td><td><label id="experienceLabel"></label></td></tr>
-                            <tr><td>{{ _("Team") }}</td><td><label id="teamLabel"></label></td></tr>
-                            <tr><td>{{ _("Rank") }}</td><td><label id="rankLabel"></label></td></tr>
+                            <tr><td>{{ _("Name") }}</td><td colspan="3"><label id="nameLabel"></label></td></tr>
+                            <tr><td>{{ _("Race") }}</td><td colspan="3"><label id="raceLabel"></label></td></tr>
+                            <tr><td>{{ _("Class") }}</td><td colspan="3"><label id="classLabel"></label></td></tr>
+                            <tr><td>{{ _("Level") }}</td><td colspan="3"><label id="levelLabel"></label></td></tr>
+                            <tr><td>{{ _("Health") }}</td><td><label id="battleHPLabel"></label></td><td>/</td><td><label id="HPLabel"></label></td></tr>
+                            <tr><td>{{ substance }}</td><td><label id="battleMPLabel"></label></td><td>/</td><td><label id="MPLabel"></label></td></tr>
+                            <tr><td>{{ _("Strength") }}</td><td><label id="battleStrengthLabel"></label></td><td>/</td><td><label id="strengthLabel"></label></td></tr>
+                            <tr><td>{{ _("Dexterity") }}</td><td><label id="battleDexterityLabel"></label></td><td>/</td><td><label id="dexterityLabel"></label></td></tr>
+                            <tr><td>{{ _("Intellect") }}</td><td><label id="battleIntellectLabel"></label></td><td>/</td><td><label id="intellectLabel"></label></td></tr>
+                            <tr><td>{{ _("Wisdom") }}</td><td><label id="battleWisdomLabel"></label></td><td>/</td><td><label id="wisdomLabel"></label></td></tr>
+                            <tr><td>{{ _("Constitution") }}</td><td><label id="battleConstitutionLabel"></label></td><td>/</td><td><label id="constitutionLabel"></label></td></tr>
+                            <tr><td>{{ _("Attack") }}</td><td><label id="battleAttackLabel"></label></td><td>/</td><td><label id="attackLabel"></label></td></tr>
+                            <tr><td>{{ _("Defence") }}</td><td><label id="battleDefenceLabel"></label></td><td>/</td><td><label id="defenceLabel"></label></td></tr>
+                            <tr><td>{{ _("Magic attack") }}</td><td><label id="battleMagicAttackLabel"></label></td><td>/</td><td><label id="magicAttackLabel"></label></td></tr>
+                            <tr><td>{{ _("Magic defence") }}</td><td><label id="battleMagicDefenceLabel"></label></td><td>/</td><td><label id="magicDefenceLabel"></label></td></tr>
+                            <tr><td>{{ _("Armor") }}</td><td><label id="battleArmorLabel"></label></td><td>/</td><td><label id="armorLabel"></label></td></tr>
+                            <tr><td>{{ _("Experience") }}</td><td><label id="battleExperienceLabel"></label></td><td>/</td><td><label id="experienceLabel"></label></td></tr>
+                            <tr><td>{{ _("Team") }}</td><td colspan="3"><label id="teamLabel"></label></td></tr>
+                            <tr><td>{{ _("Rank") }}</td><td colspan="3"><label id="rankLabel"></label></td></tr>
                         </table>
                     </td>
                     <td>

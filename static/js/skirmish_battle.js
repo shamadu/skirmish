@@ -201,7 +201,7 @@ var addDivAction = function(divAction) {
 
     $("#divAction select.spell_select").change(function(){
         if($("option:selected", this).hasClass("self")) {
-            $(".user_select option[value=\"" + $("#nameLabel_battle").text() + "\"]", $(this).parent()).attr("selected", "selected");
+            $(".user_select option[value=\"" + $("#nameLabel_topBar").text() + "\"]", $(this).parent()).attr("selected", "selected");
             $(".user_select", $(this).parent()).attr('disabled', 'true');
         }
         else {

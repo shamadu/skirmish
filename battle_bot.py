@@ -421,6 +421,7 @@ class BattleBot(Thread):
             who_character.mana += smarty.get_regeneration(who_character)*action.percent
 
     def remove_from_skirmish(self, user_name):
+        self.battle_users[user_name].reset_turn()
         battle_character = self.battle_users[user_name].battle_character
         bonus_fields = {
             "experience" : self.battle_users[user_name].character.experience + battle_character.experience,
@@ -438,12 +439,12 @@ class BattleBot(Thread):
                 "wisdom" : battle_character.wisdom + level,
                 })
         self.db_manager.change_character_fields_update(battle_character.name, bonus_fields)
-        self.characters_manager.send_character_info(user_name)
         if self.online_users[user_name].location == self.location: # user still in the same location
             self.send_action_to_user(user_name, self.reset_to_initial_action())
         self.send_action_to_all(self.remove_skirmish_user_action(user_name))
         self.battle_users[user_name].battle_character = None
         self.battle_users.pop(user_name)
+        self.characters_manager.send_character_info(user_name)
 
     def user_join(self, user_name):
         if self.phase == 0 and user_name not in self.battle_users.keys():
