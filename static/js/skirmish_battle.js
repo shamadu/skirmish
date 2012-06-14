@@ -78,7 +78,6 @@ var sendFunc = function() {
 
     if (!$("#tabChat li.active").hasClass("mainTab")) {
         data["to"] = $("#tabChat li.active >a>span").html();
-        addTextTo("#tabChat li.active >a", format_private_message(data));
     }
 
     $.postJSON('/action', data, function() {
@@ -138,7 +137,7 @@ var format_message = function(message) {
     return message_formatted;
 };
 
-var format_private_message = function(message) {
+var format_private_message = function(message, income) {
     today = new Date();
     hours = today.getHours();
     if(hours < 10) {
@@ -157,7 +156,7 @@ var format_private_message = function(message) {
     message_formatted = "";
     for(line in body_lines){
         message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]"
-        if (message.from) {
+        if (income) {
             message_formatted += "<<:"
         }
         else {

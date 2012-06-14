@@ -128,7 +128,7 @@ var openPrivateChat = function(userName, message) {
                         "</li>");
         $("#tabChat >div.tab-content").append(
                 "<div class=\"tab-pane\" id=\"" + userName + "Pane\">" +
-                        "<div id=\"" + userName + "TextArea\" class=\"textArea\"></div>" +
+                        "<div id=\"" + userName + "TextArea\" class=\"textArea notranslate\"></div>" +
                         "</div>"
         );
         $("#" + userName + "Tab").tab('show');
@@ -453,13 +453,21 @@ var pollUpdater = {
             if(message.to == "all") {
                 addTextTo("#locationTab", format_message(message))
             }
+            // not to all
             else {
-                if ($("#" + message.from + "Tab").length == 0) {
-                    $.postJSON('/action', {"action" : "open_chat", "user_name" : message.from, "message" : format_private_message(message)}, function(response) {
-                    });
+                // message from yourself
+                if (message.from == $("#nameLabel_battle").text()) {
+                    addTextTo("#" + message.to + "Tab", format_private_message(message, false))
                 }
+                // message from another user
                 else {
-                    addTextTo("#" + message.from + "Tab", format_private_message(message))
+                    if ($("#" + message.from + "Tab").length == 0) {
+                        $.postJSON('/action', {"action" : "open_chat", "user_name" : message.from, "message" : format_private_message(message, true)}, function(response) {
+                        });
+                    }
+                    else {
+                        addTextTo("#" + message.from + "Tab", format_private_message(message, true))
+                    }
                 }
             }
         }

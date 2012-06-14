@@ -17,7 +17,7 @@ spell_messages = {
     6 : _("{0} casts spell {1} on {2} and freezes him for {3}hp({4}hp)[{5}/{6}]"),
     7 : _("{0} casts spell {1} on {2} and burns him for {3}hp({4}hp)[{5}/{6}]"),
     8 : _("{0} casts spell {1} on {2} and heals him for {3}hp({4}hp)[{5}/{6}]"),
-    9 : _("{0} tried to attack {1}, but kills one phantom {2}/{3}"),
+    9 : _("{0} tried to attack {1}, but killed one phantom {2}/{3}"),
     10 : _("{0} has rounded himself with {1} phantoms [{2}/{3}][{4}/{5}]"),
     11 : _("{0} used ability {1} and knocked the weapon from {2} [{3}/{4}]"),
     12 : _("{0} has tried to attack {1} but has no weapon in hands"),
