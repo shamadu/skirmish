@@ -59,14 +59,14 @@ class BattleBot(Thread):
     def div_args(self, user_name, skirmish_users):
         user = skirmish_users[user_name]
         actions = OrderedDict()
-        actions[0] = user.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(user.character.class_id, user.character.level)
-        actions[1] = user.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(user.character.class_id, user.character.level)
-        actions[2] = smarty.get_ability_name(user.character.class_id, user.locale) , smarty.get_spell_count(user.character.class_id, user.character.level)
-        actions[3] = smarty.get_substance_name(user.character.class_id, user.locale) , 0
+        actions[0] = user.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(user.battle_character.class_id, user.battle_character.level)
+        actions[1] = user.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(user.battle_character.class_id, user.battle_character.level)
+        actions[2] = smarty.get_ability_name(user.battle_character.class_id, user.locale) , smarty.get_spell_count(user.battle_character.class_id, user.battle_character.level)
+        actions[3] = smarty.get_substance_name(user.battle_character.class_id, user.locale) , 0
         return {
             "actions" : actions,
             "users" : {},
-            "spells" : spells_manager.get_spells(user.character, user.locale)
+            "spells" : spells_manager.get_spells(user.battle_character, user.locale)
         }
 
     def add_skirmish_user_action(self, user_name):
@@ -79,14 +79,14 @@ class BattleBot(Thread):
         user = self.online_users[user_name]
         if not user.character.team_name:
             return Action(11, {"skirmish_user" : user.user_name})
-        return Action(11, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user.user_name, "team_name" : user.character.team_name}})
+        return Action(11, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user.user_name, "team_name" : user.battle_character.team_name}})
 
     def __init__(self, users_holder, db_manager, characters_manager, location):
         Thread.__init__(self)
         self.users_holder = users_holder
         self.characters_manager = characters_manager
         self.db_manager = db_manager
-        self.skirmish_users = dict()
+        self.battle_users = dict()
         self.location = location
         self.location_users = users_holder.location_users[location]
         # phases:
@@ -102,14 +102,12 @@ class BattleBot(Thread):
         self.turn_done_count = 0
         self.dead_users = dict()
         self.ran_users = list()
-        self.characters = dict()
         self.victims = dict()
 
     def reset(self):
         del self.ran_users[:]
         self.dead_users.clear()
-        self.characters.clear()
-        self.skirmish_users.clear()
+        self.battle_users.clear()
         for spell_actions in self.long_affect_victim_spells.values():
             del spell_actions[:]
         for spell_actions in self.long_affect_attacker_spells.values():
@@ -135,7 +133,7 @@ class BattleBot(Thread):
             elif self.phase == 0 and self.counter == smarty.registration_time:
                 # registration end
                 self.counter = 0
-                if len(self.skirmish_users) > 1:
+                if len(self.battle_users) > 1:
                     self.phase = 1
                     self.registration_ended()
                 else:
@@ -145,7 +143,7 @@ class BattleBot(Thread):
                     self.game_started()
                 self.round_started()
             elif self.phase > 0 and (self.counter == smarty.turn_time
-                                     or len(self.ran_users) + self.turn_done_count == len(self.skirmish_users)):
+                                     or len(self.ran_users) + self.turn_done_count == len(self.battle_users)):
                 self.counter = 0
                 self.phase += 1
                 self.turn_done_count = 0
@@ -165,7 +163,7 @@ class BattleBot(Thread):
     # heal spell result - damage spell result
     def process_round_result(self):
         # collect actions from every user
-        skirmish_users_names = self.skirmish_users.keys()
+        skirmish_users_names = self.battle_users.keys()
         random.shuffle(skirmish_users_names)
         actions = { # action type : result action
             0 : list(), # attack
@@ -174,7 +172,7 @@ class BattleBot(Thread):
             3 : list() # regeneration
         }
         for user_name in skirmish_users_names:
-            skirmish_user = self.skirmish_users[user_name]
+            skirmish_user = self.battle_users[user_name]
             if skirmish_user.is_turn_done(): # process user's turn
                 for action in skirmish_user.get_turn_info():
                     actions[action.type].append(action)
@@ -212,20 +210,22 @@ class BattleBot(Thread):
         self.round_end_long_affect_attack_spells(self.long_affect_attacker_spells)
         self.round_end_long_affect_attack_spells(self.long_after_attack_spells)
 
-        for user in self.skirmish_users.values():
-            if user.character.health <= 0:
+        for user in self.battle_users.values():
+            if user.battle_character.health <= 0:
                 self.dead_users[user.user_name] = user
-                self.skirmish_users[user.user_name].state = 3 # dead
-                self.remove_from_skirmish(user.user_name)
-                self.send_text_action_to_users(self.location_users, 9, user.user_name) # user is dead
+                self.battle_users[user.user_name].state = 3 # dead
                 if user.user_name in self.victims.keys():
-                    self.characters[self.victims[user.user_name]].gold += user.character.level + 1
+                    self.battle_users[self.victims[user.user_name]].battle_character.gold += user.battle_character.level + 1
+                self.send_text_action_to_users(self.location_users, 9, user.user_name) # user is dead
             else:
                 self.characters_manager.send_character_info(user.user_name)
+        for user in self.battle_users.values():
+            if user.battle_character.health <= 0:
+                self.remove_from_skirmish(user.user_name)
 
         for user_name in self.ran_users:
             if user_name not in self.dead_users.keys():
-                self.skirmish_users[user_name].state = 2 # ran
+                self.battle_users[user_name].state = 2 # ran
                 self.remove_from_skirmish(user_name)
                 self.send_text_action_to_users(self.location_users, 10, user_name) # user ran
 
@@ -234,31 +234,31 @@ class BattleBot(Thread):
         # count teams of users
         teams = list()
         users_no_team = list()
-        for user in self.skirmish_users.values():
-            if user.character.team_name:
-                if user.character.team_name not in teams:
-                    teams.append(user.character.team_name)
+        for user in self.battle_users.values():
+            if user.battle_character.team_name:
+                if user.battle_character.team_name not in teams:
+                    teams.append(user.battle_character.team_name)
             else:
                 users_no_team.append(user.user_name)
 
         if (len(teams) < 2 and len(users_no_team) == 0) or (len(teams) == 0 and len(users_no_team) < 2): # process game result
             self.game_ended()
             if len(teams) == 1:
-                self.send_text_action_to_users(self.location_users, 11, "{0}({1})".format(teams[0], ",".join(self.skirmish_users.keys()))) # game win team
+                self.send_text_action_to_users(self.location_users, 11, "{0}({1})".format(teams[0], ",".join(self.battle_users.keys()))) # game win team
             elif len(users_no_team) == 1:
                 self.send_text_action_to_users(self.location_users, 12, users_no_team[0]) # game win user
             else:
                 self.send_text_action_to_users(self.location_users, 13) # game win nobody
-            for user_name in self.skirmish_users.keys():
-                self.skirmish_users[user_name].state = 0 # default
+            for user_name in self.battle_users.keys():
+                self.battle_users[user_name].state = 0 # default
                 self.remove_from_skirmish(user_name)
 
             self.reset()
 
     # check spells which could affect attack, like phantoms, paralyze, etc.
     def process_affect_attack_spells(self, attack_action):
-        who_character = self.skirmish_users[attack_action.who].character
-        whom_character = self.skirmish_users[attack_action.whom].character
+        who_character = self.battle_users[attack_action.who].battle_character
+        whom_character = self.battle_users[attack_action.whom].battle_character
         spell_stop_attack = False
         if attack_action.who in self.long_affect_attacker_spells.keys():
             for spell_action in self.long_affect_attacker_spells[attack_action.who]:
@@ -279,7 +279,7 @@ class BattleBot(Thread):
 
     # check spells which be applied after attack, like mirror, plague, second life, etc.
     def process_after_attack_spells(self, attack_action, damage):
-        who_character = self.skirmish_users[attack_action.who].character
+        who_character = self.battle_users[attack_action.who].battle_character
         if attack_action.whom in self.long_after_attack_spells.keys():
             for spell_action in self.long_after_attack_spells[attack_action.whom]:
                 spell_action.process_after_attack(who_character, damage)
@@ -292,9 +292,9 @@ class BattleBot(Thread):
                 defenders = list() # character : action percent
                 for def_action in defence_actions: # defence
                     if def_action.whom == action.whom:
-                        defenders.append((self.skirmish_users[def_action.who].character, def_action.percent))
-                who_character = self.skirmish_users[action.who].character
-                whom_character = self.skirmish_users[action.whom].character
+                        defenders.append((self.battle_users[def_action.who].battle_character, def_action.percent))
+                who_character = self.battle_users[action.who].battle_character
+                whom_character = self.battle_users[action.whom].battle_character
                 if smarty.is_hit(who_character, action.percent, defenders):
                     damage = smarty.get_damage(who_character, action.percent, whom_character)
                     if smarty.is_critical_hit(who_character, whom_character):
@@ -322,7 +322,7 @@ class BattleBot(Thread):
                     for def_action in defence_actions: # defence
                         if def_action.whom == action.whom:
                             def_experience = 0
-                            def_character = self.skirmish_users[def_action.who].character
+                            def_character = self.battle_users[def_action.who].battle_character
                             if def_action.who != action.who:
                                 def_experience = round(all_experience*(def_character.defence/all_defence))
                                 def_character.experience += def_experience
@@ -340,7 +340,7 @@ class BattleBot(Thread):
         turn_actions = self.get_spells_by_type(spell_actions, 4)
         for turn_action in turn_actions:
             spell_action = spells_manager.spells_action_classes[turn_action.spell_id]()
-            spell_action.init(self.skirmish_users[turn_action.who].character, self.skirmish_users[turn_action.whom].character)
+            spell_action.init(self.battle_users[turn_action.who].battle_character, self.battle_users[turn_action.whom].battle_character)
             if spell_action.consume_mana():
                 if spell_action.is_hit(turn_action.percent):
                     self.long_spells.append(spell_action)
@@ -352,7 +352,7 @@ class BattleBot(Thread):
     def apply_long_affect_attack_spells(self, spell_actions, spells_container):
         for turn_action in spell_actions:
             spell_action = spells_manager.spells_action_classes[turn_action.spell_id]()
-            spell_action.init(self.skirmish_users[turn_action.who].character, self.skirmish_users[turn_action.whom].character)
+            spell_action.init(self.battle_users[turn_action.who].battle_character, self.battle_users[turn_action.whom].battle_character)
             if spell_action.consume_mana():
                 if spell_action.is_hit(turn_action.percent):
                     whom_name = spell_action.whom_character.name
@@ -399,16 +399,16 @@ class BattleBot(Thread):
         turn_actions = self.get_spells_by_type(spell_actions, type)
         for turn_action in turn_actions:
             spell_action = spells_manager.spells_action_classes[turn_action.spell_id]()
-            spell_action.init(self.skirmish_users[turn_action.who].character, self.skirmish_users[turn_action.whom].character)
+            spell_action.init(self.battle_users[turn_action.who].battle_character, self.battle_users[turn_action.whom].battle_character)
             if spell_action.consume_mana():
                 if spell_action.is_hit(turn_action.percent):
                     if type == 1: # damage
                         spell_action.process(turn_action.percent)
                     elif type == 2: # heal
-                        spell_action.process(turn_action.percent, self.characters[turn_action.whom].health)
+                        spell_action.process(turn_action.percent, self.battle_users[turn_action.whom].battle_character.health)
                     for online_user in self.location_users.values():
                         online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
-                    if self.skirmish_users[turn_action.whom].character.health <= 0 and not turn_action.whom in self.victims.keys():
+                    if self.battle_users[turn_action.whom].battle_character.health <= 0 and not turn_action.whom in self.victims.keys():
                         self.victims[turn_action.whom] = turn_action.who
                 else:
                     self.failed_spell(spell_action)
@@ -417,65 +417,67 @@ class BattleBot(Thread):
 
     def process_regeneration_actions(self, regeneration_actions):
         for action in regeneration_actions:
-            who_character = self.skirmish_users[action.who].character
+            who_character = self.battle_users[action.who].battle_character
             who_character.mana += smarty.get_regeneration(who_character)*action.percent
 
     def remove_from_skirmish(self, user_name):
-        character = self.characters[user_name]
+        battle_character = self.battle_users[user_name].battle_character
         bonus_fields = {
-            "experience" : character.experience + self.skirmish_users[user_name].character.experience,
+            "experience" : self.battle_users[user_name].character.experience + battle_character.experience,
+            "gold" : self.battle_users[user_name].character.gold + battle_character.gold
         }
         level = 0
-        while smarty.level_up_experiences[character.level + level] < character.experience + self.skirmish_users[user_name].character.experience: # then lvl up
+        while smarty.level_up_experiences[battle_character.level + level] < battle_character.experience + self.battle_users[user_name].character.experience: # then lvl up
             level += 1
         if level > 0:
             bonus_fields.update({
-                "level" : character.level + level,
-                "strength" : character.strength + level,
-                "dexterity" : character.dexterity + level,
-                "intellect" : character.intellect + level,
-                "wisdom" : character.wisdom + level,
+                "level" : battle_character.level + level,
+                "strength" : battle_character.strength + level,
+                "dexterity" : battle_character.dexterity + level,
+                "intellect" : battle_character.intellect + level,
+                "wisdom" : battle_character.wisdom + level,
                 })
-        self.db_manager.change_character_fields_update(character.name, bonus_fields)
+        self.db_manager.change_character_fields_update(battle_character.name, bonus_fields)
         self.characters_manager.send_character_info(user_name)
         if self.online_users[user_name].location == self.location: # user still in the same location
             self.send_action_to_user(user_name, self.reset_to_initial_action())
         self.send_action_to_all(self.remove_skirmish_user_action(user_name))
-        self.skirmish_users.pop(user_name)
+        self.battle_users[user_name].battle_character = None
+        self.battle_users.pop(user_name)
 
     def user_join(self, user_name):
-        if self.phase == 0 and user_name not in self.skirmish_users.keys():
-            self.skirmish_users[user_name] = self.online_users[user_name]
-            self.skirmish_users[user_name].state = 1 # is in skirmish
+        if self.phase == 0 and user_name not in self.battle_users.keys():
+            self.battle_users[user_name] = self.online_users[user_name]
+            self.battle_users[user_name].state = 1 # is in skirmish
             self.send_action_to_user(user_name, self.can_leave_action())
             self.send_action_to_all(self.add_skirmish_user_action(user_name))
 
     def user_leave(self, user_name):
-        if user_name in self.skirmish_users.keys():
+        if user_name in self.battle_users.keys():
             if self.phase == 0:
                 self.send_action_to_user(user_name, self.can_join_action())
                 self.send_action_to_all(self.remove_skirmish_user_action(user_name))
-                self.skirmish_users[user_name].state = 0 # default
-                self.skirmish_users.pop(user_name)
-            elif self.skirmish_users[user_name].state != 2: # didn't run yet
-                if self.skirmish_users[user_name].is_turn_done(): # if did turn - reset it
-                    self.skirmish_users[user_name].reset_turn()
+                self.battle_users[user_name].state = 0 # default
+                self.battle_users.pop(user_name)
+            elif self.battle_users[user_name].state != 2: # didn't run yet
+                if self.battle_users[user_name].is_turn_done(): # if did turn - reset it
+                    self.battle_users[user_name].reset_turn()
                     self.turn_done_count -= 1
                 self.ran_users.append(user_name)
-                self.skirmish_users[user_name].state = 2 # ran
+                self.battle_users[user_name].state = 2 # ran
                 self.send_action_to_user(user_name, self.reset_to_initial_action())
 
     def user_turn(self, user_name, turn_info):
-        if self.phase > 0 and user_name in self.skirmish_users:
+        if self.phase > 0 and user_name in self.battle_users:
             self.turn_done_count += 1
-            self.skirmish_users[user_name].set_turn_string(turn_info)
-            self.send_action_to_user(user_name, self.can_cancel_turn_action(user_name, self.skirmish_users))
+            self.battle_users[user_name].set_turn_string(turn_info)
+            self.send_action_to_user(user_name, self.can_cancel_turn_action(user_name, self.battle_users))
 
     def user_turn_cancel(self, user_name):
         if self.phase > 0:
             self.turn_done_count -= 1
-            self.skirmish_users[user_name].reset_turn()
-            self.send_action_to_user(user_name, self.can_do_turn_action(user_name, self.skirmish_users))
+            self.battle_users[user_name].reset_turn()
+            self.send_action_to_user(user_name, self.can_do_turn_action(user_name, self.battle_users))
 
     def user_enter(self, user_name):
         # if registration is in progress
@@ -489,22 +491,22 @@ class BattleBot(Thread):
         # if round is in progress
         elif self.phase > 0:
             if self.online_users[user_name].state == 1:
-                self.send_action_to_user(user_name, self.add_turn_div_action(user_name, self.skirmish_users))
-                self.send_action_to_user(user_name, self.set_turn_users_action(self.skirmish_users))
+                self.send_action_to_user(user_name, self.add_turn_div_action(user_name, self.battle_users))
+                self.send_action_to_user(user_name, self.set_turn_users_action(self.battle_users))
             if self.online_users[user_name].state == 2: # user ran
                 self.send_action_to_user(user_name, self.reset_to_initial_action())
                 # if it's time to do the turn
             if self.counter < smarty.turn_time:
                 # if user is in skirmish and the turn isn't done, send "can do turn" action
                 if self.online_users[user_name].state == 1:
-                    if not self.skirmish_users[user_name].is_turn_done():
-                        self.send_action_to_user(user_name, self.can_do_turn_action(user_name, self.skirmish_users))
+                    if not self.battle_users[user_name].is_turn_done():
+                        self.send_action_to_user(user_name, self.can_do_turn_action(user_name, self.battle_users))
                     # if user is in skirmish and the turn is done, send "can cancel turn" action
                     else:
-                        self.send_action_to_user(user_name, self.can_cancel_turn_action(user_name, self.skirmish_users))
+                        self.send_action_to_user(user_name, self.can_cancel_turn_action(user_name, self.battle_users))
             # all turns were done and if user is in skirmish and the turn is done, send "can cancel turn" action
-            elif self.online_users[user_name].state == 1 and self.skirmish_users[user_name].is_turn_done():
-                self.send_action_to_user(user_name, self.wait_for_result_action(user_name, self.skirmish_users))
+            elif self.online_users[user_name].state == 1 and self.battle_users[user_name].is_turn_done():
+                self.send_action_to_user(user_name, self.wait_for_result_action(user_name, self.battle_users))
 
     def registration_started(self):
         self.send_text_action_to_users(self.location_users, 0, None) # registration has been started
@@ -516,30 +518,30 @@ class BattleBot(Thread):
 
     def round_started(self):
         self.send_text_action_to_users(self.location_users, 2, self.phase) # round has been started
-        for user_name in self.skirmish_users.keys():
-            self.skirmish_users[user_name].send_action(self.set_turn_users_action(self.skirmish_users))
-            self.skirmish_users[user_name].send_action(self.can_do_turn_action(user_name, self.skirmish_users))
-        for skirmish_user in self.skirmish_users.values():
+        for user_name in self.battle_users.keys():
+            self.battle_users[user_name].send_action(self.set_turn_users_action(self.battle_users))
+            self.battle_users[user_name].send_action(self.can_do_turn_action(user_name, self.battle_users))
+        for skirmish_user in self.battle_users.values():
             skirmish_user.reset_turn()
 
     def round_ended(self):
         self.send_text_action_to_users(self.location_users, 3, self.phase) # round has been ended
-        for user_name in self.skirmish_users.keys():
-            self.skirmish_users[user_name].send_action(self.wait_for_result_action(user_name, self.skirmish_users))
+        for user_name in self.battle_users.keys():
+            self.battle_users[user_name].send_action(self.wait_for_result_action(user_name, self.battle_users))
 
     def game_started(self):
-        for skirmish_user in self.skirmish_users.keys():
-            self.send_action_to_user(skirmish_user, self.add_turn_div_action(skirmish_user, self.skirmish_users))
-        for user_name in self.skirmish_users.keys():
-            self.characters[user_name] = copy.copy(self.skirmish_users[user_name].character)
-            self.skirmish_users[user_name].character.experience = 0
-            self.skirmish_users[user_name].character.gold = 0
+        for user_name in self.battle_users.keys():
+            self.battle_users[user_name].battle_character = copy.copy(self.battle_users[user_name].character)
+            self.battle_users[user_name].battle_character.experience = 0
+            self.battle_users[user_name].battle_character.gold = 0
+        for skirmish_user in self.battle_users.keys():
+            self.send_action_to_user(skirmish_user, self.add_turn_div_action(skirmish_user, self.battle_users))
 
     def game_ended(self):
-        for user_name in self.skirmish_users.keys():
-            self.db_manager.change_character_field(user_name, "experience", self.characters[user_name].experience + self.skirmish_users[user_name].character.experience)
-            self.db_manager.change_character_field(user_name, "gold", self.characters[user_name].gold + self.skirmish_users[user_name].character.gold)
-            self.skirmish_users[user_name].reset_turn()
+        for user_name in self.battle_users.keys():
+            self.db_manager.change_character_field(user_name, "experience", self.battle_users[user_name].battle_character.experience + self.battle_users[user_name].character.experience)
+            self.db_manager.change_character_field(user_name, "gold", self.battle_users[user_name].battle_character.gold + self.battle_users[user_name].character.gold)
+            self.battle_users[user_name].reset_turn()
         self.send_text_action_to_users(self.location_users, 4, None) # game has been ended
 
     def game_cant_start(self):
@@ -552,7 +554,7 @@ class BattleBot(Thread):
                 online_user.locale,
                 who,
                 whom,
-                items_manager.get_current_weapon_name(self.location_users[who].character, online_user.locale),
+                items_manager.get_current_weapon_name(self.location_users[who].battle_character, online_user.locale),
                 amount,
                 new_health,
                 experience,
@@ -566,7 +568,7 @@ class BattleBot(Thread):
                 online_user.locale,
                 who,
                 whom,
-                items_manager.get_current_weapon_name(self.location_users[who].character, online_user.locale),
+                items_manager.get_current_weapon_name(self.location_users[who].battle_character, online_user.locale),
                 def_experiences)
             online_user.send_action(text_action)
 

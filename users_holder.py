@@ -28,7 +28,8 @@ class OnlineUserInfo():
         self.counter = 10
         self.callback = None
         self.cache = deque()
-        self.character = {} # will be filled by db_manager
+        self.character = None # will be filled by db_manager
+        self.battle_character = None # will be filled by battle_bot
         # 0 - default, alive
         # 1 - in skirmish, alive
         # 2 - ran from skirmish, alive

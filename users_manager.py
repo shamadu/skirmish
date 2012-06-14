@@ -86,7 +86,7 @@ class UsersManager(Thread):
     def user_enter(self, user_name):
         location = self.online_users[user_name].location
         online_users = self.location_users[location]
-        skirmish_users = self.battle_manager.battle_bots[location].skirmish_users
+        skirmish_users = self.battle_manager.battle_bots[location].battle_users
         self.online_users[user_name].send_action(self.initial_users_action(online_users, skirmish_users))
         for chat_user_name in self.online_users[user_name].opened_chats:
             self.online_users[user_name].send_action(self.open_chat_action(chat_user_name, ""))
