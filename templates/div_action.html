@@ -5,19 +5,19 @@
         <div style="width: auto">{{ actions[action][0] }}
             {% if actions[action][1] == 0 %}
             <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
-                <input type="text" style="width: 50px" value="0">
+                <input type="text" class="commonText" value="0">
                 %
             </div>
             {% else %}
                 {% for i in range(actions[action][1]) %}
                 <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
-                    <select class="user_select" style="margin: auto; width: auto;">
+                    <select class="commonSelect user_select" style="margin: auto; width: auto;">
                         {% for user in users %}
                         <option value="{{ user }}">{{ user }}</option>
                         {% end %}
                     </select>
                     {% if action == 2 %}
-                    <select class="spell_select" style="margin: auto; width: auto;">
+                    <select class="commonSelect spell_select" style="margin: auto; width: auto;">
                         {% for spell in spells %}
                         <option value="{{ spell.id }}"
                                 {% if spell.is_self %}
@@ -27,7 +27,7 @@
                         {% end %}
                     </select>
                     {% end %}
-                    <input type="text" style="margin: auto; width: 25px" value="0">
+                    <input type="text" class="commonText" value="0">
                     %
                 </div>
                 {% end %}

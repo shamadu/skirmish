@@ -51,22 +51,24 @@
                     <td>{{ _("Race") }}</td><td><label id="raceLabel_topBar"></label></td>
                     <td>{{ _("Class") }}</td><td><label id="classLabel_topBar"></label></td>
                     <td>{{ _("Level") }}</td><td><label id="levelLabel_topBar"></label></td>
-                    <td style="width: auto;">
-                        <div>
-                            <div class="progress progressBarBase">
-                                <div id="healthBar" class="bar healthBar"
-                                     style="width: 1%;">
-                                </div>
+                    <td>
+                        <div class="progress progressBarBase">
+                            <div id="healthBar" class="bar healthBar"
+                                 style="width: 1%;">
                             </div>
-                            <label class="progress-bar-label" id="HPLabel_topBar"></label>
                         </div>
-                        <div>
-                            <div class="progress progressBarBase">
-                                <div id="manaBar" class="bar {{ substance.lower() }}Bar"
-                                     style="width: 1%;">
-                                </div>
+                        <div class="progress progressBarBase">
+                            <div id="manaBar" class="bar {{ substance.lower() }}Bar"
+                                 style="width: 1%;">
                             </div>
-                            <label class="progress-bar-label" id="MPLabel_topBar"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="autoWidth">
+                            <label class="progress-bar-label" id="HPLabel"></label>
+                        </div>
+                        <div class="autoWidth">
+                            <label class="progress-bar-label" id="MPLabel"></label>
                         </div>
                     </td>
                     <td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td>
@@ -82,7 +84,20 @@
                         {% end %}
                         </select>
                     </td>
-                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="14">
+                        <div class="progress progressBarExperience">
+                            <div id="experienceBar" class="bar experienceBar"
+                                 style="width: 1%;">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="autoWidth">
+                            <label class="progress-bar-label" id="experienceLabel"></label>
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -139,8 +154,6 @@
                             <tr><td>{{ _("Race") }}</td><td colspan="3"><label id="raceLabel"></label></td></tr>
                             <tr><td>{{ _("Class") }}</td><td colspan="3"><label id="classLabel"></label></td></tr>
                             <tr><td>{{ _("Level") }}</td><td colspan="3"><label id="levelLabel"></label></td></tr>
-                            <tr><td>{{ _("Health") }}</td><td><label id="battleHPLabel"></label></td><td>/</td><td><label id="HPLabel"></label></td></tr>
-                            <tr><td>{{ substance }}</td><td><label id="battleMPLabel"></label></td><td>/</td><td><label id="MPLabel"></label></td></tr>
                             <tr><td>{{ _("Strength") }}</td><td><label id="battleStrengthLabel"></label></td><td>/</td><td><label id="strengthLabel"></label></td></tr>
                             <tr><td>{{ _("Dexterity") }}</td><td><label id="battleDexterityLabel"></label></td><td>/</td><td><label id="dexterityLabel"></label></td></tr>
                             <tr><td>{{ _("Intellect") }}</td><td><label id="battleIntellectLabel"></label></td><td>/</td><td><label id="intellectLabel"></label></td></tr>
@@ -151,7 +164,6 @@
                             <tr><td>{{ _("Magic attack") }}</td><td><label id="battleMagicAttackLabel"></label></td><td>/</td><td><label id="magicAttackLabel"></label></td></tr>
                             <tr><td>{{ _("Magic defence") }}</td><td><label id="battleMagicDefenceLabel"></label></td><td>/</td><td><label id="magicDefenceLabel"></label></td></tr>
                             <tr><td>{{ _("Armor") }}</td><td><label id="battleArmorLabel"></label></td><td>/</td><td><label id="armorLabel"></label></td></tr>
-                            <tr><td>{{ _("Experience") }}</td><td><label id="battleExperienceLabel"></label></td><td>/</td><td><label id="experienceLabel"></label></td></tr>
                             <tr><td>{{ _("Team") }}</td><td colspan="3"><label id="teamLabel"></label></td></tr>
                             <tr><td>{{ _("Rank") }}</td><td colspan="3"><label id="rankLabel"></label></td></tr>
                         </table>

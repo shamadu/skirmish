@@ -355,8 +355,6 @@ var pollUpdater = {
             $("#raceLabel").text(characterInfo[1]);
             $("#classLabel").text(characterInfo[2]);
             $("#levelLabel").text(characterInfo[3]);
-            $("#HPLabel").text(characterInfo[4]);
-            $("#MPLabel").text(characterInfo[5]);
             $("#strengthLabel").text(characterInfo[6]);
             $("#dexterityLabel").text(characterInfo[7]);
             $("#intellectLabel").text(characterInfo[8]);
@@ -367,12 +365,11 @@ var pollUpdater = {
             $("#magicAttackLabel").text(characterInfo[13]);
             $("#magicDefenceLabel").text(characterInfo[14]);
             $("#armorLabel").text(characterInfo[15]);
-            $("#experienceLabel").text(characterInfo[16]);
-            $("#goldLabel").text(characterInfo[17]);
+            $("#goldLabel").text(characterInfo[18]);
             if (characterInfo[18]){
-                $("#teamLabel").text(characterInfo[18]);
-                $("#rankLabel").text(characterInfo[19]);
-                if (characterInfo[19] > 1) {
+                $("#teamLabel").text(characterInfo[19]);
+                $("#rankLabel").text(characterInfo[20]);
+                if (characterInfo[20] > 1) {
                     $("#inviteMenuItem").hide();
                 }
                 else {
@@ -389,12 +386,15 @@ var pollUpdater = {
             $("#raceLabel_topBar").text(characterInfo[1]);
             $("#classLabel_topBar").text(characterInfo[2]);
             $("#levelLabel_topBar").text(characterInfo[3]);
-            $("#HPLabel_topBar").text(characterInfo[4]);
-            $("#MPLabel_topBar").text(characterInfo[5]);
 
             var battleCharacterInfo = action.battle_character_info.split(":");
-            $("#battleHPLabel").text(battleCharacterInfo[0]);
-            $("#battleMPLabel").text(battleCharacterInfo[1]);
+
+            $("#HPLabel").text(battleCharacterInfo[0] + "/" + characterInfo[4]);
+            $("#MPLabel").text(battleCharacterInfo[1] + "/" + characterInfo[5]);
+
+            $("#experienceLabel").text(characterInfo[16] + "/" + characterInfo[17]);
+            $("#experienceBar").width(characterInfo[16]/characterInfo[17] * 100 + "%");
+
             $("#battleStrengthLabel").text(battleCharacterInfo[2]);
             $("#battleDexterityLabel").text(battleCharacterInfo[3]);
             $("#battleIntellectLabel").text(battleCharacterInfo[4]);
@@ -405,8 +405,7 @@ var pollUpdater = {
             $("#battleMagicAttackLabel").text(battleCharacterInfo[9]);
             $("#battleMagicDefenceLabel").text(battleCharacterInfo[10]);
             $("#battleArmorLabel").text(battleCharacterInfo[11]);
-            $("#battleExperienceLabel").text(battleCharacterInfo[12]);
-            $("#battleGoldLabel").text(battleCharacterInfo[13]);
+            $("#battleGoldLabel").text(battleCharacterInfo[12]);
 
             // set health and mana bars
             $("#healthBar").removeClass("healthBar");

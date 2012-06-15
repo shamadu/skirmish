@@ -37,6 +37,7 @@ class CharactersManager:
             str(character.magic_defence),
             str(character.armor),
             str(character.experience),
+            str(smarty.level_up_experiences[character.level]),
             str(character.gold),
             team_name,
             str(character.rank_in_team)

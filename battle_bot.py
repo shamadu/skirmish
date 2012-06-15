@@ -241,6 +241,7 @@ class BattleBot(Thread):
                 self.battle_users[user_name].state = 2 # ran
                 self.remove_from_skirmish(user_name)
                 self.send_text_action_to_users(self.location_users, 10, user_name) # user ran
+                self.ran_users.remove(user_name)
 
     def process_game_result(self):
         # if there is just users of one team - end game
@@ -436,7 +437,7 @@ class BattleBot(Thread):
             "gold" : self.battle_users[user_name].character.gold + battle_character.gold
         }
         level = 0
-        while smarty.level_up_experiences[battle_character.level + level] < battle_character.experience + self.battle_users[user_name].character.experience: # then lvl up
+        while smarty.level_up_experiences[battle_character.level + level] < bonus_fields["experience"]: # then lvl up
             level += 1
         if level > 0:
             bonus_fields.update({
