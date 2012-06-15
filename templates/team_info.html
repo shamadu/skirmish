@@ -1,13 +1,13 @@
 {% comment "user_name, team_name, team_gold, members = dict(member_name, member_rank)" %}
 <div id="divTeam" class="divTeam">
     <h4>{{ _("Team information") }}</h4>
-    <table class="commonTable autoWidth">
+    <table class="table-common autoWidth">
         <tr><td>{{ _("Name") }}</td><td><label id="teamNameLabel" style="margin: 0 0 0 5px">{{ team_name }}</label></td></tr>
         <tr><td>{{ _("Gold") }}</td><td><label id="goldLabel" style="margin: 0 0 0 5px">{{ team_gold }}</label></td></tr>
         <tr><td><button id="leaveTeamButton" style="margin: 0 0 0 5px">{{ _("Leave") }}</button></td><td></td></tr>
     </table>
     <h4>{{ _("Team members") }}</h4>
-    <table class="commonTable autoWidth">
+    <table class="table-common autoWidth">
         <tr><td>{{ _("Member's name") }}</td><td>{{ _("Member's rank") }}</td></tr>
         {% for member_name in members.keys() %}
         <tr>

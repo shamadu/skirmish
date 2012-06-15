@@ -21,7 +21,7 @@
 </head>
 
 <body>
-    <div id="sideBar" class="sideBar">
+    <div id="sideBar" class="navbar-left">
         <ul class="nav nav-list">
             <li id="serverStatus" class="nav-header">
                 Connected
@@ -43,21 +43,21 @@
             </li>
         </ul>
     </div>
-    <div id="contentDiv" class="mainContentDiv">
-        <div id="topInfoBar" class="topInfoBar divCenter">
-            <table class="commonTable autoWidth">
+    <div id="contentDiv" class="div-content-main">
+        <div id="topInfoBar" class="bar-info-top div-center">
+            <table class="table-common autoWidth">
                 <tr>
-                    <td>{{ _("Name") }}</td><td><label id="nameLabel_topBar"></label></td>
-                    <td>{{ _("Race") }}</td><td><label id="raceLabel_topBar"></label></td>
-                    <td>{{ _("Class") }}</td><td><label id="classLabel_topBar"></label></td>
-                    <td>{{ _("Level") }}</td><td><label id="levelLabel_topBar"></label></td>
+                    <td>{{ _("Name") }}</td><td><label id="nameLabel"></label></td>
+                    <td>{{ _("Race") }}</td><td><label id="raceLabel"></label></td>
+                    <td>{{ _("Class") }}</td><td><label id="classLabel"></label></td>
+                    <td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td>
                     <td>
-                        <div class="progress progressBarBase">
-                            <div id="healthBar" class="bar healthBar"
+                        <div class="progress progress-bar-base">
+                            <div id="healthBar" class="bar bar-health"
                                  style="width: 1%;">
                             </div>
                         </div>
-                        <div class="progress progressBarBase">
+                        <div class="progress progress-bar-base">
                             <div id="manaBar" class="bar {{ substance.lower() }}Bar"
                                  style="width: 1%;">
                             </div>
@@ -74,7 +74,7 @@
                     <td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td>
                     <td>{{ _("Location") }}</td>
                     <td>
-                        <select id="locationSelect" class="commonSelect">
+                        <select id="locationSelect" class="select-common">
                         {% for location_id in locations.keys() %}
                             <option value="{{ location_id }}"
                                     {% if location_id == location %}
@@ -87,8 +87,8 @@
                 </tr>
                 <tr>
                     <td colspan="14">
-                        <div class="progress progressBarExperience">
-                            <div id="experienceBar" class="bar experienceBar"
+                        <div class="progress progress-bar-experience">
+                            <div id="experienceBar" class="bar bar-experience"
                                  style="width: 1%;">
                             </div>
                         </div>
@@ -101,23 +101,23 @@
                 </tr>
             </table>
         </div>
-        <div id="battleDivContainer" class="contentDiv">
-            <div id="divMain" class="divMain">
-                <div class="divCenter">
+        <div id="battleDivContainer" class="div-content">
+            <div id="divMain" class="div-main">
+                <div class="div-center">
                     <p><button id="logoutButton" style="margin:0 5px 0 0;">{{ _("Logout") }}</button></p>
                     <p><button id="dropButton">{{ _("Drop") }}</button></p>
                     <p><button id="joinButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Join") }}</button><button id="leaveButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Leave") }}</button></p>
                 </div>
             </div>
-            <div id="divChat" class="divChat">
-                <div id="divUsers" class="divUsers">
-                    <div id="divSkirmishUsers" class="divUsersOnlineSkirmish">
+            <div id="divChat" class="div-chat">
+                <div id="divUsers" class="div-users">
+                    <div id="divSkirmishUsers" class="autoWidth">
                     </div>
-                    <div id="divOnlineUsers" class="divUsersOnlineSkirmish">
+                    <div id="divOnlineUsers" class="autoWidth">
                     </div>
                 </div>
                 <div id="tabChat" class="tabbable">
-                    <ul class="nav nav-tabs skirmish-tabs">
+                    <ul class="nav nav-tabs tabs-skirmish">
                         <li class="mainTab active">
                             <a id="battleTab" href="#battlePane" data-toggle="tab">
                                 <span>{{ _("Battle") }}</span>
@@ -131,29 +131,25 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="battlePane">
-                            <div id="battleTextArea" class="textArea"></div>
+                            <div id="battleTextArea" class="text-chat"></div>
                         </div>
                         <div class="tab-pane" id="locationPane">
-                            <div id="locationTextArea" class="textArea notranslate"></div>
+                            <div id="locationTextArea" class="text-chat notranslate"></div>
                         </div>
                     </div>
-                    <div class="divSend">
-                        <textarea id="sendTextArea" class="textArea" rows="10" cols="0"></textarea><button id="sendButton" class="sendButton">{{ _("Send") }}</button>
+                    <div class="div-send">
+                        <textarea id="sendTextArea" class="text-chat" rows="10" cols="0"></textarea><button id="sendButton" class="btn-send">{{ _("Send") }}</button>
                     </div>
                 </div>
             </div>
         </div>
 
 
-        <div id="characterDivContainer" class="contentDiv">
-            <table class="tableContentHolder">
+        <div id="characterDivContainer" class="div-content">
+            <table class="table-content-holder">
                 <tr>
                     <td>
-                        <table class="commonTable">
-                            <tr><td>{{ _("Name") }}</td><td colspan="3"><label id="nameLabel"></label></td></tr>
-                            <tr><td>{{ _("Race") }}</td><td colspan="3"><label id="raceLabel"></label></td></tr>
-                            <tr><td>{{ _("Class") }}</td><td colspan="3"><label id="classLabel"></label></td></tr>
-                            <tr><td>{{ _("Level") }}</td><td colspan="3"><label id="levelLabel"></label></td></tr>
+                        <table class="table-common">
                             <tr><td>{{ _("Strength") }}</td><td><label id="battleStrengthLabel"></label></td><td>/</td><td><label id="strengthLabel"></label></td></tr>
                             <tr><td>{{ _("Dexterity") }}</td><td><label id="battleDexterityLabel"></label></td><td>/</td><td><label id="dexterityLabel"></label></td></tr>
                             <tr><td>{{ _("Intellect") }}</td><td><label id="battleIntellectLabel"></label></td><td>/</td><td><label id="intellectLabel"></label></td></tr>
@@ -169,16 +165,16 @@
                         </table>
                     </td>
                     <td>
-                        <table id="characterStuffTable" class="commonTable">
-                            <tr><td>{{ _("Weapon") }}</td><td><select id="weaponSelect" class="commonSelect"></select></td></tr>
-                            <tr><td>{{ _("Shield") }}</td><td><select id="shieldSelect" class="commonSelect"></select></td></tr>
-                            <tr><td>{{ _("Head") }}</td><td><select id="headSelect" class="commonSelect"></select></td></tr>
-                            <tr><td>{{ _("Body") }}</td><td><select id="bodySelect" class="commonSelect"></select></td></tr>
-                            <tr><td>{{ _("Left hand") }}</td><td><select id="left_handSelect" class="commonSelect"></select></td></tr>
-                            <tr><td>{{ _("Right hand") }}</td><td><select id="right_handSelect" class="commonSelect"></select></td></tr>
-                            <tr><td>{{ _("Legs") }}</td><td><select id="legsSelect" class="commonSelect"></select></td></tr>
-                            <tr><td>{{ _("Feet") }}</td><td><select id="feetSelect" class="commonSelect"></select></td></tr>
-                            <tr><td>{{ _("Cloak") }}</td><td><select id="cloakSelect" class="commonSelect"></select></td></tr>
+                        <table id="characterStuffTable" class="table-common">
+                            <tr><td>{{ _("Weapon") }}</td><td><select id="weaponSelect" class="select-common"></select></td></tr>
+                            <tr><td>{{ _("Shield") }}</td><td><select id="shieldSelect" class="select-common"></select></td></tr>
+                            <tr><td>{{ _("Head") }}</td><td><select id="headSelect" class="select-common"></select></td></tr>
+                            <tr><td>{{ _("Body") }}</td><td><select id="bodySelect" class="select-common"></select></td></tr>
+                            <tr><td>{{ _("Left hand") }}</td><td><select id="left_handSelect" class="select-common"></select></td></tr>
+                            <tr><td>{{ _("Right hand") }}</td><td><select id="right_handSelect" class="select-common"></select></td></tr>
+                            <tr><td>{{ _("Legs") }}</td><td><select id="legsSelect" class="select-common"></select></td></tr>
+                            <tr><td>{{ _("Feet") }}</td><td><select id="feetSelect" class="select-common"></select></td></tr>
+                            <tr><td>{{ _("Cloak") }}</td><td><select id="cloakSelect" class="select-common"></select></td></tr>
                         </table>
                     </td>
                     <td>
@@ -190,12 +186,12 @@
         </div>
 
 
-        <div id="teamDivContainer" class="contentDiv">
+        <div id="teamDivContainer" class="div-content">
         </div>
 
 
-        <div id="shopDivContainer" class="contentDiv">
-            <div id="shopMenu" class="shopMenu">
+        <div id="shopDivContainer" class="div-content">
+            <div id="shopMenu" class="menu-shop">
                 <ul>
                     {% for item_group_name in shop.keys() %}
                     <li><a href="javascript:void(0)">{{ item_group_name }}</a>
@@ -212,8 +208,8 @@
             </div>
         </div>
 
-        <div id="dbDivContainer" class="contentDiv">
-            <div id="dbMenu" class="shopMenu">
+        <div id="dbDivContainer" class="div-content">
+            <div id="dbMenu" class="menu-shop">
                 <ul>
                     {% for item_group_name in database.keys() %}
                     <li><a href="javascript:void(0)">{{ item_group_name }}</a>

@@ -5,19 +5,19 @@
         <div style="width: auto">{{ actions[action][0] }}
             {% if actions[action][1] == 0 %}
             <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
-                <input type="text" class="commonText" value="0">
+                <input type="text" class="text-common" value="0">
                 %
             </div>
             {% else %}
                 {% for i in range(actions[action][1]) %}
                 <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
-                    <select class="commonSelect user_select" style="margin: auto; width: auto;">
+                    <select class="select-common user_select" style="margin: auto; width: auto;">
                         {% for user in users %}
                         <option value="{{ user }}">{{ user }}</option>
                         {% end %}
                     </select>
                     {% if action == 2 %}
-                    <select class="commonSelect spell_select" style="margin: auto; width: auto;">
+                    <select class="select-common spell_select" style="margin: auto; width: auto;">
                         {% for spell in spells %}
                         <option value="{{ spell.id }}"
                                 {% if spell.is_self %}
@@ -27,7 +27,7 @@
                         {% end %}
                     </select>
                     {% end %}
-                    <input type="text" class="commonText" value="0">
+                    <input type="text" class="text-common" value="0">
                     %
                 </div>
                 {% end %}
@@ -35,7 +35,7 @@
         </div>
         {% end %}
     {% end %}
-    <div class="divCenter">
+    <div class="div-center">
         <button id="doButton" style="margin:0 5px 0 0;">{{ _("Do") }}</button>
         <button id="resetButton" style="margin:0 5px 0 0;">{{ _("Reset") }}</button>
         <button id="cancelButton">{{ _("Cancel") }}</button>

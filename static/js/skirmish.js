@@ -51,6 +51,10 @@ var initialize = function () {
             $("#vmenu").data("user_name", $(this).attr('value'));
             $("#vmenu").css({ left: e.pageX + 1, top: e.pageY + 1, zIndex: '101' }).show();
             return false;
+        },
+        click : function() {
+            $("#vmenu").data("user_name", $(this).attr('value'));
+            openPrivateChatFunc();
         }
     });
 
@@ -76,7 +80,7 @@ var initialize = function () {
 };
 
 var showBattle = function() {
-    $("#contentDiv >div.contentDiv").hide();
+    $("#contentDiv >div.div-content").hide();
     $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#battleDivContainer").show();
     $("#battleAnchor").parent().attr("class", "active");
@@ -84,28 +88,28 @@ var showBattle = function() {
 };
 
 var showCharacter = function() {
-    $("#contentDiv >div.contentDiv").hide();
+    $("#contentDiv >div.div-content").hide();
     $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#characterDivContainer").show();
     $("#characterAnchor").parent().attr("class", "active");
 };
 
 var showTeam = function() {
-    $("#contentDiv >div.contentDiv").hide();
+    $("#contentDiv >div.div-content").hide();
     $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#teamDivContainer").show();
     $("#teamAnchor").parent().attr("class", "active");
 };
 
 var showShop = function() {
-    $("#contentDiv >div.contentDiv").hide();
+    $("#contentDiv >div.div-content").hide();
     $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#shopDivContainer").show();
     $("#shopAnchor").parent().attr("class", "active");
 };
 
 var showDB = function() {
-    $("#contentDiv >div.contentDiv").hide();
+    $("#contentDiv >div.div-content").hide();
     $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#dbDivContainer").show();
     $("#dbAnchor").parent().attr("class", "active");
@@ -128,7 +132,7 @@ var openPrivateChat = function(userName, message) {
                         "</li>");
         $("#tabChat >div.tab-content").append(
                 "<div class=\"tab-pane\" id=\"" + userName + "Pane\">" +
-                        "<div id=\"" + userName + "TextArea\" class=\"textArea notranslate\"></div>" +
+                        "<div id=\"" + userName + "TextArea\" class=\"text-chat notranslate\"></div>" +
                         "</div>"
         );
         $("#" + userName + "Tab").tab('show');
@@ -158,7 +162,7 @@ var closePrivateChatFunc = function() {
 };
 
 var createOnlineUserLabel = function(user_name) {
-    return "<label value=\"" + user_name + "\" class=\"onlineUserLabel\">" + user_name + "</label>";
+    return "<label value=\"" + user_name + "\" class=\"label-online-user\">" + user_name + "</label>";
 };
 
 var initialOnlineUsers = function(users) {
@@ -200,10 +204,10 @@ var addOnlineUser = function(user, fromServer) {
 
 var createSkirmishUserLabel = function(user_name, team_name) {
     if (team_name) {
-        return "<label value=\"" + user_name + "\" class=\"skirmishUserLabel\">" + user_name + "[" + team_name + "]</label>";
+        return "<label value=\"" + user_name + "\" class=\"label-skirmish-user\">" + user_name + "[" + team_name + "]</label>";
     }
     else {
-        return "<label value=\"" + user_name + "\" class=\"skirmishUserLabel\">" + user_name + "</label>";
+        return "<label value=\"" + user_name + "\" class=\"label-skirmish-user\">" + user_name + "</label>";
     }
 };
 
@@ -366,7 +370,7 @@ var pollUpdater = {
             $("#magicDefenceLabel").text(characterInfo[14]);
             $("#armorLabel").text(characterInfo[15]);
             $("#goldLabel").text(characterInfo[18]);
-            if (characterInfo[18]){
+            if (characterInfo[19]){
                 $("#teamLabel").text(characterInfo[19]);
                 $("#rankLabel").text(characterInfo[20]);
                 if (characterInfo[20] > 1) {
@@ -381,11 +385,6 @@ var pollUpdater = {
                 $("#rankLabel").text("No rank");
                 $("#inviteMenuItem").hide();
             }
-
-            $("#nameLabel_topBar").text(characterInfo[0]);
-            $("#raceLabel_topBar").text(characterInfo[1]);
-            $("#classLabel_topBar").text(characterInfo[2]);
-            $("#levelLabel_topBar").text(characterInfo[3]);
 
             var battleCharacterInfo = action.battle_character_info.split(":");
 
@@ -408,19 +407,19 @@ var pollUpdater = {
             $("#battleGoldLabel").text(battleCharacterInfo[12]);
 
             // set health and mana bars
-            $("#healthBar").removeClass("healthBar");
-            $("#healthBar").removeClass("healthBarLow");
-            $("#healthBar").removeClass("healthBarVeryLow");
+            $("#healthBar").removeClass("bar-health");
+            $("#healthBar").removeClass("bar-health-low");
+            $("#healthBar").removeClass("bar-health-very-low");
             healthPercent = battleCharacterInfo[0]/characterInfo[4] * 100;
             $("#healthBar").width(healthPercent + "%");
             if (healthPercent < 20) {
-                $("#healthBar").addClass("healthBarVeryLow");
+                $("#healthBar").addClass("bar-health-very-low");
             }
             else if (healthPercent < 40) {
-                $("#healthBar").addClass("healthBarLow");
+                $("#healthBar").addClass("bar-health-low");
             }
             else {
-                $("#healthBar").addClass("healthBar");
+                $("#healthBar").addClass("bar-health");
             }
             $("#manaBar").width(battleCharacterInfo[1]/characterInfo[5] * 100 + "%");
         }

@@ -1,14 +1,17 @@
-.createButton {
-	width: 50px;
-}
-
-.characterTable tr {
+.character-table tr {
     vertical-align : middle;
     text-align: center;
 }
 
-.characterTable td {
+.character-table td {
     vertical-align : middle;
     text-align: center;
     padding: 1px;
+}
+
+.select-common{
+    margin: auto;
+    width: 150px;
+    height: 25px;
+    padding: 2px;
 }

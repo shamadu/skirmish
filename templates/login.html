@@ -22,7 +22,7 @@
     <tr align="center" valign="middle">
         <td>{{ _("Language") }}</td>
         <td>
-            <select id="commonSelect locales" style="margin: auto;">
+            <select id="select-common locales" style="margin: auto;">
                 {% for locale in locales.keys() %}
                 <option value="{{ locale }}" {% if selected == locale %} selected="selected" {% end %}>{{ locales[locale] }}</option>
                 {% end %}
@@ -31,7 +31,7 @@
     </tr>
     <tr align="center" valign="middle">
         <td></td>
-        <td><label id="errorLabel" class="errorLabel"></label></td>
+        <td><label id="errorLabel" class="label-error"></label></td>
     </tr>
     <tr align="center" valign="middle">
         <td></td>

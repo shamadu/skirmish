@@ -12,11 +12,13 @@ var initialize = function () {
 var loginFunc = function () {
     setCookie("locale", $("#locales option:selected").val());
     var formData = {
-        "login":$("#loginText").val()
-        , "password":$("#passwordText").val()
+        "action" : "login",
+        "login" : $("#loginText").val(),
+        "password" : $("#passwordText").val()
     };
+
     $.postJSON('/login', formData, function(res) {
-        var login_response = $.parseJSON(res)
+        var login_response = $.parseJSON(res);
         if (login_response.error) {
             $("#errorLabel").html(login_response.msg);
         }
@@ -30,4 +32,4 @@ var keyPress = function(event) {
     if ( event.which == 13 ) {
         loginFunc();
     }
-}
+};

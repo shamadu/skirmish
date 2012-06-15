@@ -1,11 +1,4 @@
-.divLogin {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    vertical-align: middle;
-}
-
-.errorLabel {
+.label-error {
     margin: auto;
     color: red;
 }
@@ -13,4 +6,11 @@
 input, select, label {
     margin: 0 10px 0 10px;
     width: 200px
+}
+
+.select-common{
+    margin: auto;
+    width: auto;
+    height: 25px;
+    padding: 2px;
 }

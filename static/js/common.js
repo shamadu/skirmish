@@ -7,11 +7,11 @@
 var getCookie = function(name) {
     var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
     return r ? r[1] : undefined;
-}
+};
 
 var setCookie = function(name, value) {
     document.cookie = name + "=" + value;
-}
+};
 
 jQuery.postJSON = function(url, args, callback_success, callback_error) {
     args._xsrf = getCookie("_xsrf");
@@ -33,7 +33,7 @@ jQuery.getJSON = function(url, args, callback) {
 };
 
 var logoutFunc = function () {
-    $.postJSON('/action', {"action" : "logout"}, function() {
+    $.postJSON('/login', {"action" : "logout"}, function() {
         window.location.href='/login';
     });
 };

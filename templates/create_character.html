@@ -12,7 +12,7 @@
 </head>
 
 <body>
-<table width="200" border="0" align="center" class="characterTable">
+<table width="200" border="0" align="center" class="character-table">
     <tr>
         <td>{{ _("Name") }}</td>
         <td><label id="nameLabel"  style="margin: auto;">{{ name }}</label></td>
@@ -20,7 +20,7 @@
     <tr>
         <td>{{ _("Race") }}</td>
         <td>
-            <select id="commonSelect raceMenu" style="margin: auto;">
+            <select class="select-common" id="raceMenu" style="margin: auto;">
                 {% for race_id in races.keys() %}
                 <option value="{{ race_id }}">{{ races[race_id] }}</option>
                 {% end %}
@@ -30,7 +30,7 @@
     <tr>
     <td>{{ _("Class") }}</td>
         <td>
-         <select id="commonSelect classMenu" style="margin: auto;">
+         <select class="select-common" id="classMenu" style="margin: auto;">
              {% for class_id in classes.keys() %}
              <option value="{{ class_id }}">{{ classes[class_id] }}</option>
              {% end %}

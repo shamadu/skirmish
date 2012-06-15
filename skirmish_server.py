@@ -148,13 +148,15 @@ class LoginHandler(BaseHandler):
             self.redirect("/")
 
     def post(self, *args, **kwargs):
-        login = self.get_argument("login")
-        login_response = self.users_manager.user_login(login, self.get_argument("password"))
-
-        if not login_response["error"]:
-            self.set_secure_cookie("login", login)
-
-        self.write(login_response)
+        if self.get_argument("action") == 'login':
+            login = self.get_argument("login")
+            login_response = self.users_manager.user_login(login, self.get_argument("password"))
+            if not login_response["error"]:
+                self.set_secure_cookie("login", login)
+            self.write(login_response)
+        elif self.get_argument("action") == 'logout':
+            self.users_manager.user_logout(self.current_user)
+            self.clear_cookie("login")
 
 class CreateCharacterHandler(BaseHandler):
     @tornado.web.authenticated
@@ -200,9 +202,6 @@ class ActionHandler(BaseHandler):
             self.battle_manager.user_turn(self.current_user, self.get_argument("turn_info"))
         elif self.get_argument("action") == 'turn_cancel':
             self.battle_manager.user_turn_cancel(self.current_user)
-        elif self.get_argument("action") == 'logout':
-            self.users_manager.user_logout(self.current_user)
-            self.clear_cookie("login")
         elif self.get_argument("action") == 'new_message':
             message = {
                 "from": self.current_user,

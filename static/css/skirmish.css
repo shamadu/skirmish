@@ -1,4 +1,4 @@
-.topInfoBar {
+.bar-info-top {
     position: absolute;
     height: 10px;
     width: auto;
@@ -6,41 +6,41 @@
     right: 5px;
 }
 
-.topInfoBar label {
+.bar-info-top label {
     width: auto;
     display: inline;
 }
 
-.commonSelect {
+.select-common {
     margin: auto;
     width: auto;
     height: 25px;
     padding: 2px;
 }
 
-.commonText {
+.text-common {
     margin: auto;
     width: 25px;
     height: 20px;
     padding: 2px;
 }
 
-.errorLabel {
+.label-error {
     margin: auto;
     color: red;
 }
 
-.onlineUserLabel,
-.skirmishUserLabel {
+.label-online-user,
+.label-skirmish-user {
     min-width: 50px;
     text-align: center;
 }
 
-.skirmishUserLabel {
+.label-skirmish-user {
     color: red;
 }
 
-.mainContentDiv {
+.div-content-main {
     position: absolute;
     width: auto;
     height: auto;
@@ -50,7 +50,7 @@
     bottom: 5px;
 }
 
-.contentDiv {
+.div-content {
     position: absolute;
     width: auto;
     height: auto;
@@ -60,7 +60,7 @@
     bottom: 0;
 }
 
-.sideBar {
+.navbar-left {
     position: absolute;
     width: auto;
     left: 5px;
@@ -71,7 +71,7 @@
     cursor: pointer;
 }
 
-.divChat {
+.div-chat {
     position: absolute;
     width: auto;
     height: auto;
@@ -81,13 +81,9 @@
     left: 5px;
 }
 
-.divUsers {
+.div-users {
     position: absolute;
     right: 0;
-    width: auto;
-}
-
-.divUsersOnlineSkirmish {
     width: auto;
 }
 
@@ -102,7 +98,7 @@
     margin-bottom: 10px;
 }
 
-.divSend {
+.div-send {
     position: fixed;
     bottom: 20px;
     top: auto;
@@ -110,45 +106,45 @@
     height: 30px;
 }
 
-.sendButton {
+.btn-send {
     position: absolute;
     left: 320px;
     width: 100px;
 }
 
-.divMain {
+.div-main {
     position: absolute;
     right: 5px;
     width: auto;
 }
 
-.divCenter {
+.div-center {
     text-align: center;
 }
 
-.divCenter Table {
+.div-center Table {
     margin-left: auto;
     margin-right: auto;
 }
 
-.textArea {
+.text-chat {
     position: absolute;
     width: 100%;
     height: 100%;
     overflow : auto
 }
 
-.commonTable {
+.table-common {
     width: 100%;
     border : 0;
 }
 
-.commonTable tr{
+.table-common tr{
     vertical-align : middle;
     text-align: center;
 }
 
-.commonTable td{
+.table-common td{
     vertical-align : middle;
     padding: 1px 5px 1px 5px;
 }
@@ -157,12 +153,12 @@
     width: auto;
 }
 
-.commonTable label{
+.table-common label{
     margin-bottom: 0;
     margin-top: 0;
 }
 
-.divTeamCreation {
+.div-team-creation {
     width: auto;
     float: left;
 }
@@ -173,28 +169,28 @@
     margin-right: 10px;
 }
 
-.divTeamCreation p, input {
+.div-team-creation p, input {
     margin-bottom: 2px;
 }
 
-.divTeamCreation input {
+.div-team-creation input {
     width: 150px
 }
 
-.tableContentHolder tr {
+.table-content-holder tr {
     vertical-align : top;
 }
 
-.tableContentHolder >tbody>tr>td {
+.table-content-holder >tbody>tr>td {
     padding-right: 20px;
 }
 
-.shopMenu, .shopMenu ul, .shopMenu li{
+.menu-shop, .menu-shop ul, .menu-shop li{
     padding:0;
     margin:0;
 }
 
-.shopMenu li{
+.menu-shop li{
     list-style: none;
     position: relative;
     width: 0;
@@ -205,42 +201,42 @@
     text-align:center
 }
 
-.shopMenu li a{
+.menu-shop li a{
     white-space: nowrap;
     text-decoration:none;
 }
 
-.shopMenu li:hover{
+.menu-shop li:hover{
     background-color:#08C;
 }
 
-.shopMenu li:hover>a {
+.menu-shop li:hover>a {
     color: #ffffff;
 }
 
-.shopMenu ul ul{
+.menu-shop ul ul{
     position: absolute;
     top:0;
     left:0;
     visibility:hidden;
 }
 
-.shopMenu ul li:hover ul{
+.menu-shop ul li:hover ul{
     visibility:visible;
 }
 
-.itemDescriptionDiv {
+.div-item-description {
     width: auto;
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-.itemDescriptionTable {
+.table-item-description {
     width: 400px;
 }
 
-.itemDescriptionTable td {
+.table-item-description td {
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -271,19 +267,19 @@ button.tabClose {
     float: none;
 }
 
-.skirmish-tabs >li >a {
+.tabs-skirmish >li >a {
     background-color: #f0f0f0;
     border-color: #eeeeee #eeeeee #dddddd;
     padding: 5px 0 5px 5px;
 }
 
-.skirmish-tabs >li.mainTab >a {
+.tabs-skirmish >li.mainTab >a {
     padding-right: 5px;
     height: 20px;
 }
 
-.progressBarBase,
-.progressBarExperience {
+.progress-bar-base,
+.progress-bar-experience {
     width: 90px;
     height: 10px;
     margin-bottom: 0;
@@ -297,11 +293,11 @@ button.tabClose {
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#D5D5D5', endColorstr='#f9f9f9', GradientType=0);
 }
 
-.progressBarExperience {
+.progress-bar-experience {
     width: 100%;
 }
 
-.progressBarBase .healthBar {
+.progress-bar-base .bar-health {
     height: 10px;
     background-color: #32cd32;
     background-image: -moz-linear-gradient(top, #32cd32, #228b22);
@@ -313,7 +309,7 @@ button.tabClose {
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#32cd32', endColorstr='#228b22', GradientType=0);
 }
 
-.progressBarBase .healthBarLow {
+.progress-bar-base .bar-health-low {
     height: 10px;
     background-color: #ffd700;
     background-image: -moz-linear-gradient(top, #ffd700, #daa520);
@@ -325,7 +321,7 @@ button.tabClose {
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffd700', endColorstr='#daa520', GradientType=0);
 }
 
-.progressBarBase .healthBarVeryLow {
+.progress-bar-base .bar-health-very-low {
     height: 10px;
     background-color: #fa8072;
     background-image: -moz-linear-gradient(top, #fa8072, #c43c35);
@@ -337,7 +333,7 @@ button.tabClose {
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fa8072', endColorstr='#c43c35', GradientType=0);
 }
 
-.progressBarBase .manaBar {
+.progress-bar-base .bar-mana {
     height: 10px;
     background-color: #1e90ff;
     background-image: -moz-linear-gradient(top, #1e90ff, #0000cd);
@@ -349,7 +345,7 @@ button.tabClose {
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#1e90ff', endColorstr='#0000cd', GradientType=0);
 }
 
-.progressBarBase .energyBar {
+.progress-bar-base .bar-energy {
     height: 10px;
     background-color: #ffff00;
     background-image: -moz-linear-gradient(top, #ffff00, #daa520);
@@ -361,7 +357,7 @@ button.tabClose {
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffff00', endColorstr='#daa520', GradientType=0);
 }
 
-.progressBarExperience .experienceBar {
+.progress-bar-experience .bar-experience {
     height: 10px;
     background-color: #ba55d3;
     background-image: -moz-linear-gradient(top, #ba55d3, #9400d3);
