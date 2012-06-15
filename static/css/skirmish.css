@@ -280,6 +280,7 @@ button.tabClose {
 
 .progress-bar-base,
 .progress-bar-experience {
+    position: relative;
     width: 90px;
     height: 10px;
     margin-bottom: 0;
@@ -297,8 +298,19 @@ button.tabClose {
     width: 100%;
 }
 
-.progress-bar-base .bar-health {
+.progress-bar-base .bar-common,
+.progress-bar-experience .bar-common {
+    position: absolute;
     height: 10px;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+       -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-base .bar-health {
     background-color: #32cd32;
     background-image: -moz-linear-gradient(top, #32cd32, #228b22);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#32cd32), to(#228b22));
@@ -310,7 +322,6 @@ button.tabClose {
 }
 
 .progress-bar-base .bar-health-low {
-    height: 10px;
     background-color: #ffd700;
     background-image: -moz-linear-gradient(top, #ffd700, #daa520);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffd700), to(#daa520));
@@ -322,7 +333,6 @@ button.tabClose {
 }
 
 .progress-bar-base .bar-health-very-low {
-    height: 10px;
     background-color: #fa8072;
     background-image: -moz-linear-gradient(top, #fa8072, #c43c35);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fa8072), to(#c43c35));
@@ -334,7 +344,6 @@ button.tabClose {
 }
 
 .progress-bar-base .bar-mana {
-    height: 10px;
     background-color: #1e90ff;
     background-image: -moz-linear-gradient(top, #1e90ff, #0000cd);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#1e90ff), to(#0000cd));
@@ -346,7 +355,6 @@ button.tabClose {
 }
 
 .progress-bar-base .bar-energy {
-    height: 10px;
     background-color: #ffff00;
     background-image: -moz-linear-gradient(top, #ffff00, #daa520);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffff00), to(#daa520));
@@ -358,7 +366,6 @@ button.tabClose {
 }
 
 .progress-bar-experience .bar-experience {
-    height: 10px;
     background-color: #ba55d3;
     background-image: -moz-linear-gradient(top, #ba55d3, #9400d3);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ba55d3), to(#9400d3));
@@ -369,7 +376,9 @@ button.tabClose {
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ba55d3', endColorstr='#9400d3', GradientType=0);
 }
 
-.progress-bar-label {
+.bar-info-top .progress-bar-label {
+    position: absolute;
     font-size: 9px;
     line-height: 10px;
+    width: 100%;
 }

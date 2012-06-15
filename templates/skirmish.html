@@ -53,22 +53,12 @@
                     <td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td>
                     <td>
                         <div class="progress progress-bar-base">
-                            <div id="healthBar" class="bar bar-health"
-                                 style="width: 1%;">
-                            </div>
+                            <div id="healthBar" class="bar bar-common bar-health" style="width: 1%;"></div>
+                            <label class="progress-bar-label div-center" id="HPLabel"></label>
                         </div>
                         <div class="progress progress-bar-base">
-                            <div id="manaBar" class="bar {{ substance.lower() }}Bar"
-                                 style="width: 1%;">
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="autoWidth">
-                            <label class="progress-bar-label" id="HPLabel"></label>
-                        </div>
-                        <div class="autoWidth">
-                            <label class="progress-bar-label" id="MPLabel"></label>
+                            <div id="manaBar" class="bar bar-common bar-{{ substance.lower() }}" style="width: 1%;"></div>
+                            <label class="progress-bar-label div-center" id="MPLabel"></label>
                         </div>
                     </td>
                     <td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td>
@@ -88,14 +78,8 @@
                 <tr>
                     <td colspan="14">
                         <div class="progress progress-bar-experience">
-                            <div id="experienceBar" class="bar bar-experience"
-                                 style="width: 1%;">
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="autoWidth">
-                            <label class="progress-bar-label" id="experienceLabel"></label>
+                            <div id="experienceBar" class="bar bar-common bar-experience" style="width: 1%;"></div>
+                            <label class="progress-bar-label div-center" id="experienceLabel"></label>
                         </div>
                     </td>
                 </tr>
