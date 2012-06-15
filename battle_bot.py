@@ -36,13 +36,13 @@ class BattleBot(Thread):
         return Action(4, {})
 
     def can_do_turn_action(self, user_name, skirmish_users):
-        return Action(5, {"turn_info" : skirmish_users[user_name].get_turn_string()})
+        return Action(5, {"turn_info" : skirmish_users[user_name].get_previous_turn_string()})
 
     def can_cancel_turn_action(self, user_name, skirmish_users):
-        return Action(6, {"turn_info" : skirmish_users[user_name].get_turn_string()})
+        return Action(6, {"turn_info" : skirmish_users[user_name].get_previous_turn_string()})
 
     def wait_for_result_action(self, user_name, skirmish_users):
-        return Action(7, {"turn_info" : skirmish_users[user_name].get_turn_string()})
+        return Action(7, {"turn_info" : skirmish_users[user_name].get_previous_turn_string()})
 
     def reset_to_initial_action(self):
         return Action(8, {})
@@ -123,6 +123,14 @@ class BattleBot(Thread):
     def online_users(self):
         return self.users_holder.online_users
 
+    def get_teams(self, teams, users_no_team):
+        for user in self.battle_users.values():
+            if user.battle_character.team_name:
+                if user.battle_character.team_name not in teams:
+                    teams.append(user.battle_character.team_name)
+            else:
+                users_no_team.append(user.user_name)
+
     def run(self):
         while 1:
             if self.phase == -1 and self.counter == smarty.rest_time:
@@ -133,7 +141,11 @@ class BattleBot(Thread):
             elif self.phase == 0 and self.counter == smarty.registration_time:
                 # registration end
                 self.counter = 0
-                if len(self.battle_users) > 1:
+                # count teams of users
+                teams = list()
+                users_no_team = list()
+                self.get_teams(teams, users_no_team)
+                if len(teams) + len(users_no_team) > 1: # more than one team or user
                     self.phase = 1
                     self.registration_ended()
                 else:
@@ -176,6 +188,7 @@ class BattleBot(Thread):
             if skirmish_user.is_turn_done(): # process user's turn
                 for action in skirmish_user.get_turn_info():
                     actions[action.type].append(action)
+                skirmish_user.reset_turn()
             elif not user_name in self.ran_users: # if not ran yet - mark as ran now
                 self.ran_users.append(user_name)
 
@@ -234,12 +247,7 @@ class BattleBot(Thread):
         # count teams of users
         teams = list()
         users_no_team = list()
-        for user in self.battle_users.values():
-            if user.battle_character.team_name:
-                if user.battle_character.team_name not in teams:
-                    teams.append(user.battle_character.team_name)
-            else:
-                users_no_team.append(user.user_name)
+        self.get_teams(teams, users_no_team)
 
         if (len(teams) < 2 and len(users_no_team) == 0) or (len(teams) == 0 and len(users_no_team) < 2): # process game result
             self.game_ended()
@@ -450,6 +458,9 @@ class BattleBot(Thread):
         if self.phase == 0 and user_name not in self.battle_users.keys():
             self.battle_users[user_name] = self.online_users[user_name]
             self.battle_users[user_name].state = 1 # is in skirmish
+            self.battle_users[user_name].battle_character = copy.deepcopy(self.battle_users[user_name].character)
+            self.battle_users[user_name].battle_character.experience = 0
+            self.battle_users[user_name].battle_character.gold = 0
             self.send_action_to_user(user_name, self.can_leave_action())
             self.send_action_to_all(self.add_skirmish_user_action(user_name))
 
@@ -459,6 +470,7 @@ class BattleBot(Thread):
                 self.send_action_to_user(user_name, self.can_join_action())
                 self.send_action_to_all(self.remove_skirmish_user_action(user_name))
                 self.battle_users[user_name].state = 0 # default
+                self.battle_users[user_name].battle_character = None
                 self.battle_users.pop(user_name)
             elif self.battle_users[user_name].state != 2: # didn't run yet
                 if self.battle_users[user_name].is_turn_done(): # if did turn - reset it
@@ -491,6 +503,8 @@ class BattleBot(Thread):
                 self.send_action_to_user(user_name, self.can_leave_action())
         # if round is in progress
         elif self.phase > 0:
+            # user can always leave skirmish
+            self.send_action_to_user(user_name, self.can_leave_action())
             if self.online_users[user_name].state == 1:
                 self.send_action_to_user(user_name, self.add_turn_div_action(user_name, self.battle_users))
                 self.send_action_to_user(user_name, self.set_turn_users_action(self.battle_users))
@@ -522,8 +536,6 @@ class BattleBot(Thread):
         for user_name in self.battle_users.keys():
             self.battle_users[user_name].send_action(self.set_turn_users_action(self.battle_users))
             self.battle_users[user_name].send_action(self.can_do_turn_action(user_name, self.battle_users))
-        for skirmish_user in self.battle_users.values():
-            skirmish_user.reset_turn()
 
     def round_ended(self):
         self.send_text_action_to_users(self.location_users, 3, self.phase) # round has been ended
@@ -531,10 +543,6 @@ class BattleBot(Thread):
             self.battle_users[user_name].send_action(self.wait_for_result_action(user_name, self.battle_users))
 
     def game_started(self):
-        for user_name in self.battle_users.keys():
-            self.battle_users[user_name].battle_character = copy.copy(self.battle_users[user_name].character)
-            self.battle_users[user_name].battle_character.experience = 0
-            self.battle_users[user_name].battle_character.gold = 0
         for skirmish_user in self.battle_users.keys():
             self.send_action_to_user(skirmish_user, self.add_turn_div_action(skirmish_user, self.battle_users))
 

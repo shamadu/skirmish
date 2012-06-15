@@ -277,7 +277,7 @@ button.tabClose {
 
 .progressBarBase {
     float: left;
-    width: 60px;
+    width: 120px;
     height: 10px;
     margin-bottom: 0;
     background-color: #D5D5D5;
@@ -302,6 +302,35 @@ button.tabClose {
     background-image: linear-gradient(top, #32cd32, #228b22);
     background-image: -ms-linear-gradient(top, #32cd32, #228b22);
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#32cd32', endColorstr='#228b22', GradientType=0);
+}
+
+.progressBarBase .healthBarLow {
+    float: left;
+    width: 0;
+    height: 10px;
+    float: left;
+    background-color: #ffd700;
+    background-image: -moz-linear-gradient(top, #ffd700, #daa520);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffd700), to(#daa520));
+    background-image: -webkit-linear-gradient(top, #ffd700, #daa520);
+    background-image: -o-linear-gradient(top, #ffd700, #daa520);
+    background-image: linear-gradient(top, #ffd700, #daa520);
+    background-image: -ms-linear-gradient(top, #ffd700, #daa520);
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffd700', endColorstr='#daa520', GradientType=0);
+}
+
+.progressBarBase .healthBarVeryLow {
+    float: left;
+    width: 0;
+    height: 10px;
+    background-color: #fa8072;
+    background-image: -moz-linear-gradient(top, #fa8072, #c43c35);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fa8072), to(#c43c35));
+    background-image: -webkit-linear-gradient(top, #fa8072, #c43c35);
+    background-image: -o-linear-gradient(top, #fa8072, #c43c35);
+    background-image: linear-gradient(top, #fa8072, #c43c35);
+    background-image: -ms-linear-gradient(top, #fa8072, #c43c35);
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fa8072', endColorstr='#c43c35', GradientType=0);
 }
 
 .progressBarBase .manaBar {

@@ -39,6 +39,7 @@ class OnlineUserInfo():
         self.location = location
         self.opened_chats = list() # users' names
         self.turn_info_string = ""
+        self.previous_turn_string = ""
 
     def set_callback(self, callback):
         self.counter = 10
@@ -58,9 +59,10 @@ class OnlineUserInfo():
 
     def set_turn_string(self, turn_info_string):
         self.turn_info_string = turn_info_string
+        self.previous_turn_string = turn_info_string
 
-    def get_turn_string(self):
-        return self.turn_info_string
+    def get_previous_turn_string(self):
+        return self.previous_turn_string
 
     def reset_turn(self):
         self.turn_info_string = ""

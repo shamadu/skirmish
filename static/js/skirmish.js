@@ -408,7 +408,21 @@ var pollUpdater = {
             $("#battleExperienceLabel").text(battleCharacterInfo[12]);
             $("#battleGoldLabel").text(battleCharacterInfo[13]);
 
-            $("#healthBar").width(battleCharacterInfo[0]/characterInfo[4] * 100 + "%");
+            // set health and mana bars
+            $("#healthBar").removeClass("healthBar");
+            $("#healthBar").removeClass("healthBarLow");
+            $("#healthBar").removeClass("healthBarVeryLow");
+            healthPercent = battleCharacterInfo[0]/characterInfo[4] * 100;
+            $("#healthBar").width(healthPercent + "%");
+            if (healthPercent < 20) {
+                $("#healthBar").addClass("healthBarVeryLow");
+            }
+            else if (healthPercent < 40) {
+                $("#healthBar").addClass("healthBarLow");
+            }
+            else {
+                $("#healthBar").addClass("healthBar");
+            }
             $("#manaBar").width(battleCharacterInfo[1]/characterInfo[5] * 100 + "%");
         }
         // character stuff update
