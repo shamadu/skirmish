@@ -53,12 +53,16 @@
                     <td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td>
                     <td>
                         <div class="progress progress-bar-base">
-                            <div id="healthBar" class="bar bar-common bar-health" style="width: 1%;"></div>
                             <label class="progress-bar-label div-center" id="HPLabel"></label>
+                            <div id="healthBar" class="bar bar-common bar-health" style="width: 1%;">
+                                <label class="progress-bar-label progress-bar-label-white div-center" id="whiteHPLabel"></label>
+                            </div>
                         </div>
                         <div class="progress progress-bar-base">
-                            <div id="manaBar" class="bar bar-common bar-{{ substance.lower() }}" style="width: 1%;"></div>
                             <label class="progress-bar-label div-center" id="MPLabel"></label>
+                            <div id="manaBar" class="bar bar-common bar-{{ substance.lower() }}" style="width: 1%;">
+                                <label class="progress-bar-label progress-bar-label-white div-center" id="whiteMPLabel"></label>
+                            </div>
                         </div>
                     </td>
                     <td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td>
@@ -78,8 +82,10 @@
                 <tr>
                     <td colspan="14">
                         <div class="progress progress-bar-experience">
-                            <div id="experienceBar" class="bar bar-common bar-experience" style="width: 1%;"></div>
                             <label class="progress-bar-label div-center" id="experienceLabel"></label>
+                            <div id="experienceBar" class="bar bar-common bar-experience" style="width: 1%;">
+                                <label class="progress-bar-label progress-bar-label-white div-center" id="whiteExperienceLabel"></label>
+                            </div>
                         </div>
                     </td>
                 </tr>

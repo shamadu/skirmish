@@ -388,12 +388,6 @@ var pollUpdater = {
 
             var battleCharacterInfo = action.battle_character_info.split(":");
 
-            $("#HPLabel").text(battleCharacterInfo[0] + "/" + characterInfo[4]);
-            $("#MPLabel").text(battleCharacterInfo[1] + "/" + characterInfo[5]);
-
-            $("#experienceLabel").text(characterInfo[16] + "/" + characterInfo[17]);
-            $("#experienceBar").width(characterInfo[16]/characterInfo[17] * 100 + "%");
-
             $("#battleStrengthLabel").text(battleCharacterInfo[2]);
             $("#battleDexterityLabel").text(battleCharacterInfo[3]);
             $("#battleIntellectLabel").text(battleCharacterInfo[4]);
@@ -407,6 +401,10 @@ var pollUpdater = {
             $("#battleGoldLabel").text(battleCharacterInfo[12]);
 
             // set health and mana bars
+            $("#HPLabel").text(battleCharacterInfo[0] + "/" + characterInfo[4]);
+            $("#whiteHPLabel").text(battleCharacterInfo[0] + "/" + characterInfo[4]);
+            $("#MPLabel").text(battleCharacterInfo[1] + "/" + characterInfo[5]);
+            $("#whiteMPLabel").text(battleCharacterInfo[1] + "/" + characterInfo[5]);
             $("#healthBar").removeClass("bar-health");
             $("#healthBar").removeClass("bar-health-low");
             $("#healthBar").removeClass("bar-health-very-low");
@@ -422,6 +420,12 @@ var pollUpdater = {
                 $("#healthBar").addClass("bar-health");
             }
             $("#manaBar").width(battleCharacterInfo[1]/characterInfo[5] * 100 + "%");
+            $("#experienceLabel").text(characterInfo[16] + "/" + characterInfo[17]);
+            $("#whiteExperienceLabel").text(characterInfo[16] + "/" + characterInfo[17]);
+            $("#experienceBar").width(characterInfo[16]/characterInfo[17] * 100 + "%");
+            $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
+            $("#whiteHPLabel").width($("#healthBar").parent().width());
+            $("#whiteMPLabel").width($("#manaBar").parent().width());
         }
         // character stuff update
         else if (action.type == 201) {
