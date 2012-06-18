@@ -44,19 +44,19 @@ error_messages = {
 }
 
 battle_messages = {
-    0 : _("Registration has been started"),
-    1 : _("Registration has been ended"),
-    2 : _("Round {0} has been started"),
-    3 : _("Round {0} has been ended"),
-    4 : _("Game has been ended"),
+    0 : _("<font color=\"980000\">Registration has been started</font>"),
+    1 : _("<font color=\"980000\">Registration has been ended</font>"),
+    2 : _("<font color=\"980000\">Round {0} has been started</font>"),
+    3 : _("<font color=\"980000\">Round {0} has been ended</font>"),
+    4 : _("<font color=\"980000\">Game has been ended</font>"),
     5 : _("Game can't be started, not enough players"),
-    6 : _("{0} attacked {1} with {2} and damaged him for {3}hp({4}hp) [{5}/{6}]"),
-    7 : _("{0} tried to attack {1} with {2}, but couldn't break protection({3})"),
-    8 : _("{0} makes critical hit!"),
-    9 : _("{0} is dead"),
-    10 : _("{0} ran from skirmish"),
-    11 : _("Team {0} win"),
-    12 : _("{0} win"),
+    6 : _("<b>{0}</b> attacked <b>{1}</b> with <b>{2}</b> and damaged him for <font color=\"FF0000\">{3}hp</font>({4}hp) [<font color=\"8a00b7\">{5}</font>/<font color=\"8a00b7\">{6}</font>]"),
+    7 : _("<b>{0}</b> tried to attack <b>{1}</b> with <b>{2}</b>, but couldn't break protection(<b>{3}</b>)"),
+    8 : _("<b>{0}</b> makes critical hit!"),
+    9 : _("<b>{0}</b> is dead"),
+    10 : _("<b>{0}</b> ran from skirmish"),
+    11 : _("Team <b>{0}</b> win"),
+    12 : _("<b>{0}</b> win"),
     13 : _("Nobody win"),
 }
 
