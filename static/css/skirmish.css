@@ -71,6 +71,25 @@
     cursor: pointer;
 }
 
+.div-action-container {
+    position: absolute;
+    right: 5px;
+    width: auto;
+}
+
+.div-action {
+    position: relative;
+    width: auto;
+    display: block;
+    float: right;
+}
+
+.div-users {
+    position: relative;
+    float: left;
+    width: auto;
+}
+
 .div-chat {
     position: absolute;
     width: auto;
@@ -79,12 +98,6 @@
     bottom: 95px;
     right: 0;
     left: 5px;
-}
-
-.div-users {
-    position: absolute;
-    right: 0;
-    width: auto;
 }
 
 .tabbable {
@@ -110,12 +123,6 @@
     position: absolute;
     left: 320px;
     width: 100px;
-}
-
-.div-action-container {
-    position: absolute;
-    right: 5px;
-    width: auto;
 }
 
 .div-center {
@@ -149,7 +156,7 @@
     padding: 1px 5px 1px 5px;
 }
 
-.autoWidth {
+.auto-width {
     width: auto;
 }
 

@@ -1,5 +1,5 @@
 {% comment "actions(dict <action id> : tuple <action name, action count>), users(list of names), spells(list of spells/skills)" %}
-<div id="divAction" style="width: auto">
+<div id="divAction" class="div-action">
     {% for action in actions.keys() %}
         {% if action != 2 or len(spells) > 0 %}
         <div style="width: auto">{{ actions[action][0] }}
