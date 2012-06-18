@@ -285,14 +285,14 @@ button.tabClose {
     height: 12px;
     line-height: 12px;
     margin-bottom: 0;
-    background-color: #D5D5D5;
-    background-image: -moz-linear-gradient(top, #D5D5D5, #797979);
-    background-image: -ms-linear-gradient(top, #D5D5D5, #797979);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#D5D5D5), to(#f9f9f9));
-    background-image: -webkit-linear-gradient(top, #D5D5D5, #f9f9f9);
-    background-image: -o-linear-gradient(top, #D5D5D5, #f9f9f9);
-    background-image: linear-gradient(top, #D5D5D5, #f9f9f9);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#D5D5D5', endColorstr='#f9f9f9', GradientType=0);
+    background-color: #d5d5d5;
+    background-image: -moz-linear-gradient(top, #d5d5d5, #f9f9f9);
+    background-image: -ms-linear-gradient(top, #d5d5d5, #f9f9f9);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#d5d5d5), to(#f9f9f9));
+    background-image: -webkit-linear-gradient(top, #d5d5d5, #f9f9f9);
+    background-image: -o-linear-gradient(top, #d5d5d5, #f9f9f9);
+    background-image: linear-gradient(top, #d5d5d5, #f9f9f9);
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#d5d5d5', endColorstr='#f9f9f9', GradientType=0);
 }
 
 .progress-bar-experience {
