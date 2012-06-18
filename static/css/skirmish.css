@@ -283,6 +283,7 @@ button.tabClose {
     position: relative;
     width: 90px;
     height: 12px;
+    line-height: 12px;
     margin-bottom: 0;
     background-color: #D5D5D5;
     background-image: -moz-linear-gradient(top, #D5D5D5, #797979);
@@ -300,8 +301,9 @@ button.tabClose {
 
 .progress-bar-base .bar-common,
 .progress-bar-experience .bar-common {
-    position: absolute;
+    position: relative;
     height: 12px;
+    line-height: 12px;
     overflow: hidden;
     -webkit-border-radius: 4px;
        -moz-border-radius: 4px;
@@ -382,9 +384,12 @@ button.tabClose {
     font-size: 9px;
     line-height: 12px;
     width: 100%;
+    left: 0;
 }
 
 .bar-info-top .progress-bar-label-white {
+    position: absolute;
     color: #ffffff;
     width: 200%;
+    left: 0;
 }
