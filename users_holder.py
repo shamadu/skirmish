@@ -25,7 +25,7 @@ class TurnAction:
 class OnlineUserInfo():
     def __init__(self, user_name, location, locale):
         self.user_name = user_name
-        self.counter = 10
+        self.counter = smarty.user_offline_time
         self.callback = None
         self.cache = deque()
         self.character = None # will be filled by db_manager
@@ -42,7 +42,7 @@ class OnlineUserInfo():
         self.previous_turn_string = ""
 
     def set_callback(self, callback):
-        self.counter = 10
+        self.counter = smarty.user_offline_time
         if len(self.cache) != 0 and callback:
             callback(self.cache.popleft())
         else:

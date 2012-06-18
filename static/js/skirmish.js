@@ -20,6 +20,7 @@ var initialize = function () {
     $("#teamAnchor").click(showTeam);
     $("#shopAnchor").click(showShop);
     $("#dbAnchor").click(showDB);
+    $("#logoutAnchor").click(logoutFunc);
 
     // hide menu if opened
     $(document.body).click(function(){
@@ -47,9 +48,13 @@ var initialize = function () {
             $(this).css('background-color' , '#FFF' );
         },
         contextmenu : function(e){
+            left_offset = e.pageX + 1;
+            if (document.width - e.pageX < $("#vmenu").width()) {
+                left_offset = document.width - $("#vmenu").width() - 10;
+            }
             // add info about user name to context menu to use it in menu items
             $("#vmenu").data("user_name", $(this).attr('value'));
-            $("#vmenu").css({ left: e.pageX + 1, top: e.pageY + 1, zIndex: '101' }).show();
+            $("#vmenu").css({ left: left_offset, top: e.pageY + 1, zIndex: '101' }).show();
             return false;
         },
         click : function() {
@@ -173,7 +178,6 @@ var initialOnlineUsers = function(users) {
         pollUpdater.online_users.push(online_users[i]);
         $("#divOnlineUsers").append(createOnlineUserLabel(online_users[i]));
     }
-    resize_battle();
 };
 
 var removeOnlineUser = function(user, fromServer) {
@@ -221,8 +225,6 @@ var initialSkirmishUsers = function(users) {
             pollUpdater.online_users.push(skirmish_user[0]);
             $("#divSkirmishUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]))
         }
-
-        resize_battle();
     }
 };
 
@@ -342,6 +344,7 @@ var pollUpdater = {
             pollUpdater.online_users.length = 0;
             initialOnlineUsers(action.online_users);
             initialSkirmishUsers(action.skirmish_users);
+            resize_battle();
         }
         else if(action.type == 101) {
             addOnlineUser(action.user, true);

@@ -41,6 +41,9 @@
             <li>
                 <a id="dbAnchor" class="mouse_pointer"><i class="icon-book"></i>{{ _("Database") }}</a>
             </li>
+            <li>
+                <a id="logoutAnchor" class="mouse_pointer"><i class="icon-briefcase"></i>{{ _("Logout") }}</a>
+            </li>
         </ul>
     </div>
     <div id="contentDiv" class="div-content-main">
@@ -78,9 +81,12 @@
                         {% end %}
                         </select>
                     </td>
+                    <td>
+                        <button id="joinButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Join") }}</button><button id="leaveButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Leave") }}</button>
+                    </td>
                 </tr>
                 <tr>
-                    <td colspan="14">
+                    <td colspan="15">
                         <div class="progress progress-bar-experience">
                             <label class="progress-bar-label" id="experienceLabel"></label>
                             <div id="experienceBar" class="bar bar-common bar-experience" style="width: 1%;">
@@ -92,12 +98,8 @@
             </table>
         </div>
         <div id="battleDivContainer" class="div-content">
-            <div id="divMain" class="div-main">
-                <div class="div-center">
-                    <p><button id="logoutButton" style="margin:0 5px 0 0;">{{ _("Logout") }}</button></p>
-                    <p><button id="dropButton">{{ _("Drop") }}</button></p>
-                    <p><button id="joinButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Join") }}</button><button id="leaveButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Leave") }}</button></p>
-                </div>
+            <div id="divActionContainer" class="div-action-container">
+                <!--p class="div-center"><button id="dropButton">{{ _("Drop") }}</button></p-->
             </div>
             <div id="divChat" class="div-chat">
                 <div id="divUsers" class="div-users">
@@ -139,6 +141,7 @@
             <table class="table-content-holder">
                 <tr>
                     <td>
+                        <h4>{{ _("Character Parameters") }}</h4>
                         <table class="table-common">
                             <tr><td>{{ _("Strength") }}</td><td><label id="battleStrengthLabel"></label></td><td>/</td><td><label id="strengthLabel"></label></td></tr>
                             <tr><td>{{ _("Dexterity") }}</td><td><label id="battleDexterityLabel"></label></td><td>/</td><td><label id="dexterityLabel"></label></td></tr>
@@ -155,6 +158,7 @@
                         </table>
                     </td>
                     <td>
+                        <h4>{{ _("Character Stuff") }}</h4>
                         <table id="characterStuffTable" class="table-common">
                             <tr><td>{{ _("Weapon") }}</td><td><select id="weaponSelect" class="select-common"></select></td></tr>
                             <tr><td>{{ _("Shield") }}</td><td><select id="shieldSelect" class="select-common"></select></td></tr>
@@ -168,6 +172,7 @@
                         </table>
                     </td>
                     <td>
+                        <h4>{{ _("Character Spells") }}</h4>
                         <div id="characterSpellDiv">
                         </div>
                     </td>

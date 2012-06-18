@@ -11,6 +11,7 @@ _ = lambda s: s
 rest_time = 1
 registration_time = 5
 turn_time = 25
+user_offline_time = 30
 
 key_words = [
     "battle",

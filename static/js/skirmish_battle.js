@@ -5,7 +5,6 @@
  */
 
 var initialize_battle = function () {
-    $("#logoutButton").click(logoutFunc);
     $("#dropButton").click(dropButtonClick);
     $("#sendButton").click(sendFunc);
     $("#sendTextArea").keypress(keyPress);
@@ -60,8 +59,13 @@ var leaveButtonClick = function () {
 };
 
 var resize_battle = function() {
-    width = $("#divMain").width();
-    $("#divChat").css('right', width + 15 + 'px');
+    width = $("#divActionContainer").width();
+    if (width != 0) {
+        $("#divChat").css('right', width + 15 + 'px');
+    }
+    else {
+        $("#divChat").css('right', 0);
+    }
 
     width = $("#divUsers").width();
     $("#tabChat").css('right', width + 5 + 'px');
@@ -181,7 +185,7 @@ var addTextTo = function(tab_element_id, message) {
 };
 
 var addDivAction = function(divAction) {
-    $("#divMain").append(divAction);
+    $("#divActionContainer").append(divAction);
     resize_battle();
     $("#cancelButton").attr('disabled', 'true');
 
