@@ -349,10 +349,7 @@ class DirectHealSpell(Spell):
         return False
 
     def process(self, percent, max_health):
-        spell_heal = self.spell_info.base_amount
-        heal = max(0.90 + (self.who_character.intellect / 100), 1) ** 2 * spell_heal
-        absorb = self.whom_character.magic_defence * 0.001
-        self.heal = round(heal - heal*percent*absorb, 2)
+        heal = smarty.get_heal(self.who_character, percent, self.spell_info.base_amount, self.whom_character)
         if smarty.is_critical_magic_hit(self.who_character, self.whom_character):
             self.heal *= 1.5
 

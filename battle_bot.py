@@ -420,7 +420,7 @@ class BattleBot(Thread):
                     if type == 1: # damage
                         spell_action.process(turn_action.percent)
                     elif type == 2: # heal
-                        spell_action.process(turn_action.percent, self.battle_users[turn_action.whom].battle_character.health)
+                        spell_action.process(turn_action.percent, self.battle_users[turn_action.whom].battle_character.full_health)
                     for online_user in self.location_users.values():
                         online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
                     if self.battle_users[turn_action.whom].battle_character.health <= 0 and not turn_action.whom in self.victims.keys():
@@ -434,6 +434,7 @@ class BattleBot(Thread):
         for action in regeneration_actions:
             who_character = self.battle_users[action.who].battle_character
             who_character.mana += smarty.get_regeneration(who_character)*action.percent
+            who_character.mana = min(who_character.mana, self.battle_users[action.who].character.mana)
 
     def remove_from_skirmish(self, user_name):
         self.battle_users[user_name].reset_turn()

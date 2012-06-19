@@ -268,6 +268,20 @@ def get_damage(character_to_attack, attack_percent, character_to_defence):
     absorb = character_to_defence.armor * 0.001
     return round((damage*attack_percent) - damage*absorb, 2)
 
+def get_spell_damage(character_to_attack, attack_percent, character_to_defence):
+    min_damage = items_manager.items[character_to_attack.current_weapon_id].min_damage
+    max_damage = items_manager.items[character_to_attack.current_weapon_id].max_damage
+    weapon_damage = random.uniform(min_damage, max_damage)
+    damage = max(0.90 + (character_to_attack.strength / 100), 1) ** 2 * weapon_damage
+    absorb = character_to_defence.armor * 0.001
+    return round((damage*attack_percent) - damage*absorb, 2)
+
+def get_heal(character_caster, heal_percent, base_amount, character_for_heal):
+    min_heal = base_amount*0.85
+    max_heal = base_amount*1.15
+    heal = max(0.90 + (character_caster.intellect / 100), 1) ** 2 * random.uniform(min_heal, max_heal)
+    return round(heal*heal_percent, 2)
+
 def is_hit(character_to_attack, attack_percent, defenders):
     defence = 0.001 # attack 1 on 1% should hit player without defence at all
     for defender in defenders:
