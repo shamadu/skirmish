@@ -300,7 +300,7 @@ var pollUpdater = {
             // set self spells
             $("#divAction select.spell_select option:selected").each(function(){
                 if($(this).hasClass("self")) {
-                    $(".user_select option[value=\"" + $("#nameLabel_topBar").text() + "\"]", $(this).parent().parent()).attr("selected", "selected");
+                    $(".user_select option[value=\"" + $("#nameLabel").text() + "\"]", $(this).parent().parent()).attr("selected", "selected");
                     $(".user_select", $(this).parent().parent()).attr('disabled', 'true');
                 }
             });
@@ -494,7 +494,7 @@ var pollUpdater = {
             // not to all
             else {
                 // message from yourself
-                if (message.from == $("#nameLabel_topBar").text()) {
+                if (message.from == $("#nameLabel").text()) {
                     addTextTo("#" + message.to + "Tab", format_private_message(message, false))
                 }
                 // message from another user

@@ -8,21 +8,21 @@ __author__ = 'PavelP'
 _ = lambda s: s
 
 spell_messages = {
-    0 : _("{0} used ability {1}[{2}/{3}]"),
-    1 : _("{0} increases attack of {2} [{3}/{4}][{5}/{6}]"),
-    2 : _("{0} tried to cast {1} on {2}, but had low mana"),
-    3 : _("{0} tried to cast {1} on {2}, but couldn't"),
-    4 : _("{0} tried to use ability {1}, but had low energy"),
-    5 : _("{0} tried to use ability {1}, but couldn't"),
-    6 : _("{0} casts spell {1} on {2} and freezes him for {3}hp({4}hp)[{5}/{6}]"),
-    7 : _("{0} casts spell {1} on {2} and burns him for {3}hp({4}hp)[{5}/{6}]"),
-    8 : _("{0} casts spell {1} on {2} and heals him for {3}hp({4}hp)[{5}/{6}]"),
-    9 : _("{0} tried to attack {1}, but killed one phantom {2}/{3}"),
-    10 : _("{0} has rounded himself with {1} phantoms [{2}/{3}][{4}/{5}]"),
-    11 : _("{0} used ability {1} and knocked the weapon from {2} [{3}/{4}]"),
-    12 : _("{0} has tried to attack {1} but has no weapon in hands"),
-    13 : _("{0} receives the reflected damage {1}/{2}({3}[{4}/{5}])"),
-    14 : _("{0} has rounded {1} with mirror shield [{2}/{3}][{4}/{5}]"),
+    0 : _("<b>{0}</b> used ability <b>{1}</b>[<font class=\"font-exp\">{2}</font>/<font class=\"font-exp\">{3}</font>]"),
+    1 : _("<b>{0}</b> increases attack of <b>{2}</b> [{3}/{4}][<font class=\"font-exp\">{5}</font>/<font class=\"font-exp\">{6}</font>]"),
+    2 : _("<b>{0}</b> tried to cast <b>{1}</b> on <b>{2}</b>, but had low mana"),
+    3 : _("<b>{0}</b> tried to cast <b>{1}</b> on <b>{2}</b>, but couldn't"),
+    4 : _("<b>{0}</b> tried to use ability <b>{1}</b>, but had low energy"),
+    5 : _("<b>{0}</b> tried to use ability <b>{1}</b>, but couldn't"),
+    6 : _("<b>{0}</b> casts spell <b>{1}</b> on <b>{2}</b> and freezes him for <font class=\"font-damage\">{3}</font>({4})[<font class=\"font-exp\">{5}</font>/<font class=\"font-exp\">{6}</font>]"),
+    7 : _("<b>{0}</b> casts spell <b>{1}</b> on <b>{2}</b> and burns him for <font class=\"font-damage\">{3}</font>({4})[<font class=\"font-exp\">{5}</font>/<font class=\"font-exp\">{6}</font>]"),
+    8 : _("<b>{0}</b> casts spell <b>{1}</b> on <b>{2}</b> and heals him for <font class=\"font-heal\">{3}</font>({4})[<font class=\"font-exp\">{5}</font>/<font class=\"font-exp\">{6}</font>]"),
+    9 : _("<b>{0}</b> tried to attack <b>{1}</b>, but killed one phantom {2}/{3}"),
+    10 : _("<b>{0}</b> has rounded himself with {1} phantoms [{2}/{3}][<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>]"),
+    11 : _("<b>{0}</b> used ability <b>{1}</b> and knocked the weapon from <b>{2}</b>[<font class=\"font-exp\">{3}</font>/<font class=\"font-exp\">{4}</font>]"),
+    12 : _("<b>{0}</b> has tried to attack <b>{1}</b> but has no weapon in hands"),
+    13 : _("<b>{0}</b> receives the reflected damage <font class=\"font-damage\">{1}</font>/{2}(<b>{3}</b>[<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>])"),
+    14 : _("<b>{0}</b> has rounded <b>{1}</b> with mirror shield [{2}/{3}][<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>]"),
 }
 
 class SpellInfo:
@@ -278,7 +278,7 @@ class MirrorCharmSpell(LongSpell, AfterAttackSpell):
         return locale.translate(spell_messages[13]).format(
             self.attack_character.name,
             self.damage,
-            self.attack_character.health,
+            smarty.apply_hp_colour(self.attack_character.health, self.attack_character.full_health),
             self.who_character.name,
             self.experience,
             self.who_character.experience)
@@ -320,7 +320,7 @@ class FrostNeedleSpell(DirectDamageSpell):
             locale.translate(self.spell_info.name),
             self.whom_character.name,
             self.damage,
-            self.whom_character.health,
+            smarty.apply_hp_colour(self.whom_character.health, self.whom_character.full_health),
             self.experience,
             self.who_character.experience)
 
@@ -334,7 +334,7 @@ class FireSparkSpell(DirectDamageSpell):
             locale.translate(self.spell_info.name),
             self.whom_character.name,
             self.damage,
-            self.whom_character.health,
+            smarty.apply_hp_colour(self.whom_character.health, self.whom_character.full_health),
             self.experience,
             self.who_character.experience)
 
@@ -372,7 +372,7 @@ class PrayerForHealthSpell(DirectHealSpell):
             locale.translate(self.spell_info.name),
             self.whom_character.name,
             self.heal,
-            self.whom_character.health,
+            smarty.apply_hp_colour(self.whom_character.health, self.whom_character.full_health),
             self.experience,
             self.who_character.experience)
 

@@ -44,20 +44,20 @@ error_messages = {
 }
 
 battle_messages = {
-    0 : _("<font color=\"980000\">Registration has been started</font>"),
-    1 : _("<font color=\"980000\">Registration has been ended</font>"),
-    2 : _("<font color=\"980000\">Round {0} has been started</font>"),
-    3 : _("<font color=\"980000\">Round {0} has been ended</font>"),
-    4 : _("<font color=\"980000\">Game has been ended</font>"),
+    0 : _("<font class=\"font-battle\">Registration has been started</font>"),
+    1 : _("<font class=\"font-battle\">Registration has been ended</font>"),
+    2 : _("<font class=\"font-battle\">Round {0} has been started</font>"),
+    3 : _("<font class=\"font-battle\">Round {0} has been ended</font>"),
+    4 : _("<font class=\"font-battle\">Game has been ended</font>"),
     5 : _("Game can't be started, not enough players"),
-    6 : _("<b>{0}</b> attacked <b>{1}</b> with <b>{2}</b> and damaged him for <font color=\"FF0000\">{3}hp</font>({4}hp) [<font color=\"8a00b7\">{5}</font>/<font color=\"8a00b7\">{6}</font>]"),
-    7 : _("<b>{0}</b> tried to attack <b>{1}</b> with <b>{2}</b>, but couldn't break protection(<b>{3}</b>)"),
+    6 : _("<b>{0}</b> attacked <b>{1}</b> with <b>{2}</b> and damaged him for <font class=\"font-damage\">{3}</font>({4}) [<font class=\"font-exp\">{5}</font>/<font class=\"font-exp\">{6}</font>]"),
+    7 : _("<b>{0}</b> tried to attack <b>{1}</b> with <b>{2}</b>, but couldn't break protection({3})"),
     8 : _("<b>{0}</b> makes critical hit!"),
     9 : _("<b>{0}</b> is dead"),
     10 : _("<b>{0}</b> ran from skirmish"),
-    11 : _("Team <b>{0}</b> win"),
-    12 : _("<b>{0}</b> win"),
-    13 : _("Nobody win"),
+    11 : _("Team <b>{0}</b> won"),
+    12 : _("<b>{0}</b> won"),
+    13 : _("Nobody won"),
 }
 
 locales = OrderedDict([
@@ -293,3 +293,11 @@ def get_experience_for_spell_heal(damage):
 
 def get_experience_for_defence(damage):
     return round(damage * 5)
+
+def apply_hp_colour(hp, full_hp):
+    if hp/full_hp < 0.2:
+        return "<font class=\"font-hp-very-low\">{0}</font>".format(hp) # red
+    elif hp/full_hp < 0.4:
+        return "<font class=\"font-hp-low\">{0}</font>".format(hp) # yellow-orange
+    else:
+        return "<font class=\"font-hp\">{0}</font>".format(hp) # green

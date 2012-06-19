@@ -316,7 +316,13 @@ class BattleBot(Thread):
                         who_character.experience += experience
                         if whom_character.health <= 0 and not action.whom in self.victims.keys():
                             self.victims[action.whom] = action.who
-                    self.succeeded_attack(action.who, action.whom, damage, whom_character.health, experience, who_character.experience)
+                    self.succeeded_attack(
+                        action.who,
+                        action.whom,
+                        damage,
+                        smarty.apply_hp_colour(whom_character.health, whom_character.full_health),
+                        experience,
+                        who_character.experience)
                     self.process_after_attack_spells(action, damage)
                 else: # not hit - set exp to defenders
                     damage = smarty.get_damage(who_character, action.percent, whom_character)
@@ -335,7 +341,7 @@ class BattleBot(Thread):
                             if def_action.who != action.who:
                                 def_experience = round(all_experience*(def_character.defence/all_defence))
                                 def_character.experience += def_experience
-                            defence_experience.append("{0}[{1}/{2}]".format(def_action.who, def_experience, def_character.experience))
+                            defence_experience.append("<b>{0}</b>[<font class=\"font-exp\">{1}</font>/<font class=\"font-exp\">{2}</font>]".format(def_action.who, def_experience, def_character.experience))
                     self.failed_attack(action.who, action.whom, ",".join(defence_experience))
 
     def get_spells_by_type(self, turn_actions, type):
@@ -462,6 +468,7 @@ class BattleBot(Thread):
             self.battle_users[user_name].battle_character = copy.deepcopy(self.battle_users[user_name].character)
             self.battle_users[user_name].battle_character.experience = 0
             self.battle_users[user_name].battle_character.gold = 0
+            self.battle_users[user_name].battle_character.full_health = self.battle_users[user_name].character.health
             self.send_action_to_user(user_name, self.can_leave_action())
             self.send_action_to_all(self.add_skirmish_user_action(user_name))
 

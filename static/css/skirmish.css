@@ -406,3 +406,31 @@ button.tabClose {
     width: 200%;
     left: 0;
 }
+
+.font-battle {
+    color: #980000;
+}
+
+.font-exp {
+    color: #8a00b7;
+}
+
+.font-damage {
+    color: #FF0000;
+}
+
+.font-hp {
+    color: #00b300;
+}
+
+.font-hp-low {
+    color: #ffb559;
+}
+
+.font-hp-very-low {
+    color: #ff3535;
+}
+
+.font-heal {
+    color: #00b300;
+}
