@@ -102,7 +102,6 @@ class BattleBot(Thread):
         self.turn_done_count = 0
         self.dead_users = dict()
         self.ran_users = list()
-        self.victims = dict()
 
     def reset(self):
         del self.ran_users[:]
@@ -115,7 +114,6 @@ class BattleBot(Thread):
         for spell_actions in self.long_after_attack_spells.values():
             del spell_actions[:]
         del self.long_spells[:]
-        self.victims.clear()
         self.phase = -1
         self.counter = 0
 
@@ -227,8 +225,9 @@ class BattleBot(Thread):
             if user.battle_character.health <= 0:
                 self.dead_users[user.user_name] = user
                 self.battle_users[user.user_name].state = 3 # dead
-                if user.user_name in self.victims.keys():
-                    self.battle_users[self.victims[user.user_name]].battle_character.gold += user.battle_character.level + 1
+                if user.battle_character.killer_name:
+                    self.battle_users[user.battle_character.killer_name].battle_character.gold += user.battle_character.level + 1
+                user.battle_character.killer_name = None
                 self.send_text_action_to_users(self.location_users, 9, user.user_name) # user is dead
             else:
                 self.characters_manager.send_character_info(user.user_name)
@@ -314,8 +313,8 @@ class BattleBot(Thread):
                     if who_character.name != whom_character.name:
                         experience = smarty.get_experience_for_damage(damage)
                         who_character.experience += experience
-                        if whom_character.health <= 0 and not action.whom in self.victims.keys():
-                            self.victims[action.whom] = action.who
+                        if whom_character.health <= 0 and not whom_character.killer_name:
+                            whom_character.killer_name = action.who
                     self.succeeded_attack(
                         action.who,
                         action.whom,
@@ -413,18 +412,20 @@ class BattleBot(Thread):
     def process_direct_spell_actions(self, spell_actions, type):
         turn_actions = self.get_spells_by_type(spell_actions, type)
         for turn_action in turn_actions:
+            who_character = self.battle_users[turn_action.who].battle_character
+            whom_character = self.battle_users[turn_action.whom].battle_character
             spell_action = spells_manager.spells_action_classes[turn_action.spell_id]()
-            spell_action.init(self.battle_users[turn_action.who].battle_character, self.battle_users[turn_action.whom].battle_character)
+            spell_action.init(who_character, whom_character)
             if spell_action.consume_mana():
                 if spell_action.is_hit(turn_action.percent):
                     if type == 1: # damage
                         spell_action.process(turn_action.percent)
                     elif type == 2: # heal
-                        spell_action.process(turn_action.percent, self.battle_users[turn_action.whom].battle_character.full_health)
+                        spell_action.process(turn_action.percent, whom_character.full_health)
                     for online_user in self.location_users.values():
                         online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
-                    if self.battle_users[turn_action.whom].battle_character.health <= 0 and not turn_action.whom in self.victims.keys():
-                        self.victims[turn_action.whom] = turn_action.who
+                    if whom_character.health <= 0 and not whom_character.killer_name:
+                        whom_character.killer_name = turn_action.who
                 else:
                     self.failed_spell(spell_action)
             else:
@@ -470,6 +471,7 @@ class BattleBot(Thread):
             self.battle_users[user_name].battle_character.experience = 0
             self.battle_users[user_name].battle_character.gold = 0
             self.battle_users[user_name].battle_character.full_health = self.battle_users[user_name].character.health
+            self.battle_users[user_name].battle_character.killer_name = None # who killed this character
             self.send_action_to_user(user_name, self.can_leave_action())
             self.send_action_to_all(self.add_skirmish_user_action(user_name))
 

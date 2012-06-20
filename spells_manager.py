@@ -24,6 +24,13 @@ spell_messages = {
     13 : _("<b>{0}</b> receives the reflected damage <font class=\"font-damage\">{1}</font>/{2}(<b>{3}</b>[<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>])"),
     14 : _("<b>{0}</b> has rounded <b>{1}</b> with mirror shield [{2}/{3}][<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>]"),
     15 : _("<b>{0}</b> has tried to attack <b>{1}</b> but he has dodged"),
+    16 : _("<b>{0}</b> casts spell <b>{1}</b> and increases defence of <b>{2}</b> [{3}/{4}][<font class=\"font-exp\">{5}</font>/<font class=\"font-exp\">{6}</font>]"),
+    17 : _("<b>{0}</b> used ability <b>{1}</b> and reduced defence of <b>{2}</b>[<font class=\"font-exp\">{3}</font>/<font class=\"font-exp\">{4}</font>]"),
+    18 : _("<b>{0}</b> casts spell <b>{1}</b> and decreases defence of <b>{2}</b> [{3}/{4}][<font class=\"font-exp\">{5}</font>/<font class=\"font-exp\">{6}</font>]"),
+    19 : _("<b>{0}</b> casts spell <b>{1}</b> on <b>{2}</b>, steals <font class=\"font-damage\">{3}</font>({4}) and adds them to himself <font class=\"font-heal\">{5}</font>({6})[<font class=\"font-exp\">{7}</font>/<font class=\"font-exp\">{8}</font>]"),
+    20 : _("<b>{0}</b> casts spell <b>{1}</b> on <b>{2}</b> and damages him for <font class=\"font-damage\">{3}</font>({4})[{5}/{6}][<font class=\"font-exp\">{7}</font>/<font class=\"font-exp\">{8}</font>]"),
+    21 : _("<b>{0}</b> has rounded <b>{1}</b> with stench [{2}/{3}][<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>]"),
+    22 : _("<b>{0}</b> receives the damage from stench <font class=\"font-damage\">{1}</font>/{2}(<b>{3}</b>[<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>])"),
 }
 
 class SpellInfo:
@@ -150,6 +157,29 @@ class BerserkFurySpell(Ability):
             self.experience,
             self.who_character.experience)
 
+class BackHeelSpell(Ability):
+    def init(self, who_character, whom_character):
+        super(BackHeelSpell, self).init_internal(spells[build_id(13, 1)], who_character, whom_character)
+        self.defence = 0
+
+    def on_round_start(self):
+        self.defence = round(self.whom_character.defence * 0.5, 2)
+        self.whom_character.defence -= self.defence
+        self.experience = round(self.defence*0.9)
+        self.who_character.experience += self.experience
+
+    def on_effect_end(self):
+        self.whom_character.defence += self.defence
+        return True
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[17]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.whom_character.name,
+            self.experience,
+            self.who_character.experience)
+
 class FierceShotSpell(BerserkFurySpell):
     def init(self, who_character, whom_character):
         super(FierceShotSpell, self).init_internal(spells[build_id(12, 1)], who_character, whom_character)
@@ -245,6 +275,82 @@ class PrayerForAttackSpell(LongSpell):
             self.experience,
             self.who_character.experience)
 
+class PrayerForProtectionSpell(LongSpell):
+    def init(self, who_character, whom_character):
+        super(PrayerForProtectionSpell, self).init_internal(spells[build_id(15, 2)], who_character, whom_character)
+        self.defence = 0
+
+    def on_round_start(self):
+        defence = round(self.whom_character.defence * 0.1, 2)
+        self.defence += defence
+        self.whom_character.defence += defence
+        self.experience = round(defence*0.9)
+        self.who_character.experience += self.experience
+
+    def on_effect_end(self):
+        self.whom_character.defence -= self.defence
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[16]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.whom_character.name,
+            self.counter,
+            self.duration,
+            self.experience,
+            self.who_character.experience)
+
+class CurseOfWeaknessSpell(LongSpell):
+    def init(self, who_character, whom_character):
+        super(CurseOfWeaknessSpell, self).init_internal(spells[build_id(16, 0)], who_character, whom_character)
+        self.defence = 0
+
+    def on_round_start(self):
+        if self.counter == 1: # apply effect
+            self.defence = round(self.whom_character.defence * 0.4, 2)
+            self.whom_character.defence -= self.defence
+        self.experience = round(self.defence*0.9)
+        self.who_character.experience += self.experience
+
+    def on_effect_end(self):
+        self.whom_character.defence += self.defence
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[18]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.whom_character.name,
+            self.counter,
+            self.duration,
+            self.experience,
+            self.who_character.experience)
+
+class InfectionSpell(LongSpell):
+    def init(self, who_character, whom_character):
+        super(InfectionSpell, self).init_internal(spells[build_id(17, 0)], who_character, whom_character)
+        self.damage = 0
+
+    def on_round_start(self):
+        self.damage = smarty.get_spell_damage(self.who_character, 1, self.spell_info.base_amount, self.whom_character)
+        self.whom_character.health -= self.damage
+        if self.who_character.name != self.whom_character.name:
+            self.experience = smarty.get_experience_for_spell_damage(self.damage)
+            self.who_character.experience += self.experience
+            if self.whom_character.health <= 0 and not self.whom_character.killer_name:
+                self.whom_character.killer_name = self.who_character.name
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[20]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.whom_character.name,
+            self.damage,
+            smarty.apply_hp_colour(self.whom_character.health, self.whom_character.full_health),
+            self.counter,
+            self.duration,
+            self.experience,
+            self.who_character.experience)
+
 class PhantomsSpell(LongSpell, AffectAttackSpell):
     def init(self, who_character, whom_character):
         super(PhantomsSpell, self).init_internal(spells[build_id(14, 2)], who_character, whom_character)
@@ -304,8 +410,11 @@ class MirrorCharmSpell(LongSpell, AfterAttackSpell):
     def do_after_attack(self):
         self.damage = round(self.damage*0.3, 2)
         self.attack_character.health -= self.damage
-        self.experience = smarty.get_experience_for_spell_damage(self.damage)
-        self.who_character.experience += self.experience
+        if self.attack_character.name != self.who_character.name:
+            if self.whom_character.health <= 0 and not self.whom_character.killer_name:
+                self.whom_character.killer_name = self.who_character.name
+            self.experience = smarty.get_experience_for_spell_damage(self.damage)
+            self.who_character.experience += self.experience
 
     def get_after_attack_message(self, locale):
         return locale.translate(spell_messages[13]).format(
@@ -325,13 +434,48 @@ class MirrorCharmSpell(LongSpell, AfterAttackSpell):
             self.experience,
             self.who_character.experience)
 
+class StenchSpell(LongSpell, AfterAttackSpell):
+    def init(self, who_character, whom_character):
+        super(StenchSpell, self).init_internal(spells[build_id(17, 1)], who_character, whom_character)
+
+    def on_round_start(self):
+        self.experience = self.who_character.level
+        self.who_character.experience += self.experience
+
+    def do_after_attack(self):
+        self.damage = smarty.get_spell_damage(self.who_character, 1, self.spell_info.base_amount, self.whom_character)
+        self.attack_character.health -= self.damage
+        if self.attack_character.name != self.who_character.name:
+            if self.attack_character.health <= 0 and not self.attack_character.killer_name:
+                self.attack_character.killer_name = self.who_character.name
+            self.experience = smarty.get_experience_for_spell_damage(self.damage)
+            self.who_character.experience += self.experience
+
+    def get_after_attack_message(self, locale):
+        return locale.translate(spell_messages[22]).format(
+            self.attack_character.name,
+            self.damage,
+            smarty.apply_hp_colour(self.attack_character.health, self.attack_character.full_health),
+            self.who_character.name,
+            self.experience,
+            self.who_character.experience)
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[21]).format(
+            self.who_character.name,
+            self.whom_character.name,
+            self.counter,
+            self.duration,
+            self.experience,
+            self.who_character.experience)
+
 class DirectDamageSpell(Spell):
     def init_internal(self, spell_id, who_character, whom_character):
         super(DirectDamageSpell, self).init_internal(spell_id, who_character, whom_character)
         self.damage = 0
 
     def process(self, percent):
-        self.damage = smarty.get_spell_damage(self.who_character, percent, self.spell_info.base_amount, self.who_character)
+        self.damage = smarty.get_spell_damage(self.who_character, percent, self.spell_info.base_amount, self.whom_character)
         if smarty.is_critical_magic_hit(self.who_character, self.whom_character):
             self.damage *= 1.5
 
@@ -368,6 +512,36 @@ class FireSparkSpell(DirectDamageSpell):
             self.experience,
             self.who_character.experience)
 
+class LeechLifeSpell(DirectDamageSpell):
+    def init(self, who_character, whom_character):
+        super(LeechLifeSpell, self).init_internal(spells[build_id(16, 1)], who_character, whom_character)
+
+    def process(self, percent):
+        self.damage = smarty.get_spell_damage(self.who_character, percent, self.spell_info.base_amount, self.who_character)
+        if smarty.is_critical_magic_hit(self.who_character, self.whom_character):
+            self.damage *= 1.5
+
+        self.whom_character.health -= self.damage
+        self.who_character.health += self.damage
+
+        if self.who_character.name != self.whom_character.name:
+            if self.whom_character.health <= 0 and not self.whom_character.killer_name:
+                self.whom_character.killer_name = self.who_character.name
+            self.experience = smarty.get_experience_for_spell_damage(self.damage)
+            self.who_character.experience += self.experience
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[19]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.whom_character.name,
+            self.damage,
+            smarty.apply_hp_colour(self.whom_character.health, self.whom_character.full_health),
+            self.damage,
+            smarty.apply_hp_colour(self.who_character.health, self.who_character.full_health),
+            self.experience,
+            self.who_character.experience)
+
 class DirectHealSpell(Spell):
     def init_internal(self, spell_id, who_character, whom_character):
         super(DirectHealSpell, self).init_internal(spell_id, who_character, whom_character)
@@ -378,12 +552,12 @@ class DirectHealSpell(Spell):
             return True
         return False
 
-    def process(self, percent, max_health):
+    def process(self, percent):
         heal = smarty.get_heal(self.who_character, percent, self.spell_info.base_amount, self.whom_character)
         if smarty.is_critical_magic_hit(self.who_character, self.whom_character):
             self.heal *= 1.5
 
-        self.heal = min(self.whom_character.health + heal, max_health) - self.whom_character.health
+        self.heal = min(self.whom_character.health + heal, self.whom_character.full_health) - self.whom_character.health
         self.whom_character.health += self.heal
 
         self.experience = smarty.get_experience_for_spell_heal(self.heal)
@@ -419,7 +593,7 @@ spells = {
     build_id(12, 1) : SpellInfo(build_id(12, 1), _("Fierce Shot"),              2, 4, True, 1, 0, 1, 15, _("")),
     # rogue
     build_id(13, 0) : SpellInfo(build_id(13, 0), _("Evasion"),                  3, 3, True, 1, 0, 5, 15, _("")),
-    build_id(13, 1) : SpellInfo(build_id(13, 1), _("Trip"),                     3, 0, False, 1, 0, 5, 15, _("")),
+    build_id(13, 1) : SpellInfo(build_id(13, 1), _("Back Heel"),                3, 4, False, 1, 0, 5, 15, _("")),
     # mage
     build_id(14, 0) : SpellInfo(build_id(14, 0), _("Frost Needle"),             4, 1, False, 1, 1.5, 1, 15, _("")),
     build_id(14, 1) : SpellInfo(build_id(14, 1), _("Fire Spark"),               4, 1, False, 1, 2.5, 1, 15, _("")),
@@ -428,13 +602,13 @@ spells = {
     # priest
     build_id(15, 0) : SpellInfo(build_id(15, 0), _("Prayer for Attack"),        5, 4, False, 1, 0, 1, 15, _("")),
     build_id(15, 1) : SpellInfo(build_id(15, 1), _("Prayer for Health"),        5, 2, False, 1, 2, 1, 15, _("")),
-    build_id(15, 2) : SpellInfo(build_id(15, 2), _("Prayer for Protection"),    5, 0, False, 1, 0, 5, 15, _("")),
+    build_id(15, 2) : SpellInfo(build_id(15, 2), _("Prayer for Protection"),    5, 4, False, 1, 0, 5, 15, _("")),
     # warlock
-    build_id(16, 0) : SpellInfo(build_id(16, 0), _("Curse of Weakness"),        6, 0, False, 1, 0, 5, 15, _("")),
-    build_id(16, 1) : SpellInfo(build_id(16, 1), _("Leech Life"),               6, 0, False, 1, 0, 5, 15, _("")),
+    build_id(16, 0) : SpellInfo(build_id(16, 0), _("Curse of Weakness"),        6, 4, False, 1, 0, 5, 15, _("")),
+    build_id(16, 1) : SpellInfo(build_id(16, 1), _("Leech Life"),               6, 1, False, 1, 2, 5, 15, _("")),
     # necromancer
-    build_id(17, 0) : SpellInfo(build_id(17, 0), _("Infection"),                7, 0, False, 1, 0, 5, 15, _("")),
-    build_id(17, 1) : SpellInfo(build_id(17, 1), _("Stench"),                   7, 0, False, 1, 0, 5, 15, _(""))
+    build_id(17, 0) : SpellInfo(build_id(17, 0), _("Infection"),                7, 4, False, 1, 1.5, 5, 15, _("")),
+    build_id(17, 1) : SpellInfo(build_id(17, 1), _("Stench"),                   7, 6, False, 1, 1.5, 5, 15, _(""))
 }
 
 spells_action_classes = {
@@ -443,12 +617,18 @@ spells_action_classes = {
     build_id(12, 0) : DodgeSpell,
     build_id(12, 1) : FierceShotSpell,
     build_id(13, 0) : EvasionSpell,
+    build_id(13, 1) : BackHeelSpell,
     build_id(14, 0) : FrostNeedleSpell,
     build_id(14, 1) : FireSparkSpell,
     build_id(14, 2) : PhantomsSpell,
     build_id(14, 3) : MirrorCharmSpell,
     build_id(15, 0) : PrayerForAttackSpell,
-    build_id(15, 1) : PrayerForHealthSpell
+    build_id(15, 1) : PrayerForHealthSpell,
+    build_id(15, 2) : PrayerForProtectionSpell,
+    build_id(16, 0) : CurseOfWeaknessSpell,
+    build_id(16, 1) : LeechLifeSpell,
+    build_id(17, 0) : InfectionSpell,
+    build_id(17, 1) : StenchSpell
 }
 
 def get_spell(id, locale):

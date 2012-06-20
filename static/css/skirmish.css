@@ -416,11 +416,11 @@ button.tabClose {
 }
 
 .font-damage {
-    color: #FF0000;
+    color: #BA0000;
 }
 
 .font-hp {
-    color: #00b300;
+    color: #008600;
 }
 
 .font-hp-low {
@@ -428,11 +428,11 @@ button.tabClose {
 }
 
 .font-hp-very-low {
-    color: #ff3535;
+    color: #BA0000;
 }
 
 .font-heal {
-    color: #00b300;
+    color: #008600;
 }
 
 /*.text-chat {
