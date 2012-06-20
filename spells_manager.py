@@ -31,6 +31,8 @@ spell_messages = {
     20 : _("<b>{0}</b> casts spell <b>{1}</b> on <b>{2}</b> and damages him for <font class=\"font-damage\">{3}</font>({4})[{5}/{6}][<font class=\"font-exp\">{7}</font>/<font class=\"font-exp\">{8}</font>]"),
     21 : _("<b>{0}</b> has rounded <b>{1}</b> with stench [{2}/{3}][<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>]"),
     22 : _("<b>{0}</b> receives the damage from stench <font class=\"font-damage\">{1}</font>/{2}(<b>{3}</b>[<font class=\"font-exp\">{4}</font>/<font class=\"font-exp\">{5}</font>])"),
+    23 : _("<b>{0}</b> used ability <b>{1}</b> and increased his defence[<font class=\"font-exp\">{2}</font>/<font class=\"font-exp\">{3}</font>]"),
+    24 : _("<b>{0}</b> tried to use ability <b>{1}</b>, but didn't have shield in hands"),
 }
 
 class SpellInfo:
@@ -179,6 +181,58 @@ class BackHeelSpell(Ability):
             self.whom_character.name,
             self.experience,
             self.who_character.experience)
+
+class ArmorSpell(Ability):
+    def init(self, who_character, whom_character):
+        super(ArmorSpell, self).init_internal(spells[build_id(11, 0)], who_character, whom_character)
+        self.defence = 0
+
+    def on_round_start(self):
+        self.defence = round(self.whom_character.defence * 2, 2)
+        self.whom_character.defence += self.defence
+        self.experience = round(self.defence*0.9)
+        self.who_character.experience += self.experience
+
+    def on_effect_end(self):
+        self.whom_character.defence -= self.defence
+        return True
+
+    def get_message(self, locale):
+        return locale.translate(spell_messages[23]).format(
+            self.who_character.name,
+            locale.translate(self.spell_info.name),
+            self.experience,
+            self.who_character.experience)
+
+class ShieldBlockSpell(Ability):
+    def init(self, who_character, whom_character):
+        super(ShieldBlockSpell, self).init_internal(spells[build_id(11, 1)], who_character, whom_character)
+        self.defence = 0
+
+    def on_round_start(self):
+        if self.who_character.shield.split(",")[0] != build_id(1, 0):
+            self.defence = round(self.whom_character.defence * 5, 2)
+            self.whom_character.defence += self.defence
+            self.experience = round(self.defence*0.9)
+            self.who_character.experience += self.experience
+
+    def on_effect_end(self):
+        self.whom_character.defence -= self.defence
+        return True
+
+    def get_message(self, locale):
+        if self.defence != 0:
+            return locale.translate(spell_messages[23]).format(
+                self.who_character.name,
+                locale.translate(self.spell_info.name),
+                self.experience,
+                self.who_character.experience)
+        else:
+            return locale.translate(spell_messages[24]).format(
+                self.who_character.name,
+                locale.translate(self.spell_info.name),
+                self.experience,
+                self.who_character.experience)
 
 class FierceShotSpell(BerserkFurySpell):
     def init(self, who_character, whom_character):
@@ -586,8 +640,8 @@ spells = {
     build_id(10, 0) : SpellInfo(build_id(10, 0), _("Berserk Fury"),             0, 4, True, 1, 0, 1, 15, _("Howling with rage, you rush to the enemy. Attack power is increased")),
     build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 5, False, 1, 0, 1, 15, _("You knock weapons out of enemy hands. He can not attack")),
     # guardian
-    build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 0, True, 1, 0, 5, 15, _("")),
-    build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 0, True, 1, 0, 5, 15, _("")),
+    build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 4, True, 1, 0, 5, 15, _("")),
+    build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 4, True, 1, 0, 5, 15, _("")),
     # archer
     build_id(12, 0) : SpellInfo(build_id(12, 0), _("Dodge"),                    2, 3, True, 1, 0, 5, 15, _("")),
     build_id(12, 1) : SpellInfo(build_id(12, 1), _("Fierce Shot"),              2, 4, True, 1, 0, 1, 15, _("")),
@@ -614,6 +668,8 @@ spells = {
 spells_action_classes = {
     build_id(10, 0) : BerserkFurySpell,
     build_id(10, 1) : DisarmamentSpell,
+    build_id(11, 0) : ArmorSpell,
+    build_id(11, 1) : ShieldBlockSpell,
     build_id(12, 0) : DodgeSpell,
     build_id(12, 1) : FierceShotSpell,
     build_id(13, 0) : EvasionSpell,
