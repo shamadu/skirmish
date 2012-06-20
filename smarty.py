@@ -58,7 +58,9 @@ battle_messages = {
     11 : _("Team <b>{0}</b> won"),
     12 : _("<b>{0}</b> won"),
     13 : _("Nobody won"),
-}
+    14 : _("<b>{0}</b> has joined the game"),
+    15 : _("<b>{0}</b> has left the game"),
+    }
 
 locales = OrderedDict([
     ("en_US", "English"),
