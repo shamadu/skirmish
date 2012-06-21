@@ -186,17 +186,23 @@
 
 
         <div id="shopDivContainer" class="div-content">
-            <div id="shopMenu" class="menu-shop">
-                <ul>
-                    {% for item_group_name in shop.keys() %}
-                    <li><a href="javascript:void(0)">{{ item_group_name }}</a>
-                        <ul>
-                            {% for item_id in shop[item_group_name].keys() %}
-                            <li><a href="javascript:void(0)" item_id="{{ item_id }}">{{ shop[item_group_name][item_id] }}</a></li>
+            <div id="shopMenu" class="menu-bar">
+                <ul class="menu-main-ul">
+                {% for item_super_group_name in shop.keys() %}
+                    <li><a href="javascript:void(0)">{{ item_super_group_name }}</a>
+                        <ul class="menu-first-ul">
+                            {% for item_group_name in shop[item_super_group_name].keys() %}
+                            <li><a href="javascript:void(0)">{{ item_group_name }}</a>
+                                <ul class="menu-second-ul">
+                                    {% for item_id in shop[item_super_group_name][item_group_name].keys() %}
+                                    <li><a href="javascript:void(0)" item_id="{{ item_id }}">{{ shop[item_super_group_name][item_group_name][item_id] }}</a></li>
+                                    {% end %}
+                                </ul>
+                            </li>
                             {% end %}
                         </ul>
                     </li>
-                    {% end %}
+                {% end %}
                 </ul>
             </div>
             <div id="shopItemDescriptions">
@@ -204,13 +210,19 @@
         </div>
 
         <div id="dbDivContainer" class="div-content">
-            <div id="dbMenu" class="menu-shop">
-                <ul>
-                    {% for item_group_name in database.keys() %}
-                    <li><a href="javascript:void(0)">{{ item_group_name }}</a>
-                        <ul>
-                            {% for item_id in database[item_group_name].keys() %}
-                            <li><a href="javascript:void(0)" item_id="{{ item_id }}">{{ database[item_group_name][item_id] }}</a></li>
+            <div id="dbMenu" class="menu-bar">
+                <ul class="menu-main-ul">
+                    {% for item_super_group_name in database.keys() %}
+                    <li><a href="javascript:void(0)">{{ item_super_group_name }}</a>
+                        <ul class="menu-first-ul">
+                            {% for item_group_name in database[item_super_group_name].keys() %}
+                            <li><a href="javascript:void(0)">{{ item_group_name }}</a>
+                                <ul class="menu-second-ul">
+                                    {% for item_id in database[item_super_group_name][item_group_name].keys() %}
+                                    <li><a href="javascript:void(0)" item_id="{{ item_id }}">{{ database[item_super_group_name][item_group_name][item_id] }}</a></li>
+                                    {% end %}
+                                </ul>
+                            </li>
                             {% end %}
                         </ul>
                     </li>

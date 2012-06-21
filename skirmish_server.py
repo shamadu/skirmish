@@ -121,12 +121,13 @@ class MainHandler(BaseHandler):
                     self.db_manager.update_character(self.current_user)
                 self.users_holder.user_enter(self.current_user)
 
-                database = items_manager.get_all(self.locale)
-                database.update(spells_manager.get_all_spells(self.locale))
+                database = dict()
+                database["Items"] = items_manager.get_all(self.locale)
+                database["Spells"] = spells_manager.get_all_spells(self.locale)
                 self.render("skirmish.html",
                     location=self.users_holder.online_users[self.current_user].location,
                     substance=smarty.get_substance_name(character.class_id, self.locale),
-                    shop=items_manager.get_shop(self.locale),
+                    shop={"Items" : items_manager.get_shop(self.locale)},
                     database=database,
                     locations=smarty.get_locations(self.locale))
         else:
