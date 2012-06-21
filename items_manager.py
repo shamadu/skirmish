@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import copy
+import smarty
 
 __author__ = 'Pavel Padinker'
 
@@ -13,6 +14,21 @@ class RequiredStats(object):
         self.intellect = intellect
         self.wisdom = wisdom
 
+    def get_required(self, locale):
+        result = dict()
+        if self.level > 0:
+            result[locale.translate(smarty.stat_names[4])] = self.level
+        if self.strength > 0:
+            result[locale.translate(smarty.stat_names[0])] = self.strength
+        if self.dexterity > 0:
+            result[locale.translate(smarty.stat_names[1])] = self.dexterity
+        if self.intellect > 0:
+            result[locale.translate(smarty.stat_names[2])] = self.intellect
+        if self.wisdom > 0:
+            result[locale.translate(smarty.stat_names[3])] = self.wisdom
+
+        return result
+
 class BonusStats(object):
     def __init__(self, strength, dexterity, intellect, wisdom, min_dmg, max_dmg, spell_dmg):
         self.strength = strength
@@ -22,6 +38,25 @@ class BonusStats(object):
         self.min_dmg = min_dmg
         self.max_dmg = max_dmg
         self.spell_dmg = spell_dmg
+
+    def get_bonus(self, locale):
+        result = dict()
+        if self.strength > 0:
+            result[locale.translate(smarty.stat_names[0])] = self.strength
+        if self.dexterity > 0:
+            result[locale.translate(smarty.stat_names[1])] = self.dexterity
+        if self.intellect > 0:
+            result[locale.translate(smarty.stat_names[2])] = self.intellect
+        if self.wisdom > 0:
+            result[locale.translate(smarty.stat_names[3])] = self.wisdom
+        if self.min_dmg > 0:
+            result[locale.translate(smarty.stat_names[5])] = self.min_dmg
+        if self.max_dmg > 0:
+            result[locale.translate(smarty.stat_names[6])] = self.max_dmg
+        if self.spell_dmg > 0:
+            result[locale.translate(smarty.stat_names[7])] = self.spell_dmg
+
+        return result
 
 class Item(object):
     def __init__(self, id, name, type, required_stats, bonus_stats, price, description):
@@ -64,13 +99,13 @@ build_id = lambda type, id: 100*type + id
 items = {
     #weapons
     build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 1.2, 2.2),
-    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(1, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
+    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
     #shields
     build_id(1, 0) : Item(build_id(1, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     build_id(1, 1) : Item(build_id(1, 1), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 15, _("Just wooden shield with iron circle in center")),
     #heads
     build_id(2, 0) : Item(build_id(2, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
-    build_id(2, 1) : Item(build_id(2, 1), _("Basic helmet"), 2, RequiredStats(2,0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 15, _("Wooden helmet is a better guard than your skull")),
+    build_id(2, 1) : Item(build_id(2, 1), _("Basic helmet"), 2, RequiredStats(2, 0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 15, _("Wooden helmet is a better guard than your skull")),
     # body
     build_id(3, 0) : Item(build_id(3, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # left_hand

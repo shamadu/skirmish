@@ -34,6 +34,17 @@ team_ranks = {
     5 : ""
 }
 
+stat_names = {
+    0 : _("Strength"),
+    1 : _("Dexterity"),
+    2 : _("Intellect"),
+    3 : _("Wisdom"),
+    4 : _("Level"),
+    5 : _("Minimum Damage"),
+    6 : _("Maximum Damage"),
+    7 : _("Spell damage"),
+}
+
 error_messages = {
     0 : _("Team with this name already exists"),
     1 : _("Character already has team"),
