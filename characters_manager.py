@@ -71,12 +71,11 @@ class CharactersManager:
         locale = self.online_users[user_name].locale
         return Action(201, {
             # <id1>:<name1>,<id2>:<name2>:...
-            "weapon" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.weapon, locale)),
-            "shield" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.shield, locale)),
+            "right_hand" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.right_hand, locale)),
+            "left_hand" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.left_hand, locale)),
             "head" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.head, locale)),
             "body" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.body, locale)),
-            "left_hand" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.left_hand, locale)),
-            "right_hand" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.right_hand, locale)),
+            "hands" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.hands, locale)),
             "legs" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.legs, locale)),
             "feet" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.feet, locale)),
             "cloak" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.cloak, locale))
@@ -220,7 +219,7 @@ class CharactersManager:
     def put_on_item(self, user_name, thing_id):
         result = False
         int_id = int(thing_id)
-        # get type of thing, e.g. weapon, shield, head, etc.
+        # get type of thing, e.g. right_hand, left_hand, head, etc.
         item_type = items_manager.get_item_type(int_id)
         character = self.online_users[user_name].character
         items = character[item_type].split(",")

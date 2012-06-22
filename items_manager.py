@@ -82,45 +82,46 @@ class Weapon(Item):
         self.max_damage = max_damage
 
 item_groups = {
-    0 : _("Weapon"),
-    1 : _("Shield"),
+    0 : _("Right hand"),
+    1 : _("Left hand"),
     2 : _("Head"),
     3 : _("Body"),
-    4 : _("Left hand"),
-    5 : _("Right hand"),
-    6 : _("Legs"),
-    7 : _("Feet"),
-    8 : _("Cloak"),
+    4 : _("Hands"),
+    5 : _("Legs"),
+    6 : _("Feet"),
+    7 : _("Cloak"),
 }
 
 # means that 0-99 are weapons, 100 - no shield, 101-199 are shields, 200 - empty head, 201-299 are helmets, etc.
 build_id = lambda type, id: 100*type + id
 
 items = {
-    #weapons
+    #right hand
     build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 1.2, 2.2),
     build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
-    #shields
+    #left hand
     build_id(1, 0) : Item(build_id(1, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     build_id(1, 1) : Item(build_id(1, 1), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 15, _("Just wooden shield with iron circle in center")),
-    #heads
+    #head
     build_id(2, 0) : Item(build_id(2, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     build_id(2, 1) : Item(build_id(2, 1), _("Basic helmet"), 2, RequiredStats(2, 0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 15, _("Wooden helmet is a better guard than your skull")),
     # body
     build_id(3, 0) : Item(build_id(3, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
-    # left_hand
+    # hands
     build_id(4, 0) : Item(build_id(4, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
-    # right_hand
-    build_id(5, 0) : Item(build_id(5, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # legs
-    build_id(6, 0) : Item(build_id(6, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(5, 0) : Item(build_id(5, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # feet
-    build_id(7, 0) : Item(build_id(7, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(6, 0) : Item(build_id(6, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # cloak
-    build_id(8, 0) : Item(build_id(8, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(7, 0) : Item(build_id(7, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     }
 
-shop_items_ids = [build_id(0, 1), build_id(1, 1), build_id(2, 1)]
+shop_items_ids = [
+    build_id(0, 1),
+    build_id(1, 1),
+    build_id(2, 1)
+]
 
 def get_shop(locale):
     shop = OrderedDict()
@@ -147,7 +148,7 @@ def get_item(id, locale):
     return items[id].translate(locale)
 
 def get_current_weapon_name(character, locale):
-    return get_item(int(character.weapon.split(",")[0]), locale).name
+    return get_item(int(character.right_hand.split(",")[0]), locale).name
 
 def get_items(item_ids_str, locale):
     items = list()
@@ -160,22 +161,20 @@ def get_items(item_ids_str, locale):
 def get_item_type(id):
     item_type = "undefined"
     if items[id].type == 0:
-        item_type = "weapon"
+        item_type = "right_hand"
     elif items[id].type == 1 or (items[id].type == -1 and id == build_id(1, 0)):
-        item_type = "shield"
+        item_type = "left_hand"
     elif items[id].type == 2 or (items[id].type == -1 and id == build_id(2, 0)):
         item_type = "head"
     elif items[id].type == 3 or (items[id].type == -1 and id == build_id(3, 0)):
         item_type = "body"
     elif items[id].type == 4 or (items[id].type == -1 and id == build_id(4, 0)):
-        item_type = "left_hand"
+        item_type = "hands"
     elif items[id].type == 5 or (items[id].type == -1 and id == build_id(5, 0)):
-        item_type = "right_hand"
-    elif items[id].type == 6 or (items[id].type == -1 and id == build_id(6, 0)):
         item_type = "legs"
-    elif items[id].type == 7 or (items[id].type == -1 and id == build_id(7, 0)):
+    elif items[id].type == 6 or (items[id].type == -1 and id == build_id(6, 0)):
         item_type = "feet"
-    elif items[id].type == 8 or (items[id].type == -1 and id == build_id(8, 0)):
+    elif items[id].type == 7 or (items[id].type == -1 and id == build_id(7, 0)):
         item_type = "cloak"
 
     return item_type
@@ -224,7 +223,7 @@ def get_default_stuff(class_id):
             , str(build_id(5, 0))
             , str(build_id(6, 0))
             , str(build_id(7, 0))
-            , str(build_id(8, 0))]
+        ]
     else: # casters
         stuff = [
               str(build_id(0, 0))
@@ -235,6 +234,6 @@ def get_default_stuff(class_id):
             , str(build_id(5, 0))
             , str(build_id(6, 0))
             , str(build_id(7, 0))
-            , str(build_id(8, 0))]
+        ]
 
     return stuff

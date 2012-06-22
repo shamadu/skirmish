@@ -433,12 +433,12 @@ var pollUpdater = {
         }
         // character stuff update
         else if (action.type == 201) {
-            if (action.weapon) {
+            if (action.left_hand) {
                 $("#weaponSelect").empty();
-                addThings(action.weapon, $("#weaponSelect"));
+                addThings(action.left_hand, $("#left_handSelect"));
             }
-            if (action.shield) {
-                addThings(action.shield, $("#shieldSelect"));
+            if (action.right_hand) {
+                addThings(action.right_hand, $("#right_handSelect"));
             }
             if (action.head) {
                 addThings(action.head, $("#headSelect"));
@@ -446,11 +446,8 @@ var pollUpdater = {
             if (action.body) {
                 addThings(action.body, $("#bodySelect"));
             }
-            if (action.left_hand) {
-                addThings(action.left_hand, $("#left_handSelect"));
-            }
-            if (action.right_hand) {
-                addThings(action.right_hand, $("#right_handSelect"));
+            if (action.hands) {
+                addThings(action.hands, $("#handsSelect"));
             }
             if (action.legs) {
                 addThings(action.legs, $("#legsSelect"));

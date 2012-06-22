@@ -22,13 +22,12 @@ class DBManager():
                         'gold integer default 1, '
                         'team_name text default null, '
                         'rank_in_team integer default 0, '
-        # weapon, shield and all clothes = comma-separated text, first is id of wearing thing, other - in backpack
-                        'weapon text, '
-                        'shield text, '
+        # right_hand, left_hand and all clothes = comma-separated text, first is id of wearing thing, other - in backpack
+                        'right_hand text, '
+                        'left_hand text, '
                         'head text, '
                         'body text, '
-                        'left_hand text, '
-                        'right_hand text, '
+                        'hands text, '
                         'legs text, '
                         'feet text, '
                         'cloak text, '
@@ -43,7 +42,7 @@ class DBManager():
         character = self.get_character(user_name)
         character.health = smarty.get_hp_count(character)
         character.mana = smarty.get_mp_count(character)
-        character.current_weapon_id = int(character.weapon.split(",")[0])
+        character.current_weapon_id = int(character.right_hand.split(",")[0])
         character.attack = smarty.get_attack(character)
         character.defence = smarty.get_defence(character)
         character.magic_attack = smarty.get_magic_attack(character)
@@ -58,7 +57,7 @@ class DBManager():
         self.db.execute("insert into users (login, password) values (%s, %s)", login, password)
 
     def update_user_location(self, login, location):
-        self.db.execute("update users set location=%s where login = %s", location, login);
+        self.db.execute("update users set location=%s where login = %s", location, login)
 
     def get_character(self, name):
         return self.db.get("select * from characters where name = %s", name)
@@ -68,8 +67,8 @@ class DBManager():
             default_parameters = smarty.get_default_parameters(int(race_id), int(class_id))
             default_stuff = items_manager.get_default_stuff(int(class_id))
             self.db.execute("insert into characters (name, race_id, class_id, strength, dexterity, intellect, wisdom, constitution, "
-                            "weapon, shield, head, body, left_hand, right_hand, legs, feet, cloak, spells) values "
-                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                            "right_hand, left_hand, head, body, hands, legs, feet, cloak, spells) values "
+                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 , name
                 , race_id
                 , class_id
@@ -86,7 +85,6 @@ class DBManager():
                 , default_stuff[5]
                 , default_stuff[6]
                 , default_stuff[7]
-                , default_stuff[8]
                 , None)
 
     def remove_character(self, name):
