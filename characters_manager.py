@@ -69,17 +69,7 @@ class CharactersManager:
     def character_stuff_action(self, user_name):
         character = self.online_users[user_name].character
         locale = self.online_users[user_name].locale
-        return Action(201, {
-            # <id1>:<name1>,<id2>:<name2>:...
-            "right_hand" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.right_hand, locale)),
-            "left_hand" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.left_hand, locale)),
-            "head" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.head, locale)),
-            "body" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.body, locale)),
-            "hands" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.hands, locale)),
-            "legs" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.legs, locale)),
-            "feet" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.feet, locale)),
-            "cloak" : ",".join("%s" % ":".join([str(item.id), item.name]) for item in items_manager.get_items(character.cloak, locale))
-        })
+        return Action(201, items_manager.get_items(character, locale))
 
     def character_spells_action(self, user_name):
         character = self.online_users[user_name].character
@@ -222,18 +212,22 @@ class CharactersManager:
         # get type of thing, e.g. right_hand, left_hand, head, etc.
         item_type = items_manager.get_item_type(int_id)
         character = self.online_users[user_name].character
-        items = character[item_type].split(",")
+        bag_items = character.bag.split(",")
         # check if character has thing and can put it on
-        if thing_id in items and items_manager.check_item(character, int_id):
-            old_item_id = items[0]
-            # put it on by changing its place with first one
-            thing_pos = items.index(thing_id)
-            items[0], items[thing_pos] = items[thing_pos], items[0]
-            self.db_manager.change_character_field_update(user_name, item_type, ",".join(items))
+        if thing_id in bag_items and items_manager.check_item(character, int_id):
+            thing_pos = bag_items.index(thing_id)
+            # remember old bonuses of old item if it was worn
+            old_bonuses = {}
+            if character[item_type]: # something was wearing - exchange it with item from bag
+                old_bonuses = items_manager.get_bonuses(int(character[item_type]))
+                character[item_type], bag_items[thing_pos] = bag_items[thing_pos], character[item_type]
+            else: # nothing was wearing, remove item from bag
+                character[item_type] = bag_items[thing_pos]
+                bag_items.pop(thing_pos)
+            self.db_manager.change_character_field_update(user_name, "bag", ",".join(bag_items))
+            self.db_manager.change_character_field_update(user_name, item_type, character[item_type])
             self.send_character_stuff(user_name)
 
-            # get bonuses of old thing to subtract them from character
-            old_bonuses = items_manager.get_bonuses(int(old_item_id))
             # get bonuses of new thing to add them from character
             bonuses = items_manager.get_bonuses(int_id)
             # add old bonuses not in new ones
@@ -257,8 +251,10 @@ class CharactersManager:
         if character.gold >= item.price: # if character can buy it
             update_fields = dict()
             update_fields["gold"] = character.gold - item.price
-            item_type = items_manager.get_item_type(item.id)
-            update_fields[item_type] = ",".join([character[item_type], item_id])
+            if not character.bag:
+                update_fields["bag"] = item_id
+            else:
+                update_fields["bag"] = ",".join([character.bag, item_id])
             self.db_manager.change_character_fields_update(user_name, update_fields)
             self.send_character_info(user_name)
             self.send_character_stuff(user_name)

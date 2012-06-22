@@ -100,27 +100,25 @@ items = {
     build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 1.2, 2.2),
     build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
     #left hand
-    build_id(1, 0) : Item(build_id(1, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
-    build_id(1, 1) : Item(build_id(1, 1), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 15, _("Just wooden shield with iron circle in center")),
+    build_id(1, 0) : Item(build_id(1, 0), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 15, _("Just wooden shield with iron circle in center")),
     #head
-    build_id(2, 0) : Item(build_id(2, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
-    build_id(2, 1) : Item(build_id(2, 1), _("Basic helmet"), 2, RequiredStats(2, 0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 15, _("Wooden helmet is a better guard than your skull")),
+    build_id(2, 0) : Item(build_id(2, 0), _("Basic helmet"), 2, RequiredStats(2, 0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 15, _("Wooden helmet is a better guard than your skull")),
     # body
-    build_id(3, 0) : Item(build_id(3, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(3, 0) : Item(build_id(3, 0), _("A"), 3, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # hands
-    build_id(4, 0) : Item(build_id(4, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(4, 0) : Item(build_id(4, 0), _("B"), 4, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # legs
-    build_id(5, 0) : Item(build_id(5, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(5, 0) : Item(build_id(5, 0), _("C"), 5, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # feet
-    build_id(6, 0) : Item(build_id(6, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(6, 0) : Item(build_id(6, 0), _("D"), 6, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # cloak
-    build_id(7, 0) : Item(build_id(7, 0), _("Nothing"), -1, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(7, 0) : Item(build_id(7, 0), _("E"), 7, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     }
 
 shop_items_ids = [
     build_id(0, 1),
-    build_id(1, 1),
-    build_id(2, 1)
+    build_id(1, 0),
+    build_id(2, 0)
 ]
 
 def get_shop(locale):
@@ -148,13 +146,44 @@ def get_item(id, locale):
     return items[id].translate(locale)
 
 def get_current_weapon_name(character, locale):
-    return get_item(int(character.right_hand.split(",")[0]), locale).name
+    return get_item(int(character.right_hand), locale).name
 
-def get_items(item_ids_str, locale):
+def get_bag_items(character, locale):
     items = list()
-    item_ids = item_ids_str.split(",")
+    item_ids = character.bag.split(",")
     for item_id in item_ids:
         items.append(get_item(int(item_id), locale))
+
+    return items
+
+def get_items(character, locale):
+    items = dict()
+    if character.right_hand:
+        item = get_item(int(character.right_hand), locale)
+        items["right_hand"] = ":".join([str(item.id), item.name])
+    if character.left_hand:
+        item = get_item(int(character.left_hand), locale)
+        items["left_hand"] = ":".join([str(item.id), item.name])
+    if character.head:
+        item = get_item(int(character.head), locale)
+        items["head"] = ":".join([str(item.id), item.name])
+    if character.body:
+        item = get_item(int(character.body), locale)
+        items["body"] = ":".join([str(item.id), item.name])
+    if character.hands:
+        item = get_item(int(character.hands), locale)
+        items["hands"] = ":".join([str(item.id), item.name])
+    if character.legs:
+        item = get_item(int(character.legs), locale)
+        items["legs"] = ":".join([str(item.id), item.name])
+    if character.feet:
+        item = get_item(int(character.feet), locale)
+        items["feet"] = ":".join([str(item.id), item.name])
+    if character.cloak:
+        item = get_item(int(character.cloak), locale)
+        items["bag"] = ":".join([str(item.id), item.name])
+    if character.bag:
+        items["bag"] = ",".join("%s" % ":".join([str(item.id), item.name]) for item in get_bag_items(character, locale))
 
     return items
 
@@ -162,19 +191,19 @@ def get_item_type(id):
     item_type = "undefined"
     if items[id].type == 0:
         item_type = "right_hand"
-    elif items[id].type == 1 or (items[id].type == -1 and id == build_id(1, 0)):
+    elif items[id].type == 1:
         item_type = "left_hand"
-    elif items[id].type == 2 or (items[id].type == -1 and id == build_id(2, 0)):
+    elif items[id].type == 2:
         item_type = "head"
-    elif items[id].type == 3 or (items[id].type == -1 and id == build_id(3, 0)):
+    elif items[id].type == 3:
         item_type = "body"
-    elif items[id].type == 4 or (items[id].type == -1 and id == build_id(4, 0)):
+    elif items[id].type == 4:
         item_type = "hands"
-    elif items[id].type == 5 or (items[id].type == -1 and id == build_id(5, 0)):
+    elif items[id].type == 5:
         item_type = "legs"
-    elif items[id].type == 6 or (items[id].type == -1 and id == build_id(6, 0)):
+    elif items[id].type == 6:
         item_type = "feet"
-    elif items[id].type == 7 or (items[id].type == -1 and id == build_id(7, 0)):
+    elif items[id].type == 7:
         item_type = "cloak"
 
     return item_type
@@ -216,24 +245,24 @@ def get_default_stuff(class_id):
     if class_id < 4: # non casters
         stuff = [
               str(build_id(0, 0))
-            , str(build_id(1, 0))
-            , str(build_id(2, 0))
-            , str(build_id(3, 0))
-            , str(build_id(4, 0))
-            , str(build_id(5, 0))
-            , str(build_id(6, 0))
-            , str(build_id(7, 0))
+            , ""
+            , ""
+            , ""
+            , ""
+            , ""
+            , ""
+            , ""
         ]
     else: # casters
         stuff = [
               str(build_id(0, 0))
-            , str(build_id(1, 0))
-            , str(build_id(2, 0))
-            , str(build_id(3, 0))
-            , str(build_id(4, 0))
-            , str(build_id(5, 0))
-            , str(build_id(6, 0))
-            , str(build_id(7, 0))
+            , ""
+            , ""
+            , ""
+            , ""
+            , ""
+            , ""
+            , ""
         ]
 
     return stuff

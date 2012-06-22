@@ -433,30 +433,34 @@ var pollUpdater = {
         }
         // character stuff update
         else if (action.type == 201) {
-            if (action.left_hand) {
-                $("#weaponSelect").empty();
-                addThings(action.left_hand, $("#left_handSelect"));
-            }
+            $("#bagStuffTable td").empty();
+            $("#characterStuffTable td").empty();
             if (action.right_hand) {
-                addThings(action.right_hand, $("#right_handSelect"));
+                showWornItem($("#right_handCell"), action.right_hand);
+            }
+            if (action.left_hand) {
+                showWornItem($("#left_handCell"), action.left_hand);
             }
             if (action.head) {
-                addThings(action.head, $("#headSelect"));
+                showWornItem($("#headCell"), action.head);
             }
             if (action.body) {
-                addThings(action.body, $("#bodySelect"));
+                showWornItem($("#bodyCell"), action.body);
             }
             if (action.hands) {
-                addThings(action.hands, $("#handsSelect"));
+                showWornItem($("#handsCell"), action.hands);
             }
             if (action.legs) {
-                addThings(action.legs, $("#legsSelect"));
+                showWornItem($("#legsCell"), action.legs);
             }
             if (action.feet) {
-                addThings(action.feet, $("#feetSelect"));
+                showWornItem($("#feetCell"), action.feet);
             }
             if (action.cloak) {
-                addThings(action.cloak, $("#cloakSelect"));
+                showWornItem($("#cloakCell"), action.cloak);
+            }
+            if (action.bag) {
+                showBagItems(action.bag);
             }
         }
         // character spells update

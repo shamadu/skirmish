@@ -22,7 +22,8 @@ class DBManager():
                         'gold integer default 1, '
                         'team_name text default null, '
                         'rank_in_team integer default 0, '
-        # right_hand, left_hand and all clothes = comma-separated text, first is id of wearing thing, other - in backpack
+        # right_hand, left_hand and all clothes = id of worn item
+        # bag = comma-separated text, ids of items in backpack
                         'right_hand text, '
                         'left_hand text, '
                         'head text, '
@@ -31,6 +32,7 @@ class DBManager():
                         'legs text, '
                         'feet text, '
                         'cloak text, '
+                        'bag text, '
                         'spells text)')
         self.db.execute("create table if not exists users "
                         "(id integer(11) primary key not null auto_increment unique, "
@@ -42,7 +44,6 @@ class DBManager():
         character = self.get_character(user_name)
         character.health = smarty.get_hp_count(character)
         character.mana = smarty.get_mp_count(character)
-        character.current_weapon_id = int(character.right_hand.split(",")[0])
         character.attack = smarty.get_attack(character)
         character.defence = smarty.get_defence(character)
         character.magic_attack = smarty.get_magic_attack(character)
@@ -67,8 +68,8 @@ class DBManager():
             default_parameters = smarty.get_default_parameters(int(race_id), int(class_id))
             default_stuff = items_manager.get_default_stuff(int(class_id))
             self.db.execute("insert into characters (name, race_id, class_id, strength, dexterity, intellect, wisdom, constitution, "
-                            "right_hand, left_hand, head, body, hands, legs, feet, cloak, spells) values "
-                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                            "right_hand, left_hand, head, body, hands, legs, feet, cloak, bag, spells) values "
+                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 , name
                 , race_id
                 , class_id
@@ -85,6 +86,7 @@ class DBManager():
                 , default_stuff[5]
                 , default_stuff[6]
                 , default_stuff[7]
+                , None
                 , None)
 
     def remove_character(self, name):

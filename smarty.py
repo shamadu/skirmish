@@ -274,8 +274,8 @@ def get_spell_duration(character):
     return character.intellect/3
 
 def get_damage(character_to_attack, attack_percent, character_to_defence):
-    min_damage = items_manager.items[character_to_attack.current_weapon_id].min_damage
-    max_damage = items_manager.items[character_to_attack.current_weapon_id].max_damage
+    min_damage = items_manager.items[character_to_attack.right_hand].min_damage
+    max_damage = items_manager.items[character_to_attack.right_hand].max_damage
     weapon_damage = random.uniform(min_damage, max_damage)
     damage = max(0.90 + (character_to_attack.strength / 100), 1) ** 2 * weapon_damage
     absorb = character_to_defence.armor * 0.001
