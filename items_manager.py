@@ -146,7 +146,10 @@ def get_item(id, locale):
     return items[id].translate(locale)
 
 def get_current_weapon_name(character, locale):
-    return get_item(int(character.right_hand), locale).name
+    if character.right_hand:
+        return get_item(int(character.right_hand), locale).name
+    else:
+        return locale.translate(_("Empty hands"))
 
 def get_bag_items(character, locale):
     items = list()
