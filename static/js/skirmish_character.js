@@ -5,9 +5,16 @@
  */
 
 var initialize_character = function() {
+    $("#characterStuffTable span").live({
+        contextmenu : function(e){
+            $.postJSON('/action', {"action" : "take_off", "item_id" : $(this).attr("value")});
+            return false;
+        }
+    });
+
     $("#bagStuffTable span").live({
         contextmenu : function(e){
-            $.postJSON('/action', {"action" : "put_on", "thing_id" : $(this).attr("value")}, function(response) {
+            $.postJSON('/action', {"action" : "put_on", "item_id" : $(this).attr("value")}, function(response) {
                 if (response == "false") {
                 }
             });

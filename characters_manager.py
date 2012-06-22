@@ -206,20 +206,20 @@ class CharactersManager:
         self.send_can_create_team(user_name)
         self.send_team_info_to_members(user.team_name, self.get_team_members(user.team_name))
 
-    def put_on_item(self, user_name, thing_id):
+    def put_on_item(self, user_name, item_id):
         result = False
-        int_id = int(thing_id)
+        int_id = int(item_id)
         # get type of thing, e.g. right_hand, left_hand, head, etc.
         item_type = items_manager.get_item_type(int_id)
         character = self.online_users[user_name].character
         bag_items = character.bag.split(",")
         # check if character has thing and can put it on
-        if thing_id in bag_items and items_manager.check_item(character, int_id):
-            thing_pos = bag_items.index(thing_id)
+        if item_id in bag_items and items_manager.check_item(character, int_id):
+            thing_pos = bag_items.index(item_id)
             # remember old bonuses of old item if it was worn
             old_bonuses = {}
             if character[item_type]: # something was wearing - exchange it with item from bag
-                old_bonuses = items_manager.get_bonuses(int(character[item_type]))
+                old_bonuses = items_manager.get_bonuses(int_id)
                 character[item_type], bag_items[thing_pos] = bag_items[thing_pos], character[item_type]
             else: # nothing was wearing, remove item from bag
                 character[item_type] = bag_items[thing_pos]
@@ -244,6 +244,26 @@ class CharactersManager:
             result = True
 
         return result
+
+    def take_off_item(self, user_name, item_id):
+        int_id = int(item_id)
+        # get type of thing, e.g. right_hand, left_hand, head, etc.
+        item_type = items_manager.get_item_type(int_id)
+        character = self.online_users[user_name].character
+        # check if character has thing and worn it
+        if item_id == character[item_type]:
+            # remember old bonuses of old item if it was worn
+            bonuses = items_manager.get_bonuses(int_id)
+            # add old bonuses not in new ones
+            for bonus_name in bonuses.keys():
+                bonuses[bonus_name] = character[bonus_name] - bonuses[bonus_name]
+            self.db_manager.change_character_fields_update(user_name, bonuses)
+            self.send_character_info(user_name)
+
+            self.db_manager.change_character_field_update(user_name, "bag", ",".join([character.bag, item_id]))
+            self.db_manager.change_character_field_update(user_name, item_type, "")
+            self.send_character_stuff(user_name)
+
 
     def buy_item(self, user_name, item_id):
         character = self.online_users[user_name].character

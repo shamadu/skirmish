@@ -175,8 +175,10 @@ class ActionHandler(BaseHandler):
             self.battle_manager.user_leave(self.current_user)
             self.users_manager.change_location(self.current_user, int(self.get_argument("location")))
         elif self.get_argument("action") == 'put_on':
-            if not self.characters_manager.put_on_item(self.current_user, self.get_argument("thing_id")):
+            if not self.characters_manager.put_on_item(self.current_user, self.get_argument("item_id")):
                 self.write("false")
+        elif self.get_argument("action") == 'take_off':
+            self.characters_manager.take_off_item(self.current_user, self.get_argument("item_id"))
         elif self.get_argument("action") == "create_team":
             self.write(self.characters_manager.create_team(self.current_user, self.get_argument("team_name")))
         elif self.get_argument("action") == "promote_team":
