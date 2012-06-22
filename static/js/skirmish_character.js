@@ -7,7 +7,8 @@
 var initialize_character = function() {
     $("#characterStuffTable span").live({
         contextmenu : function(e){
-            $.postJSON('/action', {"action" : "take_off", "item_id" : $(this).attr("value")});
+            $.postJSON('/action', {"action" : "take_off", "item_id" : $(this).attr("value")}, function() {
+            });
             return false;
         }
     });
