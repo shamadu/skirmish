@@ -86,7 +86,7 @@ class DBManager():
                 , default_stuff[5]
                 , default_stuff[6]
                 , default_stuff[7]
-                , None
+                , ""
                 , None)
 
     def remove_character(self, name):
