@@ -260,7 +260,10 @@ class CharactersManager:
             self.db_manager.change_character_fields_update(user_name, bonuses)
             self.send_character_info(user_name)
 
-            self.db_manager.change_character_field_update(user_name, "bag", ",".join([character.bag, item_id]))
+            if character.bag: # something is in the bag
+                self.db_manager.change_character_field_update(user_name, "bag", ",".join([character.bag, item_id]))
+            else: # nothing is in the bag
+                self.db_manager.change_character_field_update(user_name, "bag", item_id)
             self.db_manager.change_character_field_update(user_name, item_type, "")
             self.send_character_stuff(user_name)
 
