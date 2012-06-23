@@ -219,7 +219,7 @@ class CharactersManager:
             # remember old bonuses of old item if it was worn
             old_bonuses = {}
             if character[item_type]: # something was wearing - exchange it with item from bag
-                old_bonuses = items_manager.get_bonuses(int_id)
+                old_bonuses = items_manager.get_bonuses(int(character[item_type]))
                 character[item_type], bag_items[thing_pos] = bag_items[thing_pos], character[item_type]
             else: # nothing was wearing, remove item from bag
                 character[item_type] = bag_items[thing_pos]
