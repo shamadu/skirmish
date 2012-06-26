@@ -52,8 +52,8 @@ var initialize = function () {
         },
         contextmenu : function(e){
             left_offset = e.pageX + 1;
-            if (document.width - e.pageX < $("#vmenu").width()) {
-                left_offset = document.width - $("#vmenu").width() - 10;
+            if ($(window).width() - e.pageX < $("#vmenu").width()) {
+                left_offset = $(window).width() - $("#vmenu").width() - 10;
             }
             // add info about user name to context menu to use it in menu items
             $("#vmenu").data("user_name", $(this).attr('value'));
