@@ -30,14 +30,20 @@
     color: red;
 }
 
-.label-online-user,
-.label-skirmish-user {
+#divOnlineUsers label {
     min-width: 50px;
     text-align: center;
 }
 
-.label-skirmish-user {
+.location-user-label {
+}
+
+.skirmish-user-label {
     color: red;
+}
+
+.team-user-label {
+    color: green;
 }
 
 .div-content-main {
@@ -148,7 +154,7 @@
 }
 
 .table-common {
-    width: 100%;
+    width: auto;
     border : 0;
 }
 
@@ -160,6 +166,10 @@
 .table-common td{
     vertical-align : middle;
     padding: 1px 5px 1px 5px;
+}
+
+.table-common h4{
+    width: auto;
 }
 
 .table-character-stuff td,

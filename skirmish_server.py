@@ -49,14 +49,10 @@ class SkirmishApplication(tornado.web.Application):
         self.characters_manager = CharactersManager(self.db_manager, self.users_holder)
         self.battle_manager = BattleManager(self.users_holder, self.db_manager, self.characters_manager)
 
-        self.users_manager = UsersManager(self.db_manager, self.users_holder, self.battle_manager)
+        self.users_manager = UsersManager(self.db_manager, self.users_holder, self.characters_manager, self.battle_manager)
         self.users_manager.start()
 
         self.messager = Messager(self.users_holder.online_users, self.users_holder.location_users)
-
-        self.users_holder.users_manager = self.users_manager
-        self.users_holder.characters_manager = self.characters_manager
-        self.users_holder.battle_manager = self.battle_manager
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -115,11 +111,7 @@ class MainHandler(BaseHandler):
                     classes=smarty.get_classes(self.locale),
                     races=smarty.get_races(self.locale))
             else:
-                if not self.current_user in self.users_holder.online_users.keys():
-                    self.users_manager.add_online_user(self.current_user, self.locale)
-                if self.users_holder.online_users[self.current_user].state != 1:
-                    self.db_manager.update_character(self.current_user)
-                self.users_holder.user_enter(self.current_user)
+                self.users_manager.on_user_enter(self.current_user, self.locale)
 
                 database = dict()
                 database["Items"] = items_manager.get_all(self.locale)
@@ -208,9 +200,11 @@ class ActionHandler(BaseHandler):
         elif self.get_argument("action") == 'new_message':
             message = {
                 "from": self.current_user,
-                "to": self.get_argument("to"),
-                "body": self.get_argument("body"),
+                "type": self.get_argument("type"),
+                "body": self.get_argument("body")
                 }
+            if self.get_argument("type") == "private":
+                message["to"] = self.get_argument("to")
             self.messager.new_message(self.current_user, message)
         elif self.get_argument("action") == 'shop_get_item':
             item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
@@ -283,6 +277,7 @@ class PollBotHandler(BaseHandler):
                 team_name=action.args["team_name"],
                 team_gold=action.args["team_gold"],
                 members=action.args["members"])
+            result["team_name"] = action.args["team_name"]
         elif action.type == 205:
             result = action.args
             result["invitation_div"] = self.render_string("team_invitation.html",

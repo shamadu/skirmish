@@ -89,12 +89,3 @@ class UsersHolder:
         self.location_users = dict()
         for location in smarty.locations:
             self.location_users[location] = dict()
-        self.users_manager = None
-        self.characters_manager = None
-        self.battle_manager = None
-
-    def user_enter(self, user_name):
-        self.online_users[user_name].cache = deque()
-        self.users_manager.user_enter(user_name)
-        self.characters_manager.user_enter(user_name)
-        self.battle_manager.user_enter(user_name)

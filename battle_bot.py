@@ -79,7 +79,7 @@ class BattleBot(Thread):
         user = self.online_users[user_name]
         if not user.character.team_name:
             return Action(11, {"skirmish_user" : user.user_name})
-        return Action(11, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user.user_name, "team_name" : user.battle_character.team_name}})
+        return Action(11, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user.user_name, "team_name" : user.character.team_name}})
 
     def __init__(self, users_holder, db_manager, characters_manager, location):
         Thread.__init__(self)
@@ -259,7 +259,6 @@ class BattleBot(Thread):
                 self.send_text_action_to_users(self.location_users, 13) # game win nobody
             for user_name in self.battle_users.keys():
                 self.battle_users[user_name].state = 0 # default
-                self.battle_users[user_name].battle_character.gold += 10
                 self.remove_from_skirmish(user_name)
 
             self.reset()
@@ -468,24 +467,22 @@ class BattleBot(Thread):
         if self.phase == 0 and user_name not in self.battle_users.keys():
             self.battle_users[user_name] = self.online_users[user_name]
             self.battle_users[user_name].state = 1 # is in skirmish
-            self.battle_users[user_name].battle_character = copy.deepcopy(self.battle_users[user_name].character)
+            self.battle_users[user_name].battle_character = copy.copy(self.battle_users[user_name].character)
             self.battle_users[user_name].battle_character.experience = 0
             self.battle_users[user_name].battle_character.gold = 0
             self.battle_users[user_name].battle_character.full_health = self.battle_users[user_name].character.health
             self.battle_users[user_name].battle_character.killer_name = None # who killed this character
             self.send_action_to_user(user_name, self.can_leave_action())
             self.send_action_to_all(self.add_skirmish_user_action(user_name))
-            self.user_has_joined(user_name)
 
     def user_leave(self, user_name):
         if user_name in self.battle_users.keys():
             if self.phase == 0:
-                self.send_action_to_user(user_name, self.can_join_action())
                 self.send_action_to_all(self.remove_skirmish_user_action(user_name))
+                self.send_action_to_user(user_name, self.can_join_action())
                 self.battle_users[user_name].state = 0 # default
                 self.battle_users[user_name].battle_character = None
                 self.battle_users.pop(user_name)
-                self.user_has_left(user_name)
             elif self.battle_users[user_name].state != 2: # didn't run yet
                 if self.battle_users[user_name].is_turn_done(): # if did turn - reset it
                     self.battle_users[user_name].reset_turn()
@@ -569,12 +566,6 @@ class BattleBot(Thread):
 
     def game_cant_start(self):
         self.send_text_action_to_users(self.location_users, 5, None) # game can't be started, not enough players
-
-    def user_has_joined(self, user_name):
-        self.send_text_action_to_users(self.location_users, 14, user_name)
-
-    def user_has_left(self, user_name):
-        self.send_text_action_to_users(self.location_users, 15, user_name)
 
     def succeeded_attack(self, who, whom, amount, new_health, experience, full_experience):
         for online_user in self.location_users.values():
