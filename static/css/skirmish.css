@@ -30,7 +30,7 @@
     color: red;
 }
 
-#divOnlineUsers label {
+.div-users-list label {
     min-width: 50px;
     text-align: center;
 }

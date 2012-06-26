@@ -12,21 +12,24 @@ class UsersManager(Thread):
 # 100 - show all online and skirmish users
 # 101 - add new user
 # 102 - remove online user
-    def initial_users_action(self, team_users, location_users, skirmish_users):
+    def initial_users_action(self, location_team_users, online_team_users, location_users, skirmish_users):
         location_users_list = list()
-        team_users_list = list()
+        location_team_users_list = list()
         for user_name in location_users.keys():
-            if user_name not in team_users.keys():
+            if user_name not in location_team_users.keys():
                 location_users_list.append(user_name)
             else:
-                team_users_list.append(user_name)
+                location_team_users_list.append(user_name)
         skirmish_users_list = list()
         for user_name in skirmish_users.keys():
             if not skirmish_users[user_name].character.team_name:
                 skirmish_users_list.append(user_name)
             else:
                 skirmish_users_list.append("%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : skirmish_users[user_name].character.team_name})
-        return Action(100, {"team_users" : ','.join(team_users_list), "location_users" : ','.join(location_users_list), "skirmish_users" : ','.join(skirmish_users_list)})
+        return Action(100, {"location_team_users" : ','.join(location_team_users_list),
+                            "location_users" : ','.join(location_users_list),
+                            "skirmish_users" : ','.join(skirmish_users_list),
+                            "online_team_users" : ','.join(online_team_users.keys())})
 
     def user_online_action(self, user_name, team_mate):
         return Action(101, {"user" : user_name, "team_mate" : team_mate})
@@ -100,10 +103,12 @@ class UsersManager(Thread):
         skirmish_users = self.battle_manager.battle_bots[location].battle_users
         user = self.online_users[user_name]
         if user.character.team_name:
-            team_users = self.get_online_team_members(user, location_users)
+            location_team_users = self.get_online_team_members(user, location_users)
+            online_team_users = self.get_online_team_members(user, self.online_users)
         else:
-            team_users = dict()
-        self.online_users[user_name].send_action(self.initial_users_action(team_users, location_users, skirmish_users))
+            location_team_users = dict()
+            online_team_users = dict()
+        self.online_users[user_name].send_action(self.initial_users_action(location_team_users, online_team_users, location_users, skirmish_users))
         for chat_user_name in self.online_users[user_name].opened_chats:
             self.online_users[user_name].send_action(self.open_chat_action(chat_user_name, ""))
 

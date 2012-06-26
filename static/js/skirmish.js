@@ -22,6 +22,9 @@ var initialize = function () {
     $("#dbAnchor").click(showDB);
     $("#logoutAnchor").click(logoutFunc);
 
+    // hide team users list
+    $("#divTeamUsers").hide();
+
     // hide menu if opened
     $(document.body).click(function(){
        if ($(".vmenu :visible")) {
@@ -40,7 +43,7 @@ var initialize = function () {
                 $(this).css('background-color' , '#FFF' );
             });
 
-    $("#divOnlineUsers label").live({
+    $(".div-users-list label").live({
         mouseenter : function () {
             $(this).css({backgroundColor : '#EEE'});
         },
@@ -76,8 +79,18 @@ var initialize = function () {
         // go to the end of chat
         element = $(">div", $(this).attr("href"));
         element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
-        // save previous tab to return to it if this on would be closed
+        // save previous tab to return to it if this one would be closed
         $("#tabChat").data("previousTab", e.relatedTarget);
+        if ($(this).attr("id") == "teamTab") {// show team users instead of location users
+            $("#divTeamUsers").show();
+            $("#divOnlineUsers").hide();
+        }
+        else {// show location users instead of team users
+            $("#divOnlineUsers").show();
+            $("#divTeamUsers").hide();
+        }
+
+
         $("#sendTextArea").focus();
     });
 
@@ -178,11 +191,10 @@ var addTeamChat = function(teamName) {
         $("<li class=\"mainTab\">" +
                 "<a id=\"teamTab\" href=\"#teamPane\" data-toggle=\"tab\">" +
                 "<span>" + teamName + "</span>" +
-                "</li>").insertAfter($("#tabChat #locationTab").parent());
+                "</a></li>").insertAfter($("#locationTab").parent());
         $("<div class=\"tab-pane\" id=\"teamPane\">" +
                 "<div id=\"teamTextArea\" class=\"text-chat\"></div>" +
-                "</div>").insertAfter("#tabChat #locationPane");
-        $("#teamTab").tab('show');
+                "</div>").insertAfter("#locationPane");
     }
 };
 
@@ -207,7 +219,9 @@ var createSkirmishUserLabel = function(user_name, team_name) {
     }
 };
 
-var initLocationUsers = function(location_users_str, team_users_str, skirmish_users_str) {
+var initLocationUsers = function(location_users_str, location_team_users_str, skirmish_users_str, online_team_users_str) {
+    $("#divOnlineUsers").empty();
+    $("#divTeamUsers").empty();
     var skirmish_users_names = new Array();
     if (skirmish_users_str) {
         var skirmish_users = String(skirmish_users_str).split(',');
@@ -219,13 +233,13 @@ var initLocationUsers = function(location_users_str, team_users_str, skirmish_us
         }
     }
 
-    if (team_users_str) {
-        var team_users = String(team_users_str).split(',');
-        team_users.sort();
-        for (i = 0; i < team_users.length && team_users[i]; ++i) {
-            $("#divOnlineUsers").append(createTeamUserLabel(team_users[i]));
-            if (jQuery.inArray(team_users[i], skirmish_users_names) != -1) {
-                hideLocationUser(team_users[i]);
+    if (location_team_users_str) {
+        var location_team_users = String(location_team_users_str).split(',');
+        location_team_users.sort();
+        for (i = 0; i < location_team_users.length && location_team_users[i]; ++i) {
+            $("#divOnlineUsers").append(createTeamUserLabel(location_team_users[i]));
+            if (jQuery.inArray(location_team_users[i], skirmish_users_names) != -1) {
+                hideLocationUser(location_team_users[i]);
             }
         }
     }
@@ -237,6 +251,14 @@ var initLocationUsers = function(location_users_str, team_users_str, skirmish_us
         $("#divOnlineUsers").append(createLocationUserLabel(location_users[i]));
         if (jQuery.inArray(location_users[i], skirmish_users_names) != -1) {
             hideLocationUser(location_users[i]);
+        }
+    }
+
+    if (online_team_users_str) {
+        var online_team_users = String(online_team_users_str).split(',');
+        online_team_users.sort();
+        for (i = 0; i < online_team_users.length && online_team_users[i]; ++i) {
+            $("#divTeamUsers").append(createTeamUserLabel(online_team_users[i]));
         }
     }
 };
@@ -313,31 +335,26 @@ var initialTeamUsers = function(users) {
         var team_users = String(users).split(',');
         team_users.sort();
         for (i = 0; i < team_users.length && team_users[i]; ++i) {
-            $("#divOnlineUsers").append(createTeamUserLabel(team_users[i]));
+            $("#divTeamUsers").append(createTeamUserLabel(team_users[i]));
         }
     }
 };
 
 var removeTeamUser = function(user) {
-    $("#divOnlineUsers .team-user-label[value=\"" + user + "\"]").remove();
+    $("#divTeamUsers label[value=\"" + user + "\"]").remove();
 };
 
 var addTeamUser = function(user) {
     inserted = false;
     // insert after specified element
-    $(".team-user-label", $("#divOnlineUsers")).each(function(){
+    $("label", $("#divTeamUsers")).each(function(){
         if (!inserted && ($(this).text() > user)) {
             $(this).before(createTeamUserLabel(user));
             inserted = true;
         }
     });
     if (!inserted) {
-        if ($(".location-user-label", $("#divOnlineUsers")).length > 0) { // insert before first online user
-            $(createTeamUserLabel(user)).insertBefore(".location-user-label:first", $("#divOnlineUsers"));
-        }
-        else {
-            $("#divOnlineUsers").append(createTeamUserLabel(user));
-        }
+        $("#divTeamUsers").append(createTeamUserLabel(user));
     }
 };
 
@@ -428,8 +445,7 @@ var pollUpdater = {
             resize_battle();
         }
         else if(action.type == 100) {
-            $("#divOnlineUsers").empty();
-            initLocationUsers(action.location_users, action.team_users, action.skirmish_users);
+            initLocationUsers(action.location_users, action.location_team_users, action.skirmish_users, action.online_team_users);
             resize_battle();
         }
         else if(action.type == 101) {
@@ -444,11 +460,11 @@ var pollUpdater = {
             openPrivateChat(action.user, action.message);
         }
         else if(action.type == 104) {
-//            addTeamUser(action.user);
+            addTeamUser(action.user);
             resize_battle();
         }
         else if(action.type == 105) {
-//            removeTeamUser(action.user);
+            removeTeamUser(action.user);
             resize_battle();
         }
         // character info update
@@ -587,15 +603,15 @@ var pollUpdater = {
         // text message
         else if (action.type == 300){
             message = action;
-            if(message.type == "location") {
+            if(message.message_type == "location") {
                 addTextTo("#locationTab", format_message(message))
             }
             // not location, maybe team?
-            else if (message.type == "team") {
+            else if (message.message_type == "team") {
                 addTextTo("#teamTab", format_message(message))
             }
             // not location, not team - private
-            else if (message.type == "private") {
+            else if (message.message_type == "private") {
                 // message from yourself
                 if (message.from == $("#nameLabel").text()) {
                     addTextTo("#" + message.to + "Tab", format_private_message(message, false))

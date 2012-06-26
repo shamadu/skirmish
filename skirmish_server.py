@@ -200,10 +200,10 @@ class ActionHandler(BaseHandler):
         elif self.get_argument("action") == 'new_message':
             message = {
                 "from": self.current_user,
-                "type": self.get_argument("type"),
+                "message_type": self.get_argument("message_type"),
                 "body": self.get_argument("body")
                 }
-            if self.get_argument("type") == "private":
+            if self.get_argument("message_type") == "private":
                 message["to"] = self.get_argument("to")
             self.messager.new_message(self.current_user, message)
         elif self.get_argument("action") == 'shop_get_item':

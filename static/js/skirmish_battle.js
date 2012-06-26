@@ -72,17 +72,17 @@ var sendFunc = function() {
     data = {
         "action" : "new_message",
         'body' : $("#sendTextArea").val(),
-        'type' : 'location'
+        'message_type' : 'location'
     };
     $("#sendTextArea").val("");
     $("#sendTextArea").focus();
 
     if (!$("#tabChat li.active").hasClass("mainTab")) {
-        data["type"] = "private";
+        data["message_type"] = "private";
         data["to"] = $("#tabChat li.active >a>span").html();
     }
     else if($("#tabChat li.active>a").attr("id") == "teamTab") {
-        data["type"] = "team";
+        data["message_type"] = "team";
     }
 
     $.postJSON('/action', data, function() {
