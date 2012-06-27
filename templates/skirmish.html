@@ -30,9 +30,6 @@
                 <a id="battleAnchor" class="mouse_pointer"><i class="icon-fire"></i>{{ _("Battle") }}</a>
             </li>
             <li>
-                <a id="characterAnchor" class="mouse_pointer"><i class="icon-user"></i>{{ _("Character") }}</a>
-            </li>
-            <li>
                 <a id="teamAnchor" class="mouse_pointer"><i class="icon-home"></i>{{ _("Team") }}</a>
             </li>
             <li>
@@ -84,9 +81,11 @@
                     <td>
                         <button id="joinButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Join") }}</button><button id="leaveButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Leave") }}</button>
                     </td>
+                    <td><a id="characterAnchor" class="mouse_pointer"><i class="icon-user"></i></a></td>
+                    <td><a id="bagAnchor" class="mouse_pointer"><i class="icon-gift"></i></a></td>
                 </tr>
                 <tr>
-                    <td colspan="15">
+                    <td colspan="17">
                         <div class="progress progress-bar-experience">
                             <label class="progress-bar-label" id="experienceLabel"></label>
                             <div id="experienceBar" class="bar bar-common bar-experience" style="width: 1%;">
@@ -135,89 +134,6 @@
                 </div>
             </div>
         </div>
-
-
-        <div id="characterDivContainer" class="div-content">
-            <table class="table-common table-content-holder">
-                <tr>
-                    <td>
-                        <h4>{{ _("Character Parameters") }}</h4>
-                        <table class="table-common">
-                            <tr><td>{{ _("Strength") }}</td><td><label id="battleStrengthLabel"></label></td><td>/</td><td><label id="strengthLabel"></label></td></tr>
-                            <tr><td>{{ _("Dexterity") }}</td><td><label id="battleDexterityLabel"></label></td><td>/</td><td><label id="dexterityLabel"></label></td></tr>
-                            <tr><td>{{ _("Intellect") }}</td><td><label id="battleIntellectLabel"></label></td><td>/</td><td><label id="intellectLabel"></label></td></tr>
-                            <tr><td>{{ _("Wisdom") }}</td><td><label id="battleWisdomLabel"></label></td><td>/</td><td><label id="wisdomLabel"></label></td></tr>
-                            <tr><td>{{ _("Constitution") }}</td><td><label id="battleConstitutionLabel"></label></td><td>/</td><td><label id="constitutionLabel"></label></td></tr>
-                            <tr><td>{{ _("Attack") }}</td><td><label id="battleAttackLabel"></label></td><td>/</td><td><label id="attackLabel"></label></td></tr>
-                            <tr><td>{{ _("Defence") }}</td><td><label id="battleDefenceLabel"></label></td><td>/</td><td><label id="defenceLabel"></label></td></tr>
-                            <tr><td>{{ _("Magic attack") }}</td><td><label id="battleMagicAttackLabel"></label></td><td>/</td><td><label id="magicAttackLabel"></label></td></tr>
-                            <tr><td>{{ _("Magic defence") }}</td><td><label id="battleMagicDefenceLabel"></label></td><td>/</td><td><label id="magicDefenceLabel"></label></td></tr>
-                            <tr><td>{{ _("Armor") }}</td><td><label id="battleArmorLabel"></label></td><td>/</td><td><label id="armorLabel"></label></td></tr>
-                            <tr><td>{{ _("Team") }}</td><td colspan="3"><label id="teamLabel"></label></td></tr>
-                            <tr><td>{{ _("Rank") }}</td><td colspan="3"><label id="rankLabel"></label></td></tr>
-                        </table>
-                    </td>
-                    <td>
-                        <h4>{{ _("Character Stuff") }}</h4>
-                        <table id="characterStuffTable" class="table-common table-character-stuff">
-                            <tr>
-                                <td id="headCell"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td id="cloakCell"></td>
-                            </tr>
-                            <tr>
-                                <td id="bodyCell"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td id="legsCell"></td>
-                            </tr>
-                            <tr>
-                                <td id="handsCell"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td id="feetCell"></td>
-                            </tr>
-                            <tr>
-                                <td id="right_ringCell"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td id="left_ringCell"></td>
-                            </tr>
-                            <tr>
-                                <td id="right_handCell"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td id="left_handCell"></td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td>
-                        <h4>{{ _("Character Spells") }}</h4>
-                        <div id="characterSpellDiv">
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td colspan="2">
-                        <h4>{{ _("Bag Stuff") }}</h4>
-                        <table id="bagStuffTable" class="table-common table-bag-stuff">
-                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
 
         <div id="teamDivContainer" class="div-content">
         </div>
@@ -268,6 +184,92 @@
                 </ul>
             </div>
             <div id="dbItemDescriptions">
+            </div>
+        </div>
+        <div id="framesDivContainer" class="div-content div-frames-container">
+            <div id="characterDivFrame" class="well div-character-info">
+                <button class="close">&times;</button>
+                <table class="table-common table-content-holder">
+                    <tr><td colspan="2"><h4>{{ _("Character") }}</h4></td></tr>
+                    <tr>
+                        <td>
+                            <table class="table-common">
+                                <tr><td>{{ _("Strength") }}</td><td><label id="battleStrengthLabel"></label></td><td>/</td><td><label id="strengthLabel"></label></td></tr>
+                                <tr><td>{{ _("Dexterity") }}</td><td><label id="battleDexterityLabel"></label></td><td>/</td><td><label id="dexterityLabel"></label></td></tr>
+                                <tr><td>{{ _("Intellect") }}</td><td><label id="battleIntellectLabel"></label></td><td>/</td><td><label id="intellectLabel"></label></td></tr>
+                                <tr><td>{{ _("Wisdom") }}</td><td><label id="battleWisdomLabel"></label></td><td>/</td><td><label id="wisdomLabel"></label></td></tr>
+                                <tr><td>{{ _("Constitution") }}</td><td><label id="battleConstitutionLabel"></label></td><td>/</td><td><label id="constitutionLabel"></label></td></tr>
+                                <tr><td>{{ _("Attack") }}</td><td><label id="battleAttackLabel"></label></td><td>/</td><td><label id="attackLabel"></label></td></tr>
+                                <tr><td>{{ _("Defence") }}</td><td><label id="battleDefenceLabel"></label></td><td>/</td><td><label id="defenceLabel"></label></td></tr>
+                                <tr><td>{{ _("Magic attack") }}</td><td><label id="battleMagicAttackLabel"></label></td><td>/</td><td><label id="magicAttackLabel"></label></td></tr>
+                                <tr><td>{{ _("Magic defence") }}</td><td><label id="battleMagicDefenceLabel"></label></td><td>/</td><td><label id="magicDefenceLabel"></label></td></tr>
+                                <tr><td>{{ _("Armor") }}</td><td><label id="battleArmorLabel"></label></td><td>/</td><td><label id="armorLabel"></label></td></tr>
+                                <tr><td>{{ _("Team") }}</td><td colspan="3"><label id="teamLabel"></label></td></tr>
+                                <tr><td>{{ _("Rank") }}</td><td colspan="3"><label id="rankLabel"></label></td></tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table id="characterStuffTable" class="table-common table-character-stuff">
+                                <tr>
+                                    <td id="headCell"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td id="cloakCell"></td>
+                                </tr>
+                                <tr>
+                                    <td id="bodyCell"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td id="legsCell"></td>
+                                </tr>
+                                <tr>
+                                    <td id="handsCell"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td id="feetCell"></td>
+                                </tr>
+                                <tr>
+                                    <td id="right_ringCell"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td id="left_ringCell"></td>
+                                </tr>
+                                <tr>
+                                    <td id="right_handCell"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td id="left_handCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <!--td>
+                            <h4>{{ _("Character Spells") }}</h4>
+                            <div id="characterSpellDiv">
+                            </div>
+                        </td-->
+                    </tr>
+                </table>
+            </div>
+            <div id="bagDivFrame" class="well div-character-info">
+                <button class="close">&times;</button>
+                <table class="table-common table-content-holder">
+                    <tr><td colspan="2"><h4>{{ _("Bag Stuff") }}</h4></td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <table id="bagStuffTable" class="table-common table-bag-stuff">
+                                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

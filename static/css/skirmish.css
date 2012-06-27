@@ -485,3 +485,18 @@ button.tabClose {
     background-color: #000000;
     color: #ffffff;
 }*/
+
+.div-character-info,
+.div-frames-container {
+    width: auto;
+    height: auto;
+    top: 100px;
+    right: auto;
+    padding: 5px;
+}
+
+.div-character-info {
+    background-color: #ffffff;
+    float: left;
+    margin-right: 5px;
+}

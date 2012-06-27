@@ -16,11 +16,15 @@ var initialize = function () {
 
     showBattle();
     $("#battleAnchor").click(showBattle);
-    $("#characterAnchor").click(showCharacter);
     $("#teamAnchor").click(showTeam);
     $("#shopAnchor").click(showShop);
     $("#dbAnchor").click(showDB);
     $("#logoutAnchor").click(logoutFunc);
+
+    $("#characterDivFrame").hide();
+    $("#bagDivFrame").hide();
+    $("#characterAnchor").click(showCharacter);
+    $("#bagAnchor").click(showBag);
 
     // hide team users list
     $("#divTeamUsers").hide();
@@ -95,6 +99,9 @@ var initialize = function () {
     });
 
     $(".tabClose").live('click', closePrivateChatFunc);
+    $("#characterDivFrame .close, #bagDivFrame .close").click(function() {
+        $(this).parent().hide();
+    });
 };
 
 var showBattle = function() {
@@ -106,10 +113,17 @@ var showBattle = function() {
 };
 
 var showCharacter = function() {
-    $("#contentDiv >div.div-content").hide();
-    $("#sideBar li:not(#serverStatus)").removeAttr("class");
-    $("#characterDivContainer").show();
-    $("#characterAnchor").parent().attr("class", "active");
+    if (!$("#framesDivContainer").is(":visible")){
+        $("#framesDivContainer").show();
+    }
+    $("#characterDivFrame").toggle();
+};
+
+var showBag = function() {
+    if (!$("#framesDivContainer").is(":visible")){
+        $("#framesDivContainer").show();
+    }
+    $("#bagDivFrame").toggle();
 };
 
 var showTeam = function() {
