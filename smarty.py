@@ -129,10 +129,36 @@ level_up_experiences = {
     15 : 16384000,
 }
 
-def get_locations(locale):
+gold_sharing = {
+    0 : _("No sharing"), # no sharing at all
+    1 : _("50% sharing"), # 50% total gold is sharing
+    2 : _("100% sharing"), # all gold is sharing
+}
+
+experience_sharing = {
+    0 : _("No sharing"), # no sharing at all
+    1 : _("50% sharing"), # 50% total experience is sharing
+    2 : _("100% sharing"), # all experience is sharing
+}
+
+def get_gold_sharing(locale):
     result = dict()
+    for strategy_id in gold_sharing.keys():
+        result[strategy_id] = locale.translate(gold_sharing[strategy_id])
+    return result
+
+def get_experience_sharing(locale):
+    result = dict()
+    for strategy_id in experience_sharing.keys():
+        result[strategy_id] = locale.translate(experience_sharing[strategy_id])
+    return result
+
+def get_locations(current_location_id, locale):
+    result = OrderedDict()
+    result[current_location_id] = locations[current_location_id]
     for location_id in locations.keys():
-        result[location_id] = locale.translate(locations[location_id])
+        if location_id != current_location_id:
+            result[location_id] = locale.translate(locations[location_id])
     return result
 
 def get_classes(locale):

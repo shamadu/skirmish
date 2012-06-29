@@ -1,4 +1,4 @@
-{% comment location = current location id, sunstance = string substance name %}
+{% comment sunstance = string substance name %}
 {% comment shop = shop content ordereddict(section_name, ordereddict(id, name)), %}
 {% comment database - the same as shop, but for all objects %}
 {% comment locations - dict of location_id:location_name %}
@@ -70,11 +70,7 @@
                     <td>
                         <select id="locationSelect" class="select-common">
                         {% for location_id in locations.keys() %}
-                            <option value="{{ location_id }}"
-                                    {% if location_id == location %}
-                                    selected="selected"
-                                    {% end %}
-                                    >{{ locations[location_id] }}</option>
+                            <option value="{{ location_id }}">{{ locations[location_id] }}</option>
                         {% end %}
                         </select>
                     </td>
@@ -275,6 +271,7 @@
     </div>
     <div id="vmenu" class="vmenu">
         <div id="privateChatMenuItem" class="first_li">{{ _("Open private chat") }}</div>
+        <div id="inspectMenuItem" class="first_li">{{ _("Inspect user") }}</div>
         <div id="inviteMenuItem" class="first_li">{{ _("Invite to team") }}</div>
         <div class="sep_li"></div>
         <div class="first_li">{{ _("Ignore") }}</div>

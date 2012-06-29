@@ -58,6 +58,7 @@ class DBManager():
         self.db.execute("insert into users (login, password) values (%s, %s)", login, password)
 
     def update_user_location(self, login, location):
+        self.online_users[login].location = location
         self.db.execute("update users set location=%s where login = %s", location, login)
 
     def get_character(self, name):
@@ -100,6 +101,9 @@ class DBManager():
         self.update_character(user_name)
 
     def change_user_team(self, user_name, team_name, team_rank):
+        self.db.execute("update characters set team_name=%s, rank_in_team=%s where name=%s", team_name, team_rank, user_name)
+
+    def change_user_team_update(self, user_name, team_name, team_rank):
         self.db.execute("update characters set team_name=%s, rank_in_team=%s where name=%s", team_name, team_rank, user_name)
         self.update_character(user_name)
 

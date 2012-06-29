@@ -121,7 +121,7 @@ class UsersManager(Thread):
                 online_user.send_action(self.user_online_action(user_name, user.character.team_name == online_user.character.team_name))
         self.location_users[user.location].pop(user_name)
         self.location_users[location][user_name] = user
-        user.location = location
+        self.db_manager.update_user_location(user_name, location)
         self.on_user_enter(user_name, user.locale)
 
     def on_user_enter(self, user_name, locale):
@@ -148,7 +148,6 @@ class UsersManager(Thread):
 
     def remove_online_user(self, user_name):
         user = self.online_users[user_name]
-        self.db_manager.update_user_location(user_name, user.location)
         online_users = self.location_users[user.location]
         self.send_action_to_all(online_users, self.user_offline_action(user_name))
         if user.character.team_name:
