@@ -88,4 +88,4 @@ class UsersHolder:
         self.online_users = dict()
         self.location_users = dict()
         for location in smarty.locations:
-            self.location_users[location] = dict()
+            self.location_users[location[0]] = dict()

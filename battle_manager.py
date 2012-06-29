@@ -8,7 +8,7 @@ class BattleManager():
         self.users_holder = users_holder
         self.battle_bots = dict()
         for location in smarty.locations:
-            self.battle_bots[location] = BattleBot(users_holder, db_manager, characters_manager, location)
+            self.battle_bots[location[0]] = BattleBot(users_holder, db_manager, characters_manager, location[0])
         for battle_bot in self.battle_bots.values():
             battle_bot.start()
 

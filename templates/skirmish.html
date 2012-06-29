@@ -1,7 +1,7 @@
 {% comment sunstance = string substance name %}
 {% comment shop = shop content ordereddict(section_name, ordereddict(id, name)), %}
 {% comment database - the same as shop, but for all objects %}
-{% comment locations - dict of location_id:location_name %}
+{% comment locations - list of pairs (location_id,location_name) %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -69,8 +69,8 @@
                     <td>{{ _("Location") }}</td>
                     <td>
                         <select id="locationSelect" class="select-common">
-                        {% for location_id in locations.keys() %}
-                            <option value="{{ location_id }}">{{ locations[location_id] }}</option>
+                        {% for location in locations %}
+                            <option value="{{ location[0] }}">{{ location[1] }}</option>
                         {% end %}
                         </select>
                     </td>

@@ -1,5 +1,5 @@
 {% comment "user_name, team_name, team_gold, members = dict(member_name, member_rank), " %}
-{% comment "gold_sharing = dict(id, name), experience_sharing = dict(id, name) " %}
+{% comment "gold_tax = list of pairs(id, name), gold_sharing = list of pairs(id, name), experience_sharing = list of pairs(id, name) " %}
 <div id="divTeam" class="divTeam">
     <h4>{{ _("Team information") }}</h4>
     <table class="table-common auto-width">
@@ -9,12 +9,12 @@
             <td>
                 {% if members[user_name] < 2 %}
                 <select id="goldSharingSelect" class="select-common">
-                    {% for gold_sharing_id in gold_sharing.keys() %}
-                    <option value="{{ gold_sharing_id }}">{{ gold_sharing[gold_sharing_id] }}</option>
+                    {% for strategy in gold_sharing %}
+                    <option value="{{ strategy[0] }}">{{ strategy[1] }}</option>
                     {% end %}
                 </select>
                 {% else %}
-                <label id="goldSharingLabel" style="margin: 0 0 0 5px">{{ gold_sharing[0] }}</label>
+                <label id="goldSharingLabel" style="margin: 0 0 0 5px">{{ gold_sharing[0][1] }}</label>
                 {% end %}
             </td>
         </tr>
@@ -22,12 +22,12 @@
             <td>
                 {% if members[user_name] < 2 %}
                 <select id="experienceSharingSelect" class="select-common">
-                    {% for experience_sharing_id in experience_sharing.keys() %}
-                    <option value="{{ experience_sharing_id }}">{{ experience_sharing[experience_sharing_id] }}</option>
+                    {% for strategy in experience_sharing %}
+                    <option value="{{ strategy[0] }}">{{ strategy[1] }}</option>
                     {% end %}
                 </select>
                 {% else %}
-                <label id="experienceSharingLabel" style="margin: 0 0 0 5px">{{ experience_sharing[0] }}</label>
+                <label id="experienceSharingLabel" style="margin: 0 0 0 5px">{{ experience_sharing[0][1] }}</label>
                 {% end %}
             </td>
         </tr>
@@ -35,12 +35,12 @@
             <td>
                 {% if members[user_name] < 2 %}
                 <select id="goldTaxSelect" class="select-common">
-                    {% for gold_tax_id in gold_tax.keys() %}
-                    <option value="{{ gold_tax_id }}">{{ gold_tax[gold_tax_id] }}</option>
+                    {% for strategy in gold_tax %}
+                    <option value="{{ strategy[0] }}">{{ strategy[1] }}</option>
                     {% end %}
                 </select>
                 {% else %}
-                <label id="goldTaxLabel" style="margin: 0 0 0 5px">{{ gold_tax[0] }}</label>
+                <label id="goldTaxLabel" style="margin: 0 0 0 5px">{{ gold_tax[0][1] }}</label>
                 {% end %}
             </td>
         </tr>

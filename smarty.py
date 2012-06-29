@@ -18,12 +18,12 @@ key_words = [
     "location"
 ]
 
-locations = {
-    0 : _("Training Camp"),
-    1 : _("Underworld"),
-    2 : _("Airii Forest"),
-    3 : _("Corutarr"),
-}
+locations = [
+    (0 , _("Training Camp")),
+    (1 , _("Underworld")),
+    (2 , _("Airii Forest")),
+    (3 , _("Corutarr")),
+]
 
 team_ranks = {
     0 : "Leader",
@@ -129,48 +129,46 @@ level_up_experiences = {
     15 : 16384000,
 }
 
-gold_sharing = {
-    0 : _("No sharing"), # no sharing at all
-    1 : _("50% sharing"), # 50% total gold is sharing
-    2 : _("100% sharing"), # all gold is sharing
-}
+gold_sharing = [
+    (0 , _("No sharing")), # no sharing at all
+    (1 , _("50% sharing")), # 50% total gold is sharing
+    (2 , _("100% sharing")) # all gold is sharing
+]
 
-experience_sharing = {
-    0 : _("No sharing"), # no sharing at all
-    1 : _("50% sharing"), # 50% total experience is sharing
-    2 : _("100% sharing"), # all experience is sharing
-}
+experience_sharing = [
+    (0 , _("No sharing")), # no sharing at all
+    (1 , _("50% sharing")), # 50% total experience is sharing
+    (2 , _("100% sharing")) # all experience is sharing
+]
 
-gold_tax = {
-    0 : _("10%"),
-    1 : _("50%"),
-    2 : _("100%"),
-}
+gold_tax = [
+    (0 , _("10%")),
+    (1 , _("50%")),
+    (2 , _("100%"))
+]
 
 def get_gold_sharing(locale):
-    result = dict()
-    for strategy_id in gold_sharing.keys():
-        result[strategy_id] = locale.translate(gold_sharing[strategy_id])
+    result = list()
+    for strategy in gold_sharing:
+        result.append((strategy[0], locale.translate(strategy[1])))
     return result
 
 def get_experience_sharing(locale):
-    result = dict()
-    for strategy_id in experience_sharing.keys():
-        result[strategy_id] = locale.translate(experience_sharing[strategy_id])
+    result = list()
+    for strategy in experience_sharing:
+        result.append((strategy[0], locale.translate(strategy[1])))
     return result
 
 def get_gold_tax(locale):
-    result = dict()
-    for strategy_id in gold_tax.keys():
-        result[strategy_id] = locale.translate(gold_tax[strategy_id])
+    result = list()
+    for strategy in gold_tax:
+        result.append((strategy[0], locale.translate(strategy[1])))
     return result
 
-def get_locations(current_location_id, locale):
-    result = OrderedDict()
-    result[current_location_id] = locations[current_location_id]
-    for location_id in locations.keys():
-        if location_id != current_location_id:
-            result[location_id] = locale.translate(locations[location_id])
+def get_locations(locale):
+    result = list()
+    for location in locations:
+        result.append((location[0], locale.translate(location[1])))
     return result
 
 def get_classes(locale):

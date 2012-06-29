@@ -116,11 +116,13 @@ class MainHandler(BaseHandler):
                 database = dict()
                 database["Items"] = items_manager.get_all(self.locale)
                 database["Spells"] = spells_manager.get_all_spells(self.locale)
+                locations = smarty.get_locations(self.locale)
+                locations.insert(0, locations.pop(self.users_holder.online_users[self.current_user].location))
                 self.render("skirmish.html",
                     substance=smarty.get_substance_name(character.class_id, self.locale),
                     shop={"Items" : items_manager.get_shop(self.locale)},
                     database=database,
-                    locations=smarty.get_locations(self.users_holder.online_users[self.current_user].location, self.locale))
+                    locations=locations)
         else:
             self.clear_all_cookies()
             self.redirect("/")
@@ -271,14 +273,20 @@ class PollBotHandler(BaseHandler):
             result["team_div"] = self.render_string("create_team.html")
         elif action.type == 204:
             result["type"] = action.type
+            gold_tax = smarty.get_gold_tax(self.locale)
+            gold_tax.insert(0, gold_tax.pop(self.users_holder.online_users[self.current_user].character.team_info.gold_tax))
+            gold_sharing = smarty.get_gold_sharing(self.locale)
+            gold_sharing.insert(0, gold_sharing.pop(self.users_holder.online_users[self.current_user].character.team_info.gold_sharing))
+            experience_sharing = smarty.get_experience_sharing(self.locale)
+            experience_sharing.insert(0, experience_sharing.pop(self.users_holder.online_users[self.current_user].character.team_info.experience_sharing))
             result["team_div"] = self.render_string("team_info.html",
                 user_name=self.current_user,
                 team_name=action.args["team_name"],
                 team_gold=action.args["team_gold"],
                 members=action.args["members"],
-                gold_sharing=smarty.get_gold_sharing(self.locale),
-                experience_sharing=smarty.get_experience_sharing(self.locale),
-                gold_tax=smarty.get_gold_tax(self.locale))
+                gold_sharing=gold_sharing,
+                experience_sharing=experience_sharing,
+                gold_tax=gold_tax)
             result["team_name"] = action.args["team_name"]
         elif action.type == 205:
             result = action.args
