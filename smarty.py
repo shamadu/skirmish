@@ -141,6 +141,12 @@ experience_sharing = {
     2 : _("100% sharing"), # all experience is sharing
 }
 
+gold_tax = {
+    0 : _("10%"),
+    1 : _("50%"),
+    2 : _("100%"),
+}
+
 def get_gold_sharing(locale):
     result = dict()
     for strategy_id in gold_sharing.keys():
@@ -151,6 +157,12 @@ def get_experience_sharing(locale):
     result = dict()
     for strategy_id in experience_sharing.keys():
         result[strategy_id] = locale.translate(experience_sharing[strategy_id])
+    return result
+
+def get_gold_tax(locale):
+    result = dict()
+    for strategy_id in gold_tax.keys():
+        result[strategy_id] = locale.translate(gold_tax[strategy_id])
     return result
 
 def get_locations(current_location_id, locale):

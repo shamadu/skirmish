@@ -31,6 +31,19 @@
                 {% end %}
             </td>
         </tr>
+        <tr><td>{{ _("Gold tax") }}</td>
+            <td>
+                {% if members[user_name] < 2 %}
+                <select id="goldTaxSelect" class="select-common">
+                    {% for gold_tax_id in gold_tax.keys() %}
+                    <option value="{{ gold_tax_id }}">{{ gold_tax[gold_tax_id] }}</option>
+                    {% end %}
+                </select>
+                {% else %}
+                <label id="goldTaxLabel" style="margin: 0 0 0 5px">{{ gold_tax[0] }}</label>
+                {% end %}
+            </td>
+        </tr>
         <tr><td><button id="leaveTeamButton" style="margin: 0 0 0 5px">{{ _("Leave") }}</button></td><td></td></tr>
     </table>
     <h4>{{ _("Team members") }}</h4>
@@ -41,7 +54,7 @@
             <td><label id="memberNameLabel">{{ member_name }}</label></td><td><label id="memberRankLabel">{{ members[member_name] }}</label></td>
             {% if members[user_name] < 2 and user_name != member_name %}
                 <td><button user_name="{{ member_name }}" class="promoteButton"
-                    {% if members[member_name] == 0 or members[member_name] <= members[user_name] %}
+                    {% if members[member_name] < 2 or members[member_name] <= members[user_name] %}
                         disabled
                     {% end %}
                     >{{ _("Promote") }}</button>

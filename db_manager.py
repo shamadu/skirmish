@@ -40,6 +40,13 @@ class DBManager():
                         "password text,"
                         "location integer default 0)")
 
+        self.db.execute("create table if not exists teams "
+                        "(id integer(11) primary key not null auto_increment unique, "
+                        "team_name text default null, "
+                        'gold_tax integer default 0, '
+                        'gold_sharing integer default 0, '
+                        "experience_sharing integer default 0)")
+
     def update_character(self, user_name):
         character = self.get_character(user_name)
         character.health = smarty.get_hp_count(character)
@@ -62,7 +69,10 @@ class DBManager():
         self.db.execute("update users set location=%s where login = %s", location, login)
 
     def get_character(self, name):
-        return self.db.get("select * from characters where name = %s", name)
+        character = self.db.get("select * from characters where name = %s", name)
+        if character.team_name:
+            character.team_info = self.db.get("select * from teams where team_name = %s", character.team_name)
+        return character
 
     def create_character(self, name, race_id, class_id):
         if not self.get_character(name):
@@ -97,8 +107,16 @@ class DBManager():
         return self.db.query("select * from characters where team_name = %s", team_name)
 
     def create_team(self, user_name, team_name):
+        self.db.execute("insert into teams (team_name) values (%s)", team_name)
         self.db.execute("update characters set team_name=%s, rank_in_team=0 where name=%s", team_name, user_name)
         self.update_character(user_name)
+
+    def remove_team(self, team_name):
+        self.db.execute("delete from teams where team_name = %s", team_name)
+        members = self.get_team_members(team_name)
+        # remove team
+        for member in members:
+            self.change_user_team(member.name, None, 0)
 
     def change_user_team(self, user_name, team_name, team_rank):
         self.db.execute("update characters set team_name=%s, rank_in_team=%s where name=%s", team_name, team_rank, user_name)

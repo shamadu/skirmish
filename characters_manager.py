@@ -211,18 +211,17 @@ class CharactersManager:
         # if user is leader
         if user.rank_in_team == 0:
             members = self.get_team_members(user.team_name)
-            # if there are no other leaders
-            if members.values().count(0) == 1:
-                # remove team
-                for member_name in members.keys():
-                    self.db_manager.change_user_team_update(member_name, None, 0)
+            self.db_manager.remove_team(user.team_name)# remove team
+            # send info to online members
+            for member_name in members.keys():
+                if member_name in self.online_users.keys():
                     self.send_character_info(member_name)
                     self.send_can_create_team(member_name)
-                return
-        self.db_manager.change_user_team_update(user_name, None, 0)
-        self.send_character_info(user_name)
-        self.send_can_create_team(user_name)
-        self.send_team_info_to_members(user.team_name, self.get_team_members(user.team_name))
+        else:
+            self.db_manager.change_user_team_update(user_name, None, 0)
+            self.send_character_info(user_name)
+            self.send_can_create_team(user_name)
+            self.send_team_info_to_members(user.team_name, self.get_team_members(user.team_name))
 
     def put_on_item(self, user_name, item_id):
         result = False

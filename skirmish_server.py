@@ -277,7 +277,8 @@ class PollBotHandler(BaseHandler):
                 team_gold=action.args["team_gold"],
                 members=action.args["members"],
                 gold_sharing=smarty.get_gold_sharing(self.locale),
-                experience_sharing=smarty.get_experience_sharing(self.locale))
+                experience_sharing=smarty.get_experience_sharing(self.locale),
+                gold_tax=smarty.get_gold_tax(self.locale))
             result["team_name"] = action.args["team_name"]
         elif action.type == 205:
             result = action.args
