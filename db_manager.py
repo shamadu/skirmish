@@ -104,7 +104,7 @@ class DBManager():
         self.db.execute("delete from characters where name = %s", name)
 
     def get_team_members(self, team_name):
-        return self.db.query("select * from characters where team_name = %s", team_name)
+        return self.db.query("select name, rank_in_team from characters where team_name = %s", team_name)
 
     def create_team(self, user_name, team_name):
         self.db.execute("insert into teams (team_name) values (%s)", team_name)
@@ -116,7 +116,7 @@ class DBManager():
         members = self.get_team_members(team_name)
         # remove team
         for member in members:
-            self.change_user_team(member.name, None, 0)
+            self.change_user_team(member["name"], None, 0)
 
     def change_user_team(self, user_name, team_name, team_rank):
         self.db.execute("update characters set team_name=%s, rank_in_team=%s where name=%s", team_name, team_rank, user_name)
@@ -124,6 +124,16 @@ class DBManager():
     def change_user_team_update(self, user_name, team_name, team_rank):
         self.db.execute("update characters set team_name=%s, rank_in_team=%s where name=%s", team_name, team_rank, user_name)
         self.update_character(user_name)
+
+    def update_team_info(self, team_name):
+        members = self.get_team_members(team_name)
+        for member in members:
+            if member["name"] in self.online_users.keys():
+                self.online_users[member["name"]].character.team_info = self.db.get("select * from teams where team_name = %s", team_name)
+
+    def change_team_field(self, team_name, field_name, field_value):
+        self.db.execute("update teams set {0}=%s where team_name=%s".format(field_name), field_value, team_name)
+        self.update_team_info(team_name)
 
     def change_character_field(self, user_name, field_name, field_value):
         self.db.execute("update characters set {0}=%s where name=%s".format(field_name), field_value, user_name)

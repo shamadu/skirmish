@@ -245,6 +245,12 @@ class ActionHandler(BaseHandler):
             self.users_manager.open_chat(self.current_user, self.get_argument("user_name"), self.get_argument("message", ""))
         elif self.get_argument("action") == 'close_chat':
             self.users_manager.close_chat(self.current_user, self.get_argument("user_name"))
+        elif self.get_argument("action") == 'change_gold_tax':
+            self.characters_manager.change_gold_tax(self.current_user, self.get_argument("strategy"))
+        elif self.get_argument("action") == 'change_gold_sharing':
+            self.characters_manager.change_gold_sharing(self.current_user, self.get_argument("strategy"))
+        elif self.get_argument("action") == 'change_experience_sharing':
+            self.characters_manager.change_experience_sharing(self.current_user, self.get_argument("strategy"))
 
 class PollBotHandler(BaseHandler):
     @tornado.web.authenticated

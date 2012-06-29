@@ -124,7 +124,7 @@ class CharactersManager:
         result = dict()
         members = self.db_manager.get_team_members(team_name)
         for member in members:
-            result[member.name] = member.rank_in_team
+            result[member["name"]] = member["rank_in_team"]
 
         return result
 
@@ -136,13 +136,13 @@ class CharactersManager:
                     user_for_promotion = self.online_users[promote_user].character
                     if user_boss.team_name == user_for_promotion.team_name and user_for_promotion.rank_in_team > user_boss.rank_in_team:
                         self.db_manager.change_character_field_update(promote_user, "rank_in_team", user_for_promotion.rank_in_team - 1)
-                        self.send_team_info_to_members(user_for_promotion.team_name, self.get_team_members(user_for_promotion.team_name))
+                        self.send_team_info_to_members(user_for_promotion.team_name)
                         self.send_character_info(promote_user)
                 else: # promote user if offline
                     user_for_promotion = self.db_manager.get_character(promote_user)
                     if user_boss.team_name == user_for_promotion.team_name and user_for_promotion.rank_in_team > user_boss.rank_in_team:
                         self.db_manager.change_character_field(promote_user, "rank_in_team", user_for_promotion.rank_in_team - 1)
-                        self.send_team_info_to_members(user_for_promotion.team_name, self.get_team_members(user_for_promotion.team_name))
+                        self.send_team_info_to_members(user_for_promotion.team_name)
 
     def demote_user(self, user_name, demote_user):
         if user_name != demote_user:
@@ -152,13 +152,13 @@ class CharactersManager:
                     user_for_demotion = self.online_users[demote_user].character
                     if user_boss.team_name == user_for_demotion.team_name and user_for_demotion.rank_in_team > user_boss.rank_in_team and user_for_demotion.rank_in_team != 5:
                         self.db_manager.change_character_field_update(demote_user, "rank_in_team", user_for_demotion.rank_in_team + 1)
-                        self.send_team_info_to_members(user_for_demotion.team_name, self.get_team_members(user_for_demotion.team_name))
+                        self.send_team_info_to_members(user_for_demotion.team_name)
                         self.send_character_info(demote_user)
                 else: # demote user if offline
                     user_for_demotion = self.db_manager.get_character(demote_user)
                     if user_boss.team_name == user_for_demotion.team_name and user_for_demotion.rank_in_team > user_boss.rank_in_team and user_for_demotion.rank_in_team != 5:
                         self.db_manager.change_character_field(demote_user, "rank_in_team", user_for_demotion.rank_in_team + 1)
-                        self.send_team_info_to_members(user_for_demotion.team_name, self.get_team_members(user_for_demotion.team_name))
+                        self.send_team_info_to_members(user_for_demotion.team_name)
 
     def remove_user_from_team(self, user_name, remove_user_name):
         if user_name != remove_user_name:
@@ -168,14 +168,14 @@ class CharactersManager:
                     user_for_removing = self.online_users[remove_user_name].character
                     if user_boss.team_name == user_for_removing.team_name and user_for_removing.rank_in_team > user_boss.rank_in_team :
                         self.db_manager.change_user_team_update(remove_user_name, None, 0)
-                        self.send_team_info_to_members(user_boss.team_name, self.get_team_members(user_boss.team_name))
+                        self.send_team_info_to_members(user_boss.team_name)
                         self.send_character_info(remove_user_name)
                         self.send_can_create_team(remove_user_name)
                 else: # demote user if offline
                     user_for_removing = self.db_manager.get_character(remove_user_name)
                     if user_boss.team_name == user_for_removing.team_name and user_for_removing.rank_in_team > user_boss.rank_in_team :
                         self.db_manager.change_user_team(remove_user_name, None, 0)
-                        self.send_team_info_to_members(user_boss.team_name, self.get_team_members(user_boss.team_name))
+                        self.send_team_info_to_members(user_boss.team_name)
 
     def invite_user_to_team(self, user_name, invite_user_name):
         invite_response = {
@@ -203,7 +203,7 @@ class CharactersManager:
             user_for_join = self.online_users[joined_user].character
             if not user_for_join.team_name:
                 self.db_manager.change_user_team_update(joined_user, team_name, 5)
-                self.send_team_info_to_members(team_name, self.get_team_members(team_name))
+                self.send_team_info_to_members(team_name)
                 self.send_character_info(joined_user)
 
     def user_leave_team(self, user_name):
@@ -221,7 +221,7 @@ class CharactersManager:
             self.db_manager.change_user_team_update(user_name, None, 0)
             self.send_character_info(user_name)
             self.send_can_create_team(user_name)
-            self.send_team_info_to_members(user.team_name, self.get_team_members(user.team_name))
+            self.send_team_info_to_members(user.team_name)
 
     def put_on_item(self, user_name, item_id):
         result = False
@@ -341,7 +341,8 @@ class CharactersManager:
     def send_team_info_to_user(self, user_name, team_name, team_members):
         self.online_users[user_name].send_action(self.team_info_action(team_name, team_members))
 
-    def send_team_info_to_members(self, team_name, team_members):
+    def send_team_info_to_members(self, team_name):
+        team_members = self.get_team_members(team_name)
         action = self.team_info_action(team_name, team_members)
         for member_name in team_members.keys():
             if member_name in self.online_users.keys():
@@ -349,3 +350,18 @@ class CharactersManager:
 
     def send_invite(self, invite_user_name, user_name, team_name):
         self.online_users[invite_user_name].send_action(self.invite_action(user_name, team_name))
+
+    def change_gold_tax(self, user_name, strategy_id_str):
+        team_name = self.online_users[user_name].character.team_name
+        self.db_manager.change_team_field(team_name, "gold_tax", int(strategy_id_str))
+        self.send_team_info_to_members(team_name)
+
+    def change_gold_sharing(self, user_name, strategy_id_str):
+        team_name = self.online_users[user_name].character.team_name
+        self.db_manager.change_team_field(team_name, "gold_sharing", int(strategy_id_str))
+        self.send_team_info_to_members(team_name)
+
+    def change_experience_sharing(self, user_name, strategy_id_str):
+        team_name = self.online_users[user_name].character.team_name
+        self.db_manager.change_team_field(team_name, "experience_sharing", int(strategy_id_str))
+        self.send_team_info_to_members(team_name)

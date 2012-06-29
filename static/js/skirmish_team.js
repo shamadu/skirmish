@@ -10,6 +10,9 @@ var initialize_create_team = function () {
 
 var initialize_team_info = function () {
     $("#leaveTeamButton").click(leaveTeamFunc);
+    $("#goldTaxSelect").change(changeGoldTaxFunc);
+    $("#goldSharingSelect").change(changeGoldSharingFunc);
+    $("#experienceSharingSelect").change(changeExperienceSharingFunc);
 
     $("#divTeam button[class=promoteButton]").click(promoteFunc);
     $("#divTeam button[class=demoteButton]").click(demoteFunc);
@@ -20,6 +23,21 @@ var initialize_team_invitation = function(user_name, team_name) {
     $("#divInvitation").data("invitation", {"user_name" : user_name, "team_name" : team_name});
     $("#confirmButton").click(confirmFunc);
     $("#declineButton").click(declineFunc);
+};
+
+var changeGoldTaxFunc = function() {
+    $.postJSON('/action', {"action" : "change_gold_tax", "strategy" : $("option:selected", this).val()}, function() {
+    });
+};
+
+var changeGoldSharingFunc = function() {
+    $.postJSON('/action', {"action" : "change_gold_sharing", "strategy" : $("option:selected", this).val()}, function() {
+    });
+};
+
+var changeExperienceSharingFunc = function() {
+    $.postJSON('/action', {"action" : "change_experience_sharing", "strategy" : $("option:selected", this).val()}, function() {
+    });
 };
 
 var createTeamFunc = function() {
