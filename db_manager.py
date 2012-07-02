@@ -70,7 +70,7 @@ class DBManager():
 
     def get_character(self, name):
         character = self.db.get("select * from characters where name = %s", name)
-        if character.team_name:
+        if character and character.team_name:
             character.team_info = self.db.get("select * from teams where team_name = %s", character.team_name)
         return character
 

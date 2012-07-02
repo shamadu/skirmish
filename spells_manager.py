@@ -146,11 +146,9 @@ class BerserkFurySpell(Ability):
         self.attack = round(self.who_character.attack * 0.3, 2)
         self.who_character.attack += self.attack
         self.experience = round(self.attack*0.9)
-        self.who_character.experience += self.experience
 
     def on_effect_end(self):
         self.who_character.attack -= self.attack
-        return True
 
     def get_message(self, locale):
         return locale.translate(spell_messages[0]).format(
@@ -168,11 +166,9 @@ class BackHeelSpell(Ability):
         self.defence = round(self.whom_character.defence * 0.5, 2)
         self.whom_character.defence -= self.defence
         self.experience = round(self.defence*0.9)
-        self.who_character.experience += self.experience
 
     def on_effect_end(self):
         self.whom_character.defence += self.defence
-        return True
 
     def get_message(self, locale):
         return locale.translate(spell_messages[17]).format(
@@ -191,11 +187,9 @@ class ArmorSpell(Ability):
         self.defence = round(self.whom_character.defence * 2, 2)
         self.whom_character.defence += self.defence
         self.experience = round(self.defence*0.9)
-        self.who_character.experience += self.experience
 
     def on_effect_end(self):
         self.whom_character.defence -= self.defence
-        return True
 
     def get_message(self, locale):
         return locale.translate(spell_messages[23]).format(
@@ -214,11 +208,9 @@ class ShieldBlockSpell(Ability):
             self.defence = round(self.whom_character.defence * 5, 2)
             self.whom_character.defence += self.defence
             self.experience = round(self.defence*0.9)
-            self.who_character.experience += self.experience
 
     def on_effect_end(self):
         self.whom_character.defence -= self.defence
-        return True
 
     def get_message(self, locale):
         if self.defence != 0:
@@ -267,7 +259,6 @@ class EvasionSpell(Ability, AffectAttackSpell):
 
     def on_round_start(self):
         self.experience = self.who_character.level*10
-        self.who_character.experience += self.experience
 
     def get_message(self, locale):
         return locale.translate(spell_messages[0]).format(
@@ -294,7 +285,6 @@ class DisarmamentSpell(Ability, AffectAttackSpell):
 
     def on_round_start(self):
         self.experience = self.who_character.level*10
-        self.who_character.experience += self.experience
 
     def get_message(self, locale):
         return locale.translate(spell_messages[11]).format(
@@ -314,7 +304,6 @@ class PrayerForAttackSpell(LongSpell):
         self.attack += attack
         self.whom_character.attack += attack
         self.experience = round(attack*0.9)
-        self.who_character.experience += self.experience
 
     def on_effect_end(self):
         self.whom_character.attack -= self.attack
@@ -339,7 +328,6 @@ class PrayerForProtectionSpell(LongSpell):
         self.defence += defence
         self.whom_character.defence += defence
         self.experience = round(defence*0.9)
-        self.who_character.experience += self.experience
 
     def on_effect_end(self):
         self.whom_character.defence -= self.defence
@@ -364,7 +352,6 @@ class CurseOfWeaknessSpell(LongSpell):
             self.defence = round(self.whom_character.defence * 0.4, 2)
             self.whom_character.defence -= self.defence
         self.experience = round(self.defence*0.9)
-        self.who_character.experience += self.experience
 
     def on_effect_end(self):
         self.whom_character.defence += self.defence
@@ -385,11 +372,11 @@ class InfectionSpell(LongSpell):
         self.damage = 0
 
     def on_round_start(self):
+        self.experience = 0
         self.damage = smarty.get_spell_damage(self.who_character, 1, self.spell_info.base_amount, self.whom_character)
         self.whom_character.health -= self.damage
         if self.who_character.name != self.whom_character.name:
             self.experience = smarty.get_experience_for_spell_damage(self.damage)
-            self.who_character.experience += self.experience
             if self.whom_character.health <= 0 and not self.whom_character.killer_name:
                 self.whom_character.killer_name = self.who_character.name
 
@@ -413,7 +400,6 @@ class PhantomsSpell(LongSpell, AffectAttackSpell):
 
     def on_round_start(self):
         self.experience = self.who_character.level*10
-        self.who_character.experience += self.experience
 
     def check_succeed_attack(self):
         succeed_attack = (random.random() < 1/(self.phantoms + 1)) # 1 / phantoms_count + you
@@ -459,16 +445,15 @@ class MirrorCharmSpell(LongSpell, AfterAttackSpell):
 
     def on_round_start(self):
         self.experience = self.who_character.level
-        self.who_character.experience += self.experience
 
     def do_after_attack(self):
+        self.experience = 0
         self.damage = round(self.damage*0.3, 2)
         self.attack_character.health -= self.damage
         if self.attack_character.name != self.who_character.name:
             if self.whom_character.health <= 0 and not self.whom_character.killer_name:
                 self.whom_character.killer_name = self.who_character.name
             self.experience = smarty.get_experience_for_spell_damage(self.damage)
-            self.who_character.experience += self.experience
 
     def get_after_attack_message(self, locale):
         return locale.translate(spell_messages[13]).format(
@@ -494,16 +479,15 @@ class StenchSpell(LongSpell, AfterAttackSpell):
 
     def on_round_start(self):
         self.experience = self.who_character.level
-        self.who_character.experience += self.experience
 
     def do_after_attack(self):
+        self.experience = 0
         self.damage = smarty.get_spell_damage(self.who_character, 1, self.spell_info.base_amount, self.whom_character)
         self.attack_character.health -= self.damage
         if self.attack_character.name != self.who_character.name:
             if self.attack_character.health <= 0 and not self.attack_character.killer_name:
                 self.attack_character.killer_name = self.who_character.name
             self.experience = smarty.get_experience_for_spell_damage(self.damage)
-            self.who_character.experience += self.experience
 
     def get_after_attack_message(self, locale):
         return locale.translate(spell_messages[22]).format(
@@ -529,13 +513,13 @@ class DirectDamageSpell(Spell):
         self.damage = 0
 
     def process(self, percent):
+        self.experience = 0
         self.damage = smarty.get_spell_damage(self.who_character, percent, self.spell_info.base_amount, self.whom_character)
         if smarty.is_critical_magic_hit(self.who_character, self.whom_character):
             self.damage *= 1.5
 
         if self.who_character.name != self.whom_character.name:
             self.experience = smarty.get_experience_for_spell_damage(self.damage)
-            self.who_character.experience += self.experience
         self.whom_character.health -= self.damage
 
 class FrostNeedleSpell(DirectDamageSpell):
@@ -571,6 +555,7 @@ class LeechLifeSpell(DirectDamageSpell):
         super(LeechLifeSpell, self).init_internal(spells[build_id(16, 1)], who_character, whom_character)
 
     def process(self, percent):
+        self.experience = 0
         self.damage = smarty.get_spell_damage(self.who_character, percent, self.spell_info.base_amount, self.who_character)
         if smarty.is_critical_magic_hit(self.who_character, self.whom_character):
             self.damage *= 1.5
@@ -582,7 +567,6 @@ class LeechLifeSpell(DirectDamageSpell):
             if self.whom_character.health <= 0 and not self.whom_character.killer_name:
                 self.whom_character.killer_name = self.who_character.name
             self.experience = smarty.get_experience_for_spell_damage(self.damage)
-            self.who_character.experience += self.experience
 
     def get_message(self, locale):
         return locale.translate(spell_messages[19]).format(
@@ -615,7 +599,6 @@ class DirectHealSpell(Spell):
         self.whom_character.health += self.heal
 
         self.experience = smarty.get_experience_for_spell_heal(self.heal)
-        self.who_character.experience += self.experience
 
 class PrayerForHealthSpell(DirectHealSpell):
     def init(self, who_character, whom_character):
