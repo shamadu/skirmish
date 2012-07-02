@@ -84,7 +84,6 @@ class BattleBot(Thread):
         self.battle_users = dict()
         self.characters_manager = characters_manager
         self.db_manager = db_manager
-        self.location = location
         # phases:
         # -1 - none
         # 0 - registration
