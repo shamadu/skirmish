@@ -323,9 +323,8 @@ var showLocationUser = function(user) {
 };
 
 var removeSkirmishUser = function(user) {
-    skirmish_user = user.split(":");
-    $("#divOnlineUsers .skirmish-user-label[value=\"" + skirmish_user[0] + "\"]").remove();
-    showLocationUser(skirmish_user[0]);
+    $("#divOnlineUsers .skirmish-user-label[value=\"" + user + "\"]").remove();
+    showLocationUser(user);
 };
 
 var addSkirmishUser = function(user) {
@@ -340,7 +339,12 @@ var addSkirmishUser = function(user) {
         }
     });
     if (!inserted) {
-        $("#divOnlineUsers").prepend(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
+        if ($("#divOnlineUsers .skirmish-user-label").length > 0) {
+            $("#divOnlineUsers .skirmish-user-label:last").after(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
+        }
+        else {
+            $("#divOnlineUsers").prepend(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
+        }
     }
 };
 
