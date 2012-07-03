@@ -83,12 +83,11 @@ class CharactersManager:
     def can_create_team_action(self):
         return Action(203, {})
 
-    def team_info_action(self, team_name, team_members):
+    def team_info_action(self, team_info):
         return Action(204, {
-            "team_name" : team_name,
-            # TODO: add team gold in special team table
-            "team_gold" : 0,
-            "members" : team_members
+            "team_name" : team_info.team_name,
+            "team_gold" : team_info.gold,
+            "members" : self.get_team_members(team_info.team_name)
         })
 
     def invite_action(self, user_name, team_name):
@@ -109,7 +108,7 @@ class CharactersManager:
         if not self.online_users[user_name].character.team_name:
             if len(self.get_team_members(team_name)) == 0:
                 self.db_manager.create_team(user_name, team_name)
-                self.send_team_info_to_user(user_name, team_name, self.get_team_members(team_name))
+                self.send_team_info_to_user(user_name)
                 self.send_character_info(user_name)
             else:
                 create_response["error"] = True
@@ -320,8 +319,7 @@ class CharactersManager:
         character = self.online_users[user_name].character
         if character.team_name:
             # character is in team
-            team_name = self.online_users[user_name].character.team_name
-            self.send_team_info_to_user(user_name, team_name, self.get_team_members(team_name))
+            self.send_team_info_to_user(user_name)
         else:
             # character is not in team
             self.send_can_create_team(user_name)
@@ -338,15 +336,15 @@ class CharactersManager:
     def send_character_spells(self, user_name):
         self.online_users[user_name].send_action(self.character_spells_action(user_name))
 
-    def send_team_info_to_user(self, user_name, team_name, team_members):
-        self.online_users[user_name].send_action(self.team_info_action(team_name, team_members))
+    def send_team_info_to_user(self, user_name):
+        team_name = self.online_users[user_name].character.team_name
+        self.online_users[user_name].send_action(self.team_info_action(self.db_manager.get_team_info(team_name)))
 
     def send_team_info_to_members(self, team_name):
         team_members = self.get_team_members(team_name)
-        action = self.team_info_action(team_name, team_members)
         for member_name in team_members.keys():
             if member_name in self.online_users.keys():
-                self.online_users[member_name].send_action(action)
+                self.online_users[member_name].send_action(self.team_info_action(self.db_manager.get_team_info(team_name)))
 
     def send_invite(self, invite_user_name, user_name, team_name):
         self.online_users[invite_user_name].send_action(self.invite_action(user_name, team_name))

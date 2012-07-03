@@ -620,32 +620,32 @@ build_id = lambda type, id: spell_range*type + id
 # means that 1000-1099 are warrior spells, 1100-1199 are guardian spells, 2100-2199 are archer spells, etc.
 spells = {
     #warrior
-    build_id(10, 0) : SpellInfo(build_id(10, 0), _("Berserk Fury"),             0, 4, True, 1, 0, 1, 15, _("Howling with rage, you rush to the enemy. Attack power is increased")),
-    build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 5, False, 1, 0, 1, 15, _("You knock weapons out of enemy hands. He can not attack")),
+    build_id(10, 0) : SpellInfo(build_id(10, 0), _("Berserk Fury"),             0, 4, True, 1, 0, 1, 150, _("Howling with rage, you rush to the enemy. Attack power is increased")),
+    build_id(10, 1) : SpellInfo(build_id(10, 1), _("Disarmament"),              0, 5, False, 1, 0, 1, 150, _("You knock weapons out of enemy hands. He can not attack")),
     # guardian
-    build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 4, True, 1, 0, 5, 15, _("Armor becomes heavier and stronger. It is difficult to break it")),
-    build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 4, True, 1, 0, 5, 15, _("You place the shield in front of you. You should have shield to do that")),
+    build_id(11, 0) : SpellInfo(build_id(11, 0), _("Armor"),                    1, 4, True, 1, 0, 5, 150, _("Armor becomes heavier and stronger. It is difficult to break it")),
+    build_id(11, 1) : SpellInfo(build_id(11, 1), _("Shield Block"),             1, 4, True, 1, 0, 5, 150, _("You place the shield in front of you. You should have shield to do that")),
     # archer
-    build_id(12, 0) : SpellInfo(build_id(12, 0), _("Dodge"),                    2, 3, True, 1, 0, 5, 15, _("It's hard to hit you as you are ready to dodge")),
-    build_id(12, 1) : SpellInfo(build_id(12, 1), _("Fierce Shot"),              2, 4, True, 1, 0, 1, 15, _("You put all your rage in this shot. Tou should have a bow to do that")),
+    build_id(12, 0) : SpellInfo(build_id(12, 0), _("Dodge"),                    2, 3, True, 1, 0, 5, 150, _("It's hard to hit you as you are ready to dodge")),
+    build_id(12, 1) : SpellInfo(build_id(12, 1), _("Fierce Shot"),              2, 4, True, 1, 0, 1, 150, _("You put all your rage in this shot. Tou should have a bow to do that")),
     # rogue
-    build_id(13, 0) : SpellInfo(build_id(13, 0), _("Evasion"),                  3, 3, True, 1, 0, 5, 15, _("It's hard to hit you as you are doing a series of deviations")),
-    build_id(13, 1) : SpellInfo(build_id(13, 1), _("Back Heel"),                3, 4, False, 1, 0, 5, 15, _("You make a back heel to a player, reducing his ability of protection")),
+    build_id(13, 0) : SpellInfo(build_id(13, 0), _("Evasion"),                  3, 3, True, 1, 0, 5, 150, _("It's hard to hit you as you are doing a series of deviations")),
+    build_id(13, 1) : SpellInfo(build_id(13, 1), _("Back Heel"),                3, 4, False, 1, 0, 5, 150, _("You make a back heel to a player, reducing his ability of protection")),
     # mage
-    build_id(14, 0) : SpellInfo(build_id(14, 0), _("Frost Needle"),             4, 1, False, 1, 1.5, 1, 15, _("You are sending an frost needle at the enemy. Ice damage")),
-    build_id(14, 1) : SpellInfo(build_id(14, 1), _("Fire Spark"),               4, 1, False, 1, 2.5, 1, 15, _("You are sending an fire spark at the enemy. Fire damage")),
-    build_id(14, 2) : SpellInfo(build_id(14, 2), _("Phantoms"),                 4, 3, True, 1, 0, 1, 15, _("You round yourself with phantoms. They could be attacked instead of you")),
-    build_id(14, 3) : SpellInfo(build_id(14, 3), _("Mirror Charm"),             4, 6, False, 1, 0, 1, 15, _("Place a mirror charm on player and each of his attackers will receive reflected damage")),
+    build_id(14, 0) : SpellInfo(build_id(14, 0), _("Frost Needle"),             4, 1, False, 1, 1.5, 1, 150, _("You are sending an frost needle at the enemy. Ice damage")),
+    build_id(14, 1) : SpellInfo(build_id(14, 1), _("Fire Spark"),               4, 1, False, 1, 2.5, 1, 150, _("You are sending an fire spark at the enemy. Fire damage")),
+    build_id(14, 2) : SpellInfo(build_id(14, 2), _("Phantoms"),                 4, 3, True, 1, 0, 1, 150, _("You round yourself with phantoms. They could be attacked instead of you")),
+    build_id(14, 3) : SpellInfo(build_id(14, 3), _("Mirror Charm"),             4, 6, False, 1, 0, 1, 150, _("Place a mirror charm on player and each of his attackers will receive reflected damage")),
     # priest
-    build_id(15, 0) : SpellInfo(build_id(15, 0), _("Prayer for Attack"),        5, 4, False, 1, 0, 1, 15, _("Your prayer increases attack of player")),
-    build_id(15, 1) : SpellInfo(build_id(15, 1), _("Prayer for Health"),        5, 2, False, 1, 2, 1, 15, _("Your prayer heals player")),
-    build_id(15, 2) : SpellInfo(build_id(15, 2), _("Prayer for Protection"),    5, 4, False, 1, 0, 5, 15, _("Your prayer increases protection of player")),
+    build_id(15, 0) : SpellInfo(build_id(15, 0), _("Prayer for Attack"),        5, 4, False, 1, 0, 1, 150, _("Your prayer increases attack of player")),
+    build_id(15, 1) : SpellInfo(build_id(15, 1), _("Prayer for Health"),        5, 2, False, 1, 2, 1, 150, _("Your prayer heals player")),
+    build_id(15, 2) : SpellInfo(build_id(15, 2), _("Prayer for Protection"),    5, 4, False, 1, 0, 5, 150, _("Your prayer increases protection of player")),
     # warlock
-    build_id(16, 0) : SpellInfo(build_id(16, 0), _("Curse of Weakness"),        6, 4, False, 1, 0, 5, 15, _("Your curse make player weak. His attack is reduced")),
-    build_id(16, 1) : SpellInfo(build_id(16, 1), _("Leech Life"),               6, 1, False, 1, 2, 5, 15, _("You steal some amount of health of player and adds them to yourself")),
+    build_id(16, 0) : SpellInfo(build_id(16, 0), _("Curse of Weakness"),        6, 4, False, 1, 0, 5, 150, _("Your curse make player weak. His attack is reduced")),
+    build_id(16, 1) : SpellInfo(build_id(16, 1), _("Leech Life"),               6, 1, False, 1, 2, 5, 150, _("You steal some amount of health of player and adds them to yourself")),
     # necromancer
-    build_id(17, 0) : SpellInfo(build_id(17, 0), _("Infection"),                7, 4, False, 1, 1.5, 5, 15, _("You infect player. Some damage will be done to him every round")),
-    build_id(17, 1) : SpellInfo(build_id(17, 1), _("Stench"),                   7, 6, False, 1, 1.5, 5, 15, _("You surround the player with a stench. Every attacker will recieve some damage"))
+    build_id(17, 0) : SpellInfo(build_id(17, 0), _("Infection"),                7, 4, False, 1, 1.5, 5, 150, _("You infect player. Some damage will be done to him every round")),
+    build_id(17, 1) : SpellInfo(build_id(17, 1), _("Stench"),                   7, 6, False, 1, 1.5, 5, 150, _("You surround the player with a stench. Every attacker will recieve some damage"))
 }
 
 spells_action_classes = {

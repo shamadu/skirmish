@@ -333,7 +333,7 @@ var addSkirmishUser = function(user) {
     inserted = false;
     // insert after specified element
     $("#divOnlineUsers .skirmish-user-label").each(function(){
-        if ($(this).text() > user) {
+        if (!inserted && $(this).text() > user) {
             $(this).before(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
             inserted = true;
         }
@@ -344,16 +344,6 @@ var addSkirmishUser = function(user) {
         }
         else {
             $("#divOnlineUsers").prepend(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
-        }
-    }
-};
-
-var initialTeamUsers = function(users) {
-    if (users) {
-        var team_users = String(users).split(',');
-        team_users.sort();
-        for (i = 0; i < team_users.length && team_users[i]; ++i) {
-            $("#divTeamUsers").append(createTeamUserLabel(team_users[i]));
         }
     }
 };

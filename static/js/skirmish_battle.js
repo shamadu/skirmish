@@ -66,6 +66,7 @@ var resize_battle = function() {
     else {
         $("#divChat").css('right', 0);
     }
+    $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
 };
 
 var sendFunc = function() {

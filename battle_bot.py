@@ -146,11 +146,6 @@ class BattleBot(Thread):
             time.sleep(1)
             pass
 
-    # special spell result - who_name, whom_name, is_hit, is_critical, spell, amount, exp
-    # damage spell result - who_name, whom_name, is_hit, is_critical, spell, amount, exp
-    # ability result - who_name, whom_name, is_hit, amount, exp
-    # attack result - who_name, whom_name, is_hit, is_critical, damage, exp
-    # heal spell result - damage spell result
     def process_round_result(self):
         # collect actions from every user
         skirmish_users_names = self.battle_users.keys()
@@ -206,7 +201,7 @@ class BattleBot(Thread):
                 self.dead_users.append(user.user_name)
                 self.battle_users[user.user_name].state = 3 # dead
                 if user.battle_character.killer_name:
-                    self.battle_users[user.battle_character.killer_name].battle_character.gold += user.battle_character.level + 1
+                    self.add_gold(user.battle_character.killer_name, (user.battle_character.level + 1)*10)
                 user.battle_character.killer_name = None
                 self.send_text_action_to_users(9, user.user_name) # user is dead
             else:
@@ -220,22 +215,23 @@ class BattleBot(Thread):
                 self.battle_users[user_name].state = 2 # ran
                 self.remove_from_skirmish(user_name)
                 self.send_text_action_to_users(10, user_name) # user ran
-                self.ran_users.remove(user_name)
+        del self.ran_users[:]
 
     def process_game_result(self):
         # if there is just users of one team or one user without team - end game
         if len(self.teams) < 2 and (None not in self.teams.keys() or len(self.teams[None]) < 2): # process game result
-            self.game_ended()
+            self.send_text_action_to_users(4, None) # game has been ended
             if len(self.teams) > 0:
                 if None not in self.teams.keys():
-                    self.send_text_action_to_users(11, "{0}({1})".format(self.teams.keys()[0], ",".join(self.battle_users.keys()))) # game win team
+                    self.send_text_action_to_users(11, "{0}({1})".format(self.teams.keys()[0], ", ".join(self.battle_users.keys()))) # game win team
                 else:
                     self.send_text_action_to_users(12, self.teams[None][0].user_name) # game win user
+                for user_name in self.battle_users.keys():
+                    self.add_gold(user_name, 100)
+                    self.battle_users[user_name].state = 0 # default
+                    self.remove_from_skirmish(user_name)
             else:
                 self.send_text_action_to_users(13) # game win nobody
-            for user_name in self.battle_users.keys():
-                self.battle_users[user_name].state = 0 # default
-                self.remove_from_skirmish(user_name)
 
             self.reset()
 
@@ -267,7 +263,7 @@ class BattleBot(Thread):
         if attack_action.whom in self.long_after_attack_spells.keys():
             for spell_action in self.long_after_attack_spells[attack_action.whom]:
                 spell_action.process_after_attack(who_character, damage)
-                spell_action.who_character.experience += spell_action.experience
+                self.add_experience(spell_action.who_character.name, spell_action.experience)
                 for online_user in self.location_users.values():
                     online_user.send_action(self.text_spell_action(spell_action.get_after_attack_message(online_user.locale)))
 
@@ -289,7 +285,7 @@ class BattleBot(Thread):
                     experience = 0
                     if who_character.name != whom_character.name:
                         experience = smarty.get_experience_for_damage(damage)
-                        who_character.experience += experience
+                        self.add_experience(who_character.name, experience)
                         if whom_character.health <= 0 and not whom_character.killer_name:
                             whom_character.killer_name = action.who
                     self.succeeded_attack(
@@ -316,7 +312,7 @@ class BattleBot(Thread):
                             def_character = self.battle_users[def_action.who].battle_character
                             if def_action.who != action.who:
                                 def_experience = round(all_experience*(def_character.defence/all_defence))
-                                def_character.experience += def_experience
+                                self.add_experience(def_character.name, def_experience)
                             defence_experience.append("<b>{0}</b>[<font class=\"font-exp\">{1}</font>/<font class=\"font-exp\">{2}</font>]".format(def_action.who, def_experience, def_character.experience))
                     self.failed_attack(action.who, action.whom, ",".join(defence_experience))
 
@@ -365,7 +361,7 @@ class BattleBot(Thread):
     def round_start_long_spells(self):
         for spell_action in self.long_spells:
             spell_action.round_start()
-            spell_action.who_character.experience += spell_action.experience
+            self.add_experience(spell_action.who_character.name, spell_action.experience)
             for online_user in self.location_users.values():
                 online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
 
@@ -373,7 +369,7 @@ class BattleBot(Thread):
         for spell_actions in spells_container.values():
             for spell_action in spell_actions:
                 spell_action.round_start()
-                spell_action.who_character.experience += spell_action.experience
+                self.add_experience(spell_action.who_character.name, spell_action.experience)
                 for online_user in self.location_users.values():
                     online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
 
@@ -401,7 +397,7 @@ class BattleBot(Thread):
                         spell_action.process(turn_action.percent)
                     elif type == 2: # heal
                         spell_action.process(turn_action.percent, whom_character.full_health)
-                    spell_action.who_character.experience += spell_action.experience
+                    self.add_experience(spell_action.who_character.name, spell_action.experience)
                     for online_user in self.location_users.values():
                         online_user.send_action(self.text_spell_action(spell_action.get_message(online_user.locale)))
                     if whom_character.health <= 0 and not whom_character.killer_name:
@@ -420,11 +416,17 @@ class BattleBot(Thread):
     def remove_from_skirmish(self, user_name):
         user = self.battle_users[user_name]
         team_name = user.battle_character.team_name
+        # remove from battle team
         self.teams[team_name].remove(user)
         if len(self.teams[team_name]) == 0:
             self.teams.pop(team_name)
         self.battle_users[user_name].reset_turn()
         battle_character = user.battle_character
+        # add team gold to team
+        if battle_character.team_name:
+            self.db_manager.change_team_field(team_name, "gold", self.db_manager.get_team_info(team_name).gold + battle_character.team_gold)
+            self.characters_manager.send_team_info_to_members(team_name)
+
         bonus_fields = {
             "experience" : user.character.experience + battle_character.experience,
             "gold" : user.character.gold + battle_character.gold
@@ -458,6 +460,7 @@ class BattleBot(Thread):
             user.battle_character = copy.copy(user.character)
             user.battle_character.experience = 0
             user.battle_character.gold = 0
+            user.battle_character.team_gold = 0
             user.battle_character.full_health = user.character.health
             user.battle_character.killer_name = None # who killed this character
             # send actions
@@ -560,13 +563,6 @@ class BattleBot(Thread):
         for skirmish_user in self.battle_users.keys():
             self.send_action_to_user(skirmish_user, self.add_turn_div_action(skirmish_user, self.battle_users))
 
-    def game_ended(self):
-        for user_name in self.battle_users.keys():
-            self.db_manager.change_character_field(user_name, "experience", self.battle_users[user_name].battle_character.experience + self.battle_users[user_name].character.experience)
-            self.db_manager.change_character_field(user_name, "gold", self.battle_users[user_name].battle_character.gold + self.battle_users[user_name].character.gold)
-            self.battle_users[user_name].reset_turn()
-        self.send_text_action_to_users(4, None) # game has been ended
-
     def game_cant_start(self):
         self.send_text_action_to_users(5, None) # game can't be started, not enough players
 
@@ -617,3 +613,50 @@ class BattleBot(Thread):
     def send_action_to_all(self, action):
         for online_user in self.location_users.values():
             online_user.send_action(action)
+
+    def add_experience(self, user_name, experience):
+        team_name = self.battle_users[user_name].battle_character.team_name
+        if team_name:
+            team_info = self.db_manager.get_team_info(team_name)
+            if team_info.experience_sharing == 0: # no sharing
+                self.battle_users[user_name].battle_character.experience += experience
+            elif team_info.experience_sharing == 1: # 50% sharing
+                self.battle_users[user_name].battle_character.experience += round(experience*0.5)
+                experience_for_team_mate =  round(experience*0.5/len(self.teams[team_name]))
+                for team_mate in self.teams[team_name]:
+                    team_mate.battle_character.experience += experience_for_team_mate
+            elif team_info.experience_sharing == 2: # 100% sharing
+                experience_for_team_mate =  round(experience/len(self.teams[team_name]))
+                for team_mate in self.teams[team_name]:
+                    team_mate.battle_character.experience += experience_for_team_mate
+        else:
+            self.battle_users[user_name].battle_character.experience += experience
+
+    def add_gold(self, user_name, gold):
+        team_name = self.battle_users[user_name].battle_character.team_name
+        if team_name:
+            team_info = self.db_manager.get_team_info(team_name)
+            battle_character = self.battle_users[user_name].battle_character
+            if team_info.gold_tax == 0: # 10%
+                battle_character.team_gold += round(gold*0.1)
+                gold = round(gold*0.9)
+            elif team_info.gold_tax == 1: # 50%
+                battle_character.team_gold += round(gold*0.5)
+                gold = round(gold*0.5)
+            elif team_info.gold_tax == 2: # 100%
+                battle_character.team_gold += gold
+                gold = 0
+
+            if team_info.gold_sharing == 0: # no sharing
+                battle_character.gold += gold
+            elif team_info.gold_sharing == 1: # 50% sharing
+                battle_character.gold += round(gold*0.5)
+                gold_for_team_mate =  round(gold*0.5/len(self.teams[team_name]))
+                for team_mate in self.teams[team_name]:
+                    team_mate.battle_character.gold += gold_for_team_mate
+            elif team_info.gold_sharing == 2: # 100% sharing
+                gold_for_team_mate =  round(gold/len(self.teams[team_name]))
+                for team_mate in self.teams[team_name]:
+                    team_mate.battle_character.gold += gold_for_team_mate
+        else:
+            self.battle_users[user_name].battle_character.gold += gold

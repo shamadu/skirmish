@@ -98,11 +98,11 @@ build_id = lambda type, id: 100*type + id
 items = {
     #right hand
     build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 1.2, 2.2),
-    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 15, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
+    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 150, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
     #left hand
-    build_id(1, 0) : Item(build_id(1, 0), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 15, _("Just wooden shield with iron circle in center")),
+    build_id(1, 0) : Item(build_id(1, 0), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 150, _("Just wooden shield with iron circle in center")),
     #head
-    build_id(2, 0) : Item(build_id(2, 0), _("Basic helmet"), 2, RequiredStats(2, 0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 15, _("Wooden helmet is a better guard than your skull")),
+    build_id(2, 0) : Item(build_id(2, 0), _("Basic helmet"), 2, RequiredStats(2, 0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 150, _("Wooden helmet is a better guard than your skull")),
     # body
     build_id(3, 0) : Item(build_id(3, 0), _("A"), 3, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # hands
