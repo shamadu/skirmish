@@ -86,6 +86,7 @@ class BattleBot(Thread):
         Thread.__init__(self)
         self.location_users = users_holder.location_users[location]
         self.battle_users = dict()
+        self.battle_characters = list()
         self.characters_manager = characters_manager
         self.db_manager = db_manager
         # phases:
@@ -117,6 +118,7 @@ class BattleBot(Thread):
         self.phase = -1
         self.counter = 0
         self.send_action_to_users(0, None) # truce started
+        del self.battle_characters[:]
 
     def run(self):
         while 1:
@@ -228,7 +230,7 @@ class BattleBot(Thread):
                 else:
                     self.send_text_action_to_users(12, self.teams[None][0].user_name) # game win user
                 for user_name in self.battle_users.keys():
-                    self.add_gold(user_name, 100)
+                    self.add_gold(user_name, len(self.battle_characters)*10)
                     self.battle_users[user_name].state = 0 # default
                     self.remove_from_skirmish(user_name)
             else:
@@ -464,6 +466,7 @@ class BattleBot(Thread):
             user.battle_character.team_gold = 0
             user.battle_character.full_health = user.character.health
             user.battle_character.killer_name = None # who killed this character
+            self.battle_characters.append(user.battle_character)
             # send actions
             self.send_action_to_user(user_name, self.can_leave_action())
             self.send_action_to_all(self.add_skirmish_user_action(user_name))
@@ -487,6 +490,7 @@ class BattleBot(Thread):
                 self.send_action_to_all(self.remove_skirmish_user_action(user_name))
                 self.send_action_to_user(user_name, self.can_join_action())
                 user.state = 0 # default
+                self.battle_characters.remove(user.battle_character)
                 user.battle_character = None
                 self.battle_users.pop(user_name)
             elif user.state != 2: # didn't run yet
