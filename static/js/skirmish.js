@@ -375,6 +375,13 @@ var pollUpdater = {
 
     onSuccess: function(response) {
         var action = $.parseJSON(response);
+        // set state
+        if(action.type == 0) {
+            $("#gameStateLabel").text(action.state);
+            message = {};
+            message["body"] = action.state;
+            addTextTo("#battleTab", format_message(message))
+        }
         // add turn div
         if(action.type == 1) {
             addDivAction(action.div_action);

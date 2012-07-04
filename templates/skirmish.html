@@ -48,8 +48,7 @@
             <table class="table-common auto-width">
                 <tr>
                     <td>{{ _("Name") }}</td><td><label id="nameLabel"></label></td>
-                    <td>{{ _("Race") }}</td><td><label id="raceLabel"></label></td>
-                    <td>{{ _("Class") }}</td><td><label id="classLabel"></label></td>
+                    <td><label id="raceLabel"></label></td><td><label id="classLabel"></label></td>
                     <td>{{ _("Level") }}</td><td><label id="levelLabel"></label></td>
                     <td>
                         <div class="progress progress-bar-base">
@@ -66,7 +65,6 @@
                         </div>
                     </td>
                     <td>{{ _("Gold") }}</td><td><label id="goldLabel"></label></td>
-                    <td>{{ _("Location") }}</td>
                     <td>
                         <select id="locationSelect" class="select-common">
                         {% for location in locations %}
@@ -74,6 +72,7 @@
                         {% end %}
                         </select>
                     </td>
+                    <td><label id="gameStateLabel"></label></td>
                     <td>
                         <button id="joinButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Join") }}</button><button id="leaveButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Leave") }}</button>
                     </td>
@@ -81,7 +80,7 @@
                     <td><a id="bagAnchor" class="mouse_pointer"><i class="icon-gift"></i></a></td>
                 </tr>
                 <tr>
-                    <td colspan="17">
+                    <td colspan="15">
                         <div class="progress progress-bar-experience">
                             <label class="progress-bar-label" id="experienceLabel"></label>
                             <div id="experienceBar" class="bar bar-common bar-experience" style="width: 1%;">

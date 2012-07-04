@@ -124,12 +124,15 @@ class DBManager():
         self.update_character(user_name)
 
     def get_team_info(self, team_name):
+        print "select * from teams where team_name = %s" % team_name
         return self.db.get("select * from teams where team_name = %s", team_name)
 
     def change_team_field(self, team_name, field_name, field_value):
+        print ("update teams set {0}=%s where team_name=%s".format(field_name)) % (field_value, team_name)
         self.db.execute("update teams set {0}=%s where team_name=%s".format(field_name), field_value, team_name)
 
     def change_character_field(self, user_name, field_name, field_value):
+        print ("update characters set {0}=%s where name=%s".format(field_name)) % (field_value, user_name)
         self.db.execute("update characters set {0}=%s where name=%s".format(field_name), field_value, user_name)
 
     def change_character_field_update(self, user_name, field_name, field_value):
@@ -138,7 +141,8 @@ class DBManager():
 
     def change_character_fields(self, user_name, fields):
         if len(fields) > 0:
-            fields_str = ", ".join("{0}='{1}'".format(key, str(fields[key])) for key in fields.keys())
+            fields_str = ", ".join("{0}={1}".format(key, str(fields[key])) for key in fields.keys())
+            print "update characters set {0} where name=%s".format(fields_str) % user_name
             self.db.execute("update characters set {0} where name=%s".format(fields_str), user_name)
 
     def change_character_fields_update(self, user_name, fields):

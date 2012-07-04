@@ -55,12 +55,9 @@ error_messages = {
 }
 
 battle_messages = {
-    0 : _("<font class=\"font-battle\">Registration has been started</font>"),
-    1 : _("<font class=\"font-battle\">Registration has been ended</font>"),
-    2 : _("<font class=\"font-battle\">Round {0} has been started</font>"),
-    3 : _("<font class=\"font-battle\">Round {0} has been ended</font>"),
-    4 : _("<font class=\"font-battle\">Game has been ended</font>"),
-    5 : _("Game can't be started, not enough players"),
+    0 : _("Truce"),
+    1 : _("Registration"),
+    2 : _("Round {0}"),
     6 : _("<b>{0}</b> damaged <b>{1}</b> with <b>{2}</b> for <font class=\"font-damage\">{3}</font>({4})[<font class=\"font-exp\">{5}</font>/<font class=\"font-exp\">{6}</font>]"),
     7 : _("<b>{0}</b> tried to attack <b>{1}</b> with <b>{2}</b>, but couldn't break protection({3})"),
     8 : _("<b>{0}</b> makes critical hit!"),

@@ -85,8 +85,7 @@ class CharactersManager:
 
     def team_info_action(self, team_info):
         return Action(204, {
-            "team_name" : team_info.team_name,
-            "team_gold" : team_info.gold,
+            "team_info" : team_info,
             "members" : self.get_team_members(team_info.team_name)
         })
 
@@ -342,9 +341,10 @@ class CharactersManager:
 
     def send_team_info_to_members(self, team_name):
         team_members = self.get_team_members(team_name)
+        team_info = self.db_manager.get_team_info(team_name)
         for member_name in team_members.keys():
             if member_name in self.online_users.keys():
-                self.online_users[member_name].send_action(self.team_info_action(self.db_manager.get_team_info(team_name)))
+                self.online_users[member_name].send_action(self.team_info_action(team_info))
 
     def send_invite(self, invite_user_name, user_name, team_name):
         self.online_users[invite_user_name].send_action(self.invite_action(user_name, team_name))

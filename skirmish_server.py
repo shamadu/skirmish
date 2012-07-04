@@ -279,8 +279,8 @@ class PollBotHandler(BaseHandler):
             result["team_div"] = self.render_string("create_team.html")
         elif action.type == 204:
             result["type"] = action.type
-            team_name = action.args["team_name"]
-            team_info = self.db_manager.get_team_info(team_name)
+            team_info = action.args["team_info"]
+            team_name = team_info.team_name
             gold_tax = smarty.get_gold_tax(self.locale)
             gold_tax.insert(0, gold_tax.pop(team_info.gold_tax))
             gold_sharing = smarty.get_gold_sharing(self.locale)
@@ -290,12 +290,12 @@ class PollBotHandler(BaseHandler):
             result["team_div"] = self.render_string("team_info.html",
                 user_name=self.current_user,
                 team_name=team_name,
-                team_gold=action.args["team_gold"],
+                team_gold=team_info.gold,
                 members=action.args["members"],
                 gold_sharing=gold_sharing,
                 experience_sharing=experience_sharing,
                 gold_tax=gold_tax)
-            result["team_name"] = action.args["team_name"]
+            result["team_name"] = team_name
         elif action.type == 205:
             result = action.args
             result["invitation_div"] = self.render_string("team_invitation.html",

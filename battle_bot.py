@@ -12,6 +12,7 @@ __author__ = 'PavelP'
 
 class BattleBot(Thread):
     # skirmish action types are:
+    # 0 - battle state
     # 1 - add turn div
     # 2 - set skirmish users
     # 3 - can join
@@ -23,6 +24,9 @@ class BattleBot(Thread):
     # 9 - message action
     # 10 - add skirmish user
     # 11 - remove skirmish user
+    def battle_state_action(self, state):
+        return Action(0, {"state" : state})
+
     def add_turn_div_action(self, user_name, skirmish_users):
         return Action(1, self.div_args(user_name, skirmish_users))
 
@@ -112,6 +116,7 @@ class BattleBot(Thread):
         del self.long_spells[:]
         self.phase = -1
         self.counter = 0
+        self.send_action_to_users(0, None) # truce started
 
     def run(self):
         while 1:
@@ -125,9 +130,6 @@ class BattleBot(Thread):
                 self.counter = 0
                 if len(self.teams) > 1 or None in self.teams.keys() and len(self.teams[None]) > 1: # more than one team or user
                     self.phase = 1
-                    self.registration_ended()
-                else:
-                    self.game_cant_start()
             elif self.phase > 0 and self.counter == 1:
                 if self.phase == 1: # first round
                     self.game_started()
@@ -220,7 +222,6 @@ class BattleBot(Thread):
     def process_game_result(self):
         # if there is just users of one team or one user without team - end game
         if len(self.teams) < 2 and (None not in self.teams.keys() or len(self.teams[None]) < 2): # process game result
-            self.send_text_action_to_users(4, None) # game has been ended
             if len(self.teams) > 0:
                 if None not in self.teams.keys():
                     self.send_text_action_to_users(11, "{0}({1})".format(self.teams.keys()[0], ", ".join(self.battle_users.keys()))) # game win team
@@ -512,6 +513,7 @@ class BattleBot(Thread):
     def user_enter(self, user_name):
         # if registration is in progress
         if self.phase == 0:
+            self.send_action_to_user(user_name, self.battle_state_action(smarty.battle_messages[1])) # state is registration
             # and if user is not in skirmish, send "can join" action
             if self.location_users[user_name].state != 1: # TODO: don't allow dead or ran users join battle till some payment
                 self.send_action_to_user(user_name, self.can_join_action())
@@ -520,6 +522,7 @@ class BattleBot(Thread):
                 self.send_action_to_user(user_name, self.can_leave_action())
         # if round is in progress
         elif self.phase > 0:
+            self.send_action_to_user(user_name, self.battle_state_action(smarty.battle_messages[2].format(self.phase))) # state is round is in progress
             # user can always leave skirmish
             self.send_action_to_user(user_name, self.can_leave_action())
             if self.location_users[user_name].state == 1:
@@ -539,32 +542,27 @@ class BattleBot(Thread):
             # all turns were done and if user is in skirmish and the turn is done, send "can cancel turn" action
             elif self.location_users[user_name].state == 1 and self.battle_users[user_name].is_turn_done():
                 self.send_action_to_user(user_name, self.wait_for_result_action(user_name, self.battle_users))
+        else: # initial state
+            self.send_action_to_user(user_name, self.battle_state_action(smarty.battle_messages[0])) # state is truce
 
     def registration_started(self):
-        self.send_text_action_to_users(0, None) # registration has been started
+        self.send_action_to_users(1, None) # registration has been started
         for online_user in self.location_users.values():
             online_user.send_action(self.can_join_action())
 
-    def registration_ended(self):
-        self.send_text_action_to_users(1, None) # registration has been ended
-
     def round_started(self):
-        self.send_text_action_to_users(2, self.phase) # round has been started
+        self.send_action_to_users(2, self.phase) # round has been started
         for user_name in self.battle_users.keys():
             self.battle_users[user_name].send_action(self.set_turn_users_action(self.battle_users))
             self.battle_users[user_name].send_action(self.can_do_turn_action(user_name, self.battle_users))
 
     def round_ended(self):
-        self.send_text_action_to_users(3, self.phase) # round has been ended
         for user_name in self.battle_users.keys():
             self.battle_users[user_name].send_action(self.wait_for_result_action(user_name, self.battle_users))
 
     def game_started(self):
         for skirmish_user in self.battle_users.keys():
             self.send_action_to_user(skirmish_user, self.add_turn_div_action(skirmish_user, self.battle_users))
-
-    def game_cant_start(self):
-        self.send_text_action_to_users(5, None) # game can't be started, not enough players
 
     def succeeded_attack(self, who, whom, amount, new_health, experience, full_experience):
         for online_user in self.location_users.values():
@@ -602,6 +600,10 @@ class BattleBot(Thread):
     def send_text_action_to_users(self, message_number, *args):
         for online_user in self.location_users.values():
             online_user.send_action(self.text_action(smarty.battle_messages[message_number], online_user.locale, *args))
+
+    def send_action_to_users(self, message_number, *args):
+        for online_user in self.location_users.values():
+            online_user.send_action(self.battle_state_action(online_user.locale.translate(smarty.battle_messages[message_number]).format(*args)))
 
     def skirmish_user_added(self, user_name):
         self.send_action_to_user(user_name, self.can_leave_action())
