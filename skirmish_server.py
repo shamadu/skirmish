@@ -208,39 +208,20 @@ class ActionHandler(BaseHandler):
                 message["to"] = self.get_argument("to")
             self.messager.new_message(self.current_user, message)
         elif self.get_argument("action") == 'shop_get_item':
-            item = items_manager.get_item(int(self.get_argument("item_id")), self.locale)
-            required = item.required_stats.get_required(self.locale)
-            bonus = item.bonus_stats.get_bonus(self.locale)
-            self.write(self.render_string("item_description.html",
-                item=item,
-                group_name=items_manager.get_item_group_name(item.type, self.locale),
-                buy_button=True,
-                can_buy=(self.users_manager.online_users[self.current_user].character.gold >= item.price),
-                required=", ".join("{0} {1}".format(stat_name, str(required[stat_name])) for stat_name in required.keys()),
-                bonus=", ".join("{0} {1}".format(stat_name, str(bonus[stat_name])) for stat_name in bonus.keys()),
-            ))
-        elif self.get_argument("action") == 'buy_item':
-            self.characters_manager.buy_item(self.current_user, self.get_argument("item_id"))
+            item_id = int(self.get_argument("item_id"))
+            self.write(self.render_item_description(item_id, True))
         elif self.get_argument("action") == 'db_get_item':
-            id = int(self.get_argument("item_id"))
-            if id >= items_manager.build_id(10, 0) and id < items_manager.build_id(18, 0):
-                spell = spells_manager.get_spell(id, self.locale)
+            item_id = int(self.get_argument("item_id"))
+            if item_id >= items_manager.build_id(10, 0) and item_id < items_manager.build_id(18, 0):
+                spell = spells_manager.get_spell(item_id, self.locale)
                 self.write(self.render_string("spell_description.html",
                     spell=spell,
                     group_name=smarty.get_class_name(spell.class_id, self.locale),
                     substance_name=smarty.get_substance_name(spell.class_id, self.locale)))
             else:
-                item = items_manager.get_item(id, self.locale)
-                required = item.required_stats.get_required(self.locale)
-                bonus = item.bonus_stats.get_bonus(self.locale)
-                self.write(self.render_string("item_description.html",
-                    item=item,
-                    group_name=items_manager.get_item_group_name(item.type, self.locale),
-                    buy_button=False,
-                    can_buy=False,
-                    required=", ".join("{0} {1}".format(stat_name, str(required[stat_name])) for stat_name in required.keys()),
-                    bonus=", ".join("{0} {1}".format(stat_name, str(bonus[stat_name])) for stat_name in bonus.keys()),
-                ))
+                self.write(self.render_item_description(item_id, False))
+        elif self.get_argument("action") == 'buy_item':
+            self.characters_manager.buy_item(self.current_user, self.get_argument("item_id"))
         elif self.get_argument("action") == 'open_chat':
             self.users_manager.open_chat(self.current_user, self.get_argument("user_name"), self.get_argument("message", ""))
         elif self.get_argument("action") == 'close_chat':
@@ -251,6 +232,23 @@ class ActionHandler(BaseHandler):
             self.characters_manager.change_gold_sharing(self.current_user, self.get_argument("strategy"))
         elif self.get_argument("action") == 'change_experience_sharing':
             self.characters_manager.change_experience_sharing(self.current_user, self.get_argument("strategy"))
+
+    def render_item_description(self, item_id, buy_button=True):
+        item = items_manager.get_item(item_id, self.locale)
+        required = item.required_stats.get_required(self.locale)
+        bonus = item.bonus_stats.get_bonus(self.locale)
+        classes = item.classes.get_class_names(self.locale)
+        can_buy = False
+        if buy_button:
+            can_buy = (self.users_manager.online_users[self.current_user].character.gold >= item.price)
+        return self.render_string("item_description.html",
+            item=item,
+            group_name=items_manager.get_item_group_name(item.type, self.locale),
+            buy_button=buy_button,
+            can_buy=can_buy,
+            required=", ".join("{0} {1}".format(stat_name, str(required[stat_name])) for stat_name in required.keys()),
+            bonus=", ".join("{0} {1}".format(stat_name, str(bonus[stat_name])) for stat_name in bonus.keys()),
+            classes=", ".join(classes))
 
 class PollBotHandler(BaseHandler):
     @tornado.web.authenticated

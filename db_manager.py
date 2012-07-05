@@ -138,7 +138,7 @@ class DBManager():
 
     def change_character_fields(self, user_name, fields):
         if len(fields) > 0:
-            fields_str = ", ".join("{0}={1}".format(key, str(fields[key])) for key in fields.keys())
+            fields_str = ", ".join("{0}='{1}'".format(key, str(fields[key])) for key in fields.keys())
             self.db.execute("update characters set {0} where name=%s".format(fields_str), user_name)
 
     def change_character_fields_update(self, user_name, fields):

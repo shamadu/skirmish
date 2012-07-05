@@ -130,7 +130,7 @@ class BattleBot(Thread):
             elif self.phase == 0 and self.counter == smarty.registration_time:
                 # registration end
                 self.counter = 0
-                if len(self.teams) > 1 or None in self.teams.keys() and len(self.teams[None]) > 1: # more than one team or user
+                if self.can_start():
                     self.phase = 1
             elif self.phase > 0 and self.counter == 1:
                 if self.phase == 1: # first round
@@ -149,6 +149,37 @@ class BattleBot(Thread):
 
             time.sleep(1)
             pass
+
+    # can start only if there is no clear advantage of one team
+    def can_start(self):
+        if len(self.teams) > 1 or None in self.teams.keys() and len(self.teams[None]) > 1: # more than one team or user
+            team_levels = list()
+            no_team_levels = list()
+            for team_name in self.teams.keys(): # team is list
+                team = self.teams[team_name]
+                if team_name:
+                    team_sum_level = 0
+                    for member in team:
+                        team_sum_level += member.battle_character.level
+                    team_levels.append(team_sum_level)
+                else:
+                    for member in team:
+                        no_team_levels.append(member.battle_character.level)
+            max_sum_level = max(team_levels)
+            max_character_level = max(no_team_levels)
+            if max_sum_level > max_character_level:
+                team_levels.remove(max_sum_level)
+                # 0.8 from sum of levels of the strongest team should be not more than sum of levels of the rest of players
+                if max_sum_level*0.8 < sum(team_levels, sum(no_team_levels)):
+                    return True
+            else:
+                no_team_levels.remove(max_character_level)
+                # 0.8 from level of the strongest character should be not more than sum of levels of the rest of players
+                if max_character_level*0.8 < sum(team_levels, sum(no_team_levels)):
+                    return True
+        return False
+
+
 
     def process_round_result(self):
         # collect actions from every user

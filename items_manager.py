@@ -58,11 +58,30 @@ class BonusStats(object):
 
         return result
 
+class Classes(object):
+    def __init__(self, *classes):
+        self.classes = list()
+        self.classes.extend(classes)
+
+    def get_class_names(self, locale):
+        result = list()
+        if len(self.classes) == len(smarty.classes):
+            result.append(locale.translate(_("All")))
+        else:
+            for class_id in self.classes:
+                result.append(locale.translate(smarty.classes[class_id]))
+
+        return result
+
+    def get_classes(self):
+        return self.classes
+
 class Item(object):
-    def __init__(self, id, name, type, required_stats, bonus_stats, price, description):
+    def __init__(self, id, name, type, classes, required_stats, bonus_stats, price, description):
         self.id = id
         self.name = name
         self.type = type
+        self.classes = classes
         self.required_stats = required_stats
         self.bonus_stats = bonus_stats
         self.price = price
@@ -76,8 +95,8 @@ class Item(object):
 
 
 class Weapon(Item):
-    def __init__(self, id, name, type, required_stats, bonus_stats, price, description, min_damage, max_damage):
-        super(Weapon, self).__init__(id, name, type, required_stats, bonus_stats, price, description)
+    def __init__(self, id, name, type, classes, required_stats, bonus_stats, price, description, min_damage, max_damage):
+        super(Weapon, self).__init__(id, name, type, classes, required_stats, bonus_stats, price, description)
         self.min_damage = min_damage
         self.max_damage = max_damage
 
@@ -97,28 +116,33 @@ build_id = lambda type, id: 100*type + id
 
 items = {
     #right hand
-    build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 1.2, 2.2),
-    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, RequiredStats(0, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 150, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
+    build_id(0, 0) : Weapon(build_id(0, 0), _("Knife"), 0, Classes(0, 1, 2, 3, 4, 5, 6, 7), RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("Knife is basic weapon, everybody has it"), 1.2, 2.2),
+    build_id(0, 1) : Weapon(build_id(0, 1), _("Stone"), 0, Classes(0, 1, 2, 3), RequiredStats(0, 0, 0, 0, 0), BonusStats(1, 1, 0, 0, 0, 0, 0), 150, _("Sharpened stone is the weapon of real barbarian"), 1.4, 2.6),
     #left hand
-    build_id(1, 0) : Item(build_id(1, 0), _("Basic shield"), 1, RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 150, _("Just wooden shield with iron circle in center")),
+    build_id(1, 0) : Item(build_id(1, 0), _("Basic shield"), 1, Classes(0, 1, 2, 3), RequiredStats(2, 0, 0, 0, 0), BonusStats(1, 0, 0, 0, 0, 0, 0), 150, _("Just wooden shield with iron circle in center")),
     #head
-    build_id(2, 0) : Item(build_id(2, 0), _("Basic helmet"), 2, RequiredStats(2, 0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 150, _("Wooden helmet is a better guard than your skull")),
+    build_id(2, 0) : Item(build_id(2, 0), _("Basic helmet"), 2, Classes(0, 1, 2, 3), RequiredStats(2, 0, 0, 0, 0), BonusStats(0, 1, 0, 0, 0, 0, 0), 150, _("Wooden helmet is a better guard than your skull")),
     # body
-    build_id(3, 0) : Item(build_id(3, 0), _("A"), 3, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(3, 0) : Item(build_id(3, 0), _("A"), 3, Classes(2, 3, 4, 5), RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # hands
-    build_id(4, 0) : Item(build_id(4, 0), _("B"), 4, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(4, 0) : Item(build_id(4, 0), _("B"), 4, Classes(3, 4, 5), RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # legs
-    build_id(5, 0) : Item(build_id(5, 0), _("C"), 5, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(5, 0) : Item(build_id(5, 0), _("C"), 5, Classes(7), RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # feet
-    build_id(6, 0) : Item(build_id(6, 0), _("D"), 6, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(6, 0) : Item(build_id(6, 0), _("D"), 6, Classes(0, 1, 2, 3), RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     # cloak
-    build_id(7, 0) : Item(build_id(7, 0), _("E"), 7, RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
+    build_id(7, 0) : Item(build_id(7, 0), _("E"), 7, Classes(0, 1, 2, 3), RequiredStats(0, 0, 0, 0, 0), BonusStats(0, 0, 0, 0, 0, 0, 0), 0, _("You don't wear anything")),
     }
 
 shop_items_ids = [
     build_id(0, 1),
     build_id(1, 0),
-    build_id(2, 0)
+    build_id(2, 0),
+    build_id(3, 0),
+    build_id(4, 0),
+    build_id(5, 0),
+    build_id(6, 0),
+    build_id(7, 0)
 ]
 
 def get_shop(locale):
@@ -214,11 +238,13 @@ def get_item_type(id):
 def check_item(character, item_id):
     result = False
     required_stats = items[item_id].required_stats
+    classes = items[item_id].classes.get_classes()
     if (character.level >= required_stats.level
         and character.strength >= required_stats.strength
         and character.dexterity>= required_stats.dexterity
         and character.intellect >= required_stats.intellect
-        and character.wisdom >= required_stats.wisdom):
+        and character.wisdom >= required_stats.wisdom
+        and character.class_id in classes):
         result = True
     return result
 
