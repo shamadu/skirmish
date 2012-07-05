@@ -43,9 +43,11 @@ var changeLocationFunc = function() {
 };
 
 var dropButtonClick = function () {
-    $.postJSON('/action', {"action" : "drop"}, function() {
-        window.location.href='/';
-    });
+    if (confirm(messages[3])) {
+        $.postJSON('/action', {"action" : "drop"}, function() {
+            window.location.href='/';
+        });
+    }
 };
 
 var joinButtonClick = function () {
