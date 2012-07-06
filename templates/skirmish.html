@@ -78,6 +78,7 @@
                     </td>
                     <td><a id="characterAnchor" class="mouse_pointer"><i class="icon-user"></i></a></td>
                     <td><a id="bagAnchor" class="mouse_pointer"><i class="icon-gift"></i></a></td>
+                    <td><button id="dropButton">{{ _("Drop") }}</button></td>
                 </tr>
                 <tr>
                     <td colspan="15">
@@ -93,12 +94,19 @@
         </div>
         <div id="battleDivContainer" class="div-content">
             <div id="divActionContainer" class="div-action-container">
-                <p class="div-center"><button id="dropButton">{{ _("Drop") }}</button></p>
                 <div id="divUsers" class="div-users">
-                    <div id="divOnlineUsers" class="div-users-list auto-width">
-                    </div>
-                    <div id="divTeamUsers" class="div-users-list auto-width">
-                    </div>
+                    <table class="table-common">
+                        <tr>
+                            <td><div id="divOnlineUsers"></div></td>
+                            <td width="5px"></td>
+                        </tr>
+                    </table>
+                    <table class="table-common">
+                        <tr>
+                            <td><div id="divTeamUsers"></div></td>
+                            <td width="10px"></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             <div id="divChat" class="div-chat">

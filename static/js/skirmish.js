@@ -47,7 +47,7 @@ var initialize = function () {
                 $(this).css('background-color' , '#FFF' );
             });
 
-    $(".div-users-list label").live({
+    $("#divOnlineUsers label, #divTeamUsers label").live({
         mouseenter : function () {
             $(this).css({backgroundColor : '#EEE'});
         },

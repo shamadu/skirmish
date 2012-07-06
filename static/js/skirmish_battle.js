@@ -61,14 +61,9 @@ var leaveButtonClick = function () {
 };
 
 var resize_battle = function() {
-    width = $("#divActionContainer").width();
-    if (width != 0) {
-        $("#divChat").css('right', width + 15 + 'px');
-    }
-    else {
-        $("#divChat").css('right', 0);
-    }
     $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
+    width = $("#divActionContainer").width();
+    $("#divChat").css('right', width + 5 + 'px');
 };
 
 var sendFunc = function() {

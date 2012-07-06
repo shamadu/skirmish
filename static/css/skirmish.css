@@ -30,10 +30,6 @@
     color: red;
 }
 
-.div-users-list label {
-    min-width: 50px;
-    text-align: center;
-}
 
 .location-user-label {
 }
@@ -79,8 +75,11 @@
 
 .div-action-container {
     position: absolute;
-    right: 5px;
+    right: 0;
     width: auto;
+    height: auto;
+    top: 0;
+    bottom: 0;
 }
 
 .div-action {
@@ -93,7 +92,17 @@
 .div-users {
     position: relative;
     float: left;
+    height: 100%;
+    overflow: auto;
+    overflow-x: hidden;
     width: auto;
+}
+
+#divOnlineUsers label,
+#divTeamUsers label {
+    min-width: 50px;
+    text-align: center;
+    width: 100%;
 }
 
 .div-chat {

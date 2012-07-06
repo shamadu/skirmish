@@ -7,6 +7,7 @@
             <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
                 <input type="text" class="text-common" value="0">
                 %
+                <button class="upPercentButton">{{ _("Cancel") }}</button>
             </div>
             {% else %}
                 {% for i in range(actions[action][1]) %}
