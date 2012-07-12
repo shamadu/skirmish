@@ -173,13 +173,13 @@ class BattleBot(Thread):
                 max_character_level = max(no_team_levels)
             if max_sum_level > max_character_level:
                 team_levels.remove(max_sum_level)
-                # 0.8 from sum of levels of the strongest team should be not more than sum of levels of the rest of players
-                if max_sum_level*0.8 < sum(team_levels, sum(no_team_levels)):
+                # 0.5 from sum of levels of the strongest team should be not more than sum of levels of the rest of players
+                if max_sum_level*0.5 <= sum(team_levels, sum(no_team_levels)):
                     return True
             else:
                 no_team_levels.remove(max_character_level)
-                # 0.8 from level of the strongest character should be not more than sum of levels of the rest of players
-                if max_character_level*0.8 < sum(team_levels, sum(no_team_levels)):
+                # 0.5 from level of the strongest character should be not more than sum of levels of the rest of players
+                if max_character_level*0.5 < sum(team_levels, sum(no_team_levels)):
                     return True
         return False
 

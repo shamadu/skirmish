@@ -188,20 +188,6 @@ var addDivAction = function(divAction) {
     resize_battle();
     $("#cancelButton").attr('disabled', 'true');
 
-    $("#divAction input[type=text]").keyup(function(){
-        value = $(this).val();
-        lastChar = value.charAt(value.length - 1);
-        if(lastChar > '9' || lastChar < '0') {
-            $(this).val(value.substring(0, value.length - 1))
-        }
-    });
-
-    $("#divAction input[type=text]").change(function(){
-        if(!checkTurnSum($(this))) {
-            window.alert("Incorrect percentage of the action. Incorrect values were changed to 0");
-        }
-    });
-
     $("#divAction select.spell_select").change(function(){
         if($("option:selected", this).hasClass("self")) {
             $(".user_select option[value=\"" + $("#nameLabel").text() + "\"]", $(this).parent()).attr("selected", "selected");
@@ -218,16 +204,37 @@ var addDivAction = function(divAction) {
 
     $("#cancelButton").click(cancelButtonClick);
 
+    $( ".slider" ).slider({
+        range: "min",
+        min: 0,
+        max: 100,
+        value: 0,
+        slide: function( event, ui ) {
+            event.preventDefault();
+            if (!$(">div", this).hasClass('ui-widget-header-disabled')) {
+                var sum = 0;
+                $("#divAction .slider").each(function() {
+                    intVal = parseInt($(this).slider("value"));
+                    sum += intVal;
+                });
+                current = $(this).slider("value");
+                sum = sum - current + ui.value;
+                if(sum > 100) {
+                    ui.value = ui.value - (sum - 100);
+                }
+
+                label = $(this).parent().parent().find(".label-percent-amount");
+                label.html(ui.value + "%");
+                $(this).slider({value : ui.value});
+            }
+        }
+    });
+
     height = $("#divAction").height();
     $("#divAction").height(1);
     $("#divAction").animate({ height: height }, 1000, function() {
 //        resize_battle();
     });
-};
-
-var enableDivAction = function() {
-    $("#divAction input,#divAction select,#divAction button").removeAttr('disabled');
-    $("#cancelButton").attr('disabled', true);
 };
 
 var showTurnInfo = function(turn_info) {
@@ -262,7 +269,8 @@ var showTurnInfo = function(turn_info) {
                         if (turn_parts[2]) {
                             $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(div)).attr("selected", "selected");
                         }
-                        $("input", $(div)).val(turn_parts[3]);
+                        $(".slider", $(div)).slider("value", parseInt(turn_parts[3]));
+                        $(".label-percent-amount", $(div)).html(turn_parts[3] + "%");
                     }
                 }
                 // if there is no target user - restore turn
@@ -270,50 +278,24 @@ var showTurnInfo = function(turn_info) {
                     if (turn_parts[2]) {
                         $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(div)).attr("selected", "selected");
                     }
-                    $("input", $(div)).val(turn_parts[3]);
+                    $(".slider", $(div)).slider("value", parseInt(turn_parts[3]));
+                    $(".label-percent-amount", $(div)).html(turn_parts[3] + "%");
                 }
             }
         }
     }
 };
 
-
-var disableDivAction = function(divAction, turn_info) {
-    $("#divAction input,#divAction select,#divAction button").attr('disabled', true);
-    $("#cancelButton").removeAttr('disabled');
+var enableDivAction = function() {
+    $("#divAction select,#divAction button").removeAttr('disabled');
+    $("#divAction .slider>div").removeClass('ui-widget-header-disabled');
+    $("#cancelButton").attr('disabled', true);
 };
 
-/*
- Return true if all values (text inputs in div with id "divAction") are correct (integer), false otherwise
- */
-var checkTurnSum = function(element) {
-    result = true;
-    value = element.val();
-    if(!isNaN(value)) {
-        var sum = 0;
-        i = 0;
-        $("#divAction input[type=text]").each(function() {
-            intVal = parseInt($(this).val());
-            if(isNaN(intVal)) {
-                $(this).val("0");
-                result = false;
-            }
-            else {
-                $(this).val(intVal);
-                sum += intVal;
-            }
-            ++i;
-        });
-        if(sum > 100) {
-            element.val(value - (sum - 100));
-        }
-    }
-    else {
-        element.val("0");
-        result = false;
-    }
-
-    return result;
+var disableDivAction = function(divAction, turn_info) {
+    $("#divAction select,#divAction button").attr('disabled', true);
+    $("#divAction .slider>div").addClass('ui-widget-header-disabled');
+    $("#cancelButton").removeAttr('disabled');
 };
 
 var removeDivAction = function(divAction) {
@@ -324,34 +306,29 @@ var removeDivAction = function(divAction) {
 };
 
 var doButtonClick = function() {
-    if(!checkTurnSum($(this))) {
-        window.alert(messages[0]);
+    /*
+     Prepare turn information:
+     <action1>:<player1>:[<spell1>]:<percent1>,<action2>:<player2>:[<spell2>]:<percent2>,...
+     */
+    turnInfo = "";
+    $(".action").each(function() {
+        percent = $(".slider", this).slider("value");
+        if (percent != 0) {
+            turnInfo += $(this).attr("action") + ":";
+            value = $(".user_select option:selected", this).html();
+            turnInfo += ((value) ? value : "") + ":";
+            value = $(".spell_select option:selected", this).val();
+            turnInfo += ((value) ? value : "") + ":";
+            turnInfo += $(".slider", this).slider("value");
+            turnInfo += ",";
+        }
+    });
+    if (turnInfo) {
+        $.postJSON('/action', {'action' : 'turn_do', 'turn_info' : turnInfo}, function(){
+        });
     }
     else {
-        /*
-         Prepare turn information:
-         <action1>:<player1>:[<spell1>]:<percent1>,<action2>:<player2>:[<spell2>]:<percent2>,...
-         */
-        turnInfo = "";
-        $(".action").each(function() {
-            percent = $("input[type=text]", this).val();
-            if (percent != 0) {
-                turnInfo += $(this).attr("action") + ":";
-                value = $(".user_select option:selected", this).html();
-                turnInfo += ((value) ? value : "") + ":";
-                value = $(".spell_select option:selected", this).val();
-                turnInfo += ((value) ? value : "") + ":";
-                turnInfo += $("input[type=text]", this).val();
-                turnInfo += ",";
-            }
-        });
-        if (turnInfo) {
-            $.postJSON('/action', {'action' : 'turn_do', 'turn_info' : turnInfo}, function(){
-            });
-        }
-        else {
-            window.alert(messages[1])
-        }
+        window.alert(messages[1])
     }
 };
 
@@ -361,7 +338,8 @@ var cancelButtonClick = function() {
 };
 
 var resetButtonClick = function() {
-    $("#divAction input[type=text]").each(function() {
-        $(this).val("0")
+    $("#divAction").each(function() {
+        $(".slider", this).slider("value", 0);
+        $(this).parent().parent().find(".label-percent-amount").html("0%");
     });
 };

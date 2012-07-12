@@ -5,20 +5,28 @@
         <div style="width: auto">{{ actions[action][0] }}
             {% if actions[action][1] == 0 %}
             <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
-                <input type="text" class="text-common" value="0">
-                %
-                <button class="upPercentButton">{{ _("Cancel") }}</button>
+                <div style="padding: 10px; width: auto; float:left;">
+                    <div class="slider">
+                    </div>
+                </div>
+                <label class="label-percent-amount">0%</label>
             </div>
             {% else %}
                 {% for i in range(actions[action][1]) %}
                 <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
-                    <select class="select-common user_select" style="margin: auto; width: auto;">
+                    <select class="select-common user_select" style="margin: auto; width: auto; float:left;">
                         {% for user in users %}
                         <option value="{{ user }}">{{ user }}</option>
                         {% end %}
                     </select>
+                    <div style="padding: 10px; width: auto; float:left;">
+                        <div class="slider">
+                        </div>
+                    </div>
+                    <label class="label-percent-amount">0%</label>
                     {% if action == 2 %}
-                    <select class="select-common spell_select" style="margin: auto; width: auto;">
+                    <br>
+                    <select class="select-common spell_select" style="margin: auto; width: auto; margin-top: 5px;">
                         {% for spell in spells %}
                         <option value="{{ spell.id }}"
                                 {% if spell.is_self %}
@@ -28,8 +36,6 @@
                         {% end %}
                     </select>
                     {% end %}
-                    <input type="text" class="text-common" value="0">
-                    %
                 </div>
                 {% end %}
             {% end %}
