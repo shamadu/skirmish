@@ -1,47 +1,61 @@
-{% comment "actions(dict <action id> : tuple <action name, action count>), users(list of names), spells(list of spells/skills)" %}
+{% comment "actions(list of tuples <action id, action name>), users(list of names), spells(list of spells/skills)" %}
 <div id="divAction" class="div-action">
-    {% for action in actions.keys() %}
-        {% if action != 2 or len(spells) > 0 %}
-        <div style="width: auto">{{ actions[action][0] }}
-            {% if actions[action][1] == 0 %}
-            <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
-                <div style="padding: 10px; width: auto; float:left;">
-                    <div class="slider">
-                    </div>
-                </div>
-                <label class="label-percent-amount">0%</label>
-            </div>
-            {% else %}
-                {% for i in range(actions[action][1]) %}
-                <div class="action" action="{{ action }}" style="width: auto; padding: 5px;">
-                    <select class="select-common user_select" style="margin: auto; width: auto; float:left;">
-                        {% for user in users %}
-                        <option value="{{ user }}">{{ user }}</option>
-                        {% end %}
-                    </select>
-                    <div style="padding: 10px; width: auto; float:left;">
-                        <div class="slider">
-                        </div>
-                    </div>
-                    <label class="label-percent-amount">0%</label>
-                    {% if action == 2 %}
-                    <br>
-                    <select class="select-common spell_select" style="margin: auto; width: auto; margin-top: 5px;">
-                        {% for spell in spells %}
-                        <option value="{{ spell.id }}"
-                                {% if spell.is_self %}
-                                class="self"
+    <table class="table-common">
+        {% for action in actions %}
+            {% if action[0] != 2 or len(spells) > 0 %}
+                <tr class="action" action="{{ action[0] }}">
+                    <td>
+                        {{ action[1] }}
+                    </td>
+                    {% if action[0] == 3 %}
+                        <td>
+                        </td>
+                        <td>
+                            <div style="padding: 10px">
+                                <div class="slider">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <label class="label-percent-amount">0%</label>
+                        </td>
+                    {% else %}
+                        <td>
+                            <select class="select-common user_select" style="margin: auto; width: auto; float:left;">
+                                {% for user in users %}
+                                    <option value="{{ user }}">{{ user }}</option>
                                 {% end %}
-                                >{{ spell.name }}</option>
-                        {% end %}
-                    </select>
+                            </select>
+                        </td>
+                        <td>
+                            <div style="padding: 10px; width: auto; float:left;">
+                                <div class="slider">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <label class="label-percent-amount">0%</label>
+                        </td>
                     {% end %}
-                </div>
-                {% end %}
+                </tr>
+                    {% if action[0] == 2 %}
+                        <tr>
+                            <td colspan="3">
+                                <select class="select-common spell_select" style="margin: auto; width: auto; margin-top: 5px;">
+                                    {% for spell in spells %}
+                                    <option value="{{ spell.id }}"
+                                            {% if spell.is_self %}
+                                            class="self"
+                                            {% end %}
+                                            >{{ spell.name }}</option>
+                                    {% end %}
+                                </select>
+                            </td>
+                        </tr>
+                    {% end %}
             {% end %}
-        </div>
         {% end %}
-    {% end %}
+    </table>
     <div class="div-center">
         <button id="doButton" style="margin:0 5px 0 0;">{{ _("Do") }}</button>
         <button id="resetButton" style="margin:0 5px 0 0;">{{ _("Reset") }}</button>

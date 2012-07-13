@@ -541,3 +541,8 @@ button.tabClose {
     border: 1px solid #0074cc;
     background: #49afcd;
 }
+
+.label-percent-amount {
+    width: auto;
+    float: left;
+}

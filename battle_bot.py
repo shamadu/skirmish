@@ -62,11 +62,17 @@ class BattleBot(Thread):
 
     def div_args(self, user_name, skirmish_users):
         user = skirmish_users[user_name]
-        actions = OrderedDict()
-        actions[0] = user.locale.translate(smarty.main_abilities[0]), smarty.get_attack_count(user.battle_character.class_id, user.battle_character.level)
-        actions[1] = user.locale.translate(smarty.main_abilities[1]), smarty.get_defence_count(user.battle_character.class_id, user.battle_character.level)
-        actions[2] = smarty.get_ability_name(user.battle_character.class_id, user.locale) , smarty.get_spell_count(user.battle_character.class_id, user.battle_character.level)
-        actions[3] = smarty.get_substance_name(user.battle_character.class_id, user.locale) , 0
+        actions = list()
+        count = smarty.get_attack_count(user.battle_character.class_id, user.battle_character.level)
+        for i in range(count):
+            actions.append((0, user.locale.translate(smarty.main_abilities[0])))
+        count = smarty.get_defence_count(user.battle_character.class_id, user.battle_character.level)
+        for i in range(count):
+            actions.append((1, user.locale.translate(smarty.main_abilities[1])))
+        count = smarty.get_spell_count(user.battle_character.class_id, user.battle_character.level)
+        for i in range(count):
+            actions.append((2, smarty.get_ability_name(user.battle_character.class_id, user.locale)))
+        actions.append((3, smarty.get_substance_name(user.battle_character.class_id, user.locale)))
         return {
             "actions" : actions,
             "users" : {},
