@@ -1,17 +1,3 @@
-.bar-info-top {
-    position: absolute;
-    height: 10px;
-    width: auto;
-    left: 5px;
-    right: 5px;
-}
-
-.bar-info-top label {
-    width: auto;
-    display: inline;
-    white-space: nowrap;
-}
-
 .select-common {
     margin: auto;
     width: auto;
@@ -26,11 +12,34 @@
     padding: 2px;
 }
 
+.table-common {
+    width: auto;
+    border : 0;
+}
+
+.table-common tr {
+    vertical-align : middle;
+    text-align: center;
+}
+
+.table-common td {
+    vertical-align : middle;
+    padding: 1px 5px 1px 5px;
+}
+
+.table-common h4 {
+    width: auto;
+}
+
+.table-common label {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
 .label-error {
     margin: auto;
     color: red;
 }
-
 
 .location-user-label {
 }
@@ -102,10 +111,6 @@
     width: 100%;
 }
 
-.nav {
-    margin-bottom: 10px;
-}
-
 .div-send {
     position: fixed;
     bottom: 20px;
@@ -135,25 +140,6 @@
     margin-right: auto;
 }
 
-.table-common {
-    width: auto;
-    border : 0;
-}
-
-.table-common tr{
-    vertical-align : middle;
-    text-align: center;
-}
-
-.table-common td{
-    vertical-align : middle;
-    padding: 1px 5px 1px 5px;
-}
-
-.table-common h4{
-    width: auto;
-}
-
 .table-character-stuff td,
 .table-bag-stuff td {
     width: 50px;
@@ -178,11 +164,6 @@
 
 .auto-width {
     width: auto;
-}
-
-.table-common label{
-    margin-bottom: 0;
-    margin-top: 0;
 }
 
 .div-team-creation {
@@ -308,6 +289,10 @@ button.tabClose {
     float: none;
 }
 
+.tabs-skirmish {
+    margin-bottom: 10px;
+}
+
 .tabs-skirmish >li >a {
     background-color: #f0f0f0;
     border-color: #eeeeee #eeeeee #dddddd;
@@ -317,122 +302,6 @@ button.tabClose {
 .tabs-skirmish >li.mainTab >a {
     padding-right: 5px;
     height: 20px;
-}
-
-.progress-bar-base,
-.progress-bar-experience {
-    position: relative;
-    width: 90px;
-    height: 12px;
-    line-height: 12px;
-    margin-bottom: 0;
-    background-color: #d5d5d5;
-    background-image: -moz-linear-gradient(top, #d5d5d5, #f9f9f9);
-    background-image: -ms-linear-gradient(top, #d5d5d5, #f9f9f9);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#d5d5d5), to(#f9f9f9));
-    background-image: -webkit-linear-gradient(top, #d5d5d5, #f9f9f9);
-    background-image: -o-linear-gradient(top, #d5d5d5, #f9f9f9);
-    background-image: linear-gradient(top, #d5d5d5, #f9f9f9);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#d5d5d5', endColorstr='#f9f9f9', GradientType=0);
-}
-
-.progress-bar-experience {
-    width: 100%;
-}
-
-.progress-bar-base .bar-common,
-.progress-bar-experience .bar-common {
-    position: relative;
-    height: 12px;
-    line-height: 12px;
-    overflow: hidden;
-    -webkit-border-radius: 4px;
-       -moz-border-radius: 4px;
-            border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-       -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.progress-bar-base .bar-health {
-    background-color: #00ff00;
-    background-image: -moz-linear-gradient(top, #00ff00, #005000);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#00ff00), to(#005000));
-    background-image: -webkit-linear-gradient(top, #00ff00, #005000);
-    background-image: -o-linear-gradient(top, #00ff00, #005000);
-    background-image: linear-gradient(top, #00ff00, #005000);
-    background-image: -ms-linear-gradient(top, #00ff00, #005000);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#00ff00', endColorstr='#005000', GradientType=0);
-}
-
-.progress-bar-base .bar-health-low {
-    background-color: #ffb559;
-    background-image: -moz-linear-gradient(top, #ffb559, #623600);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffb559), to(#623600));
-    background-image: -webkit-linear-gradient(top, #ffb559, #623600);
-    background-image: -o-linear-gradient(top, #ffb559, #623600);
-    background-image: linear-gradient(top, #ffb559, #623600);
-    background-image: -ms-linear-gradient(top, #ffb559, #623600);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffb559', endColorstr='#623600', GradientType=0);
-}
-
-.progress-bar-base .bar-health-very-low {
-    background-color: #ff3535;
-    background-image: -moz-linear-gradient(top, #ff3535, #420000);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ff3535), to(#420000));
-    background-image: -webkit-linear-gradient(top, #ff3535, #420000);
-    background-image: -o-linear-gradient(top, #ff3535, #420000);
-    background-image: linear-gradient(top, #ff3535, #420000);
-    background-image: -ms-linear-gradient(top, #ff3535, #420000);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ff3535', endColorstr='#420000', GradientType=0);
-}
-
-.progress-bar-base .bar-mana {
-    background-color: #78cdff;
-    background-image: -moz-linear-gradient(top, #78cdff, #004067);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#78cdff), to(#004067));
-    background-image: -webkit-linear-gradient(top, #78cdff, #004067);
-    background-image: -o-linear-gradient(top, #78cdff, #004067);
-    background-image: linear-gradient(top, #78cdff, #004067);
-    background-image: -ms-linear-gradient(top, #78cdff, #004067);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#78cdff', endColorstr='#004067', GradientType=0);
-}
-
-.progress-bar-base .bar-energy {
-    background-color: #ffff00;
-    background-image: -moz-linear-gradient(top, #ffff00, #b99700);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(ffff00), to(#b99700));
-    background-image: -webkit-linear-gradient(top, #ffff00, #b99700);
-    background-image: -o-linear-gradient(top, #ffff00, #b99700);
-    background-image: linear-gradient(top, #ffff00, #b99700);
-    background-image: -ms-linear-gradient(top, #ffff00, #b99700);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffff00', endColorstr='#b99700', GradientType=0);
-}
-
-.progress-bar-experience .bar-experience {
-    background-color: #e595ff;
-    background-image: -moz-linear-gradient(top, #e595ff, #4f0069);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e595ff), to(#4f0069));
-    background-image: -webkit-linear-gradient(top, #e595ff, #4f0069);
-    background-image: -o-linear-gradient(top, #e595ff, #4f0069);
-    background-image: linear-gradient(top, #e595ff, #4f0069);
-    background-image: -ms-linear-gradient(top, #e595ff, #4f0069);
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#e595ff', endColorstr='#4f0069', GradientType=0);
-}
-
-.bar-info-top .progress-bar-label {
-    position: absolute;
-    font-size: 9px;
-    line-height: 12px;
-    width: 100%;
-    left: 0;
-}
-
-.bar-info-top .progress-bar-label-white {
-    position: absolute;
-    color: #ffffff;
-    width: 200%;
-    left: 0;
 }
 
 .font-battle {
@@ -481,53 +350,4 @@ button.tabClose {
     background-color: #ffffff;
     float: left;
     margin-right: 5px;
-}
-
-/* jQuery UI CSS corrections */
-
-.ui-slider-horizontal
-{
-    height: 5px;
-    width: 60px;
-}
-
-.ui-slider-horizontal .ui-slider-handle {
-    top: -3px;
-    margin-left: -5px;
-    width: 8px;
-    height: 8px;
-}
-
-.ui-widget-header
-{
-    background: #08c;
-}
-
-.ui-widget-header-disabled
-{
-    background: #808080;
-}
-
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus
-{
-    border: 1px solid #0074cc;
-    background: #49afcd;
-}
-
-.ui-widget-content {
-    background: #eeeeee;
-}
-
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default
-{
-    background: #f6f6f6 ;
-}
-
-.label-percent-amount {
-    width: auto;
-    float: left;
-}
-
-.button-player-select {
-    white-space: nowrap;
 }

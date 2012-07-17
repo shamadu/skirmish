@@ -132,10 +132,9 @@ class BattleBot(Thread):
                 # registration end
                 self.counter = 0
                 if self.can_start():
+                    self.game_started()
                     self.phase = 1
             elif self.phase > 0 and self.counter == 1:
-                if self.phase == 1: # first round
-                    self.game_started()
                 self.round_started()
             elif self.phase > 0 and (self.counter == smarty.turn_time
                                      or len(self.ran_users) + self.turn_done_count == len(self.battle_users)):
@@ -517,6 +516,7 @@ class BattleBot(Thread):
         if user_name in self.battle_users.keys():
             user = self.battle_users[user_name]
             if self.phase == 0:
+                self.battle_users.pop(user_name)
                 # remove from battle team
                 team_name = user.battle_character.team_name
                 self.teams[team_name].remove(user)
@@ -524,11 +524,10 @@ class BattleBot(Thread):
                     self.teams.pop(team_name)
                 # send actions
                 self.send_action_to_all(self.remove_skirmish_user_action(user_name))
-                self.send_action_to_user(user_name, self.can_join_action())
+                user.send_action(self.can_join_action())
                 user.state = 0 # default
                 self.battle_characters.remove(user.battle_character)
                 user.battle_character = None
-                self.battle_users.pop(user_name)
             elif user.state != 2: # didn't run yet
                 if user.is_turn_done(): # if did turn - reset it
                     user.reset_turn()

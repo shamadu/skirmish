@@ -1,0 +1,40 @@
+/* jQuery UI CSS corrections */
+
+.ui-slider-horizontal
+{
+    height: 5px;
+    width: 60px;
+}
+
+.ui-slider-horizontal .ui-slider-handle {
+    top: -3px;
+    margin-left: -5px;
+    width: 8px;
+    height: 8px;
+}
+
+.ui-widget-header
+{
+    background: #08c;
+}
+
+.ui-widget-header-disabled
+{
+    background: #808080;
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus
+{
+    border: 1px solid #0074cc;
+    background: #49afcd;
+}
+
+.ui-widget-content {
+    background: #eeeeee;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default
+{
+    background: #f6f6f6 ;
+}
+

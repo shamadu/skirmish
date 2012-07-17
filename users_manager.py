@@ -118,7 +118,8 @@ class UsersManager(Thread):
         self.send_action_to_all(online_users, self.user_offline_action(user_name))
         if user_name not in self.battle_manager.battle_bots[location].battle_users.keys():
             for online_user in self.location_users[location].values():
-                online_user.send_action(self.user_online_action(user_name, user.character.team_name == online_user.character.team_name))
+                team_mate = online_user.character.team_name and (user.character.team_name == online_user.character.team_name)
+                online_user.send_action(self.user_online_action(user_name, team_mate))
         self.location_users[user.location].pop(user_name)
         self.location_users[location][user_name] = user
         self.db_manager.update_user_location(user_name, location)
