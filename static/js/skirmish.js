@@ -122,6 +122,10 @@ var initialize = function () {
     $("#characterDivFrame .close, #bagDivFrame .close").click(function() {
         $(this).parent().hide();
     });
+
+    $("#whiteHPLabel").width($("#healthBar").parent().width());
+    $("#whiteMPLabel").width($("#manaBar").parent().width());
+    $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
 };
 
 var showBattle = function() {
@@ -397,6 +401,7 @@ var pollUpdater = {
         // set state
         if(action.type == 0) {
             $("#gameStateLabel").text(action.state);
+            $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
             message = {};
             message["body"] = action.state;
             addTextTo("#battleTab", format_message(message))
@@ -555,9 +560,6 @@ var pollUpdater = {
             $("#experienceLabel").text(characterInfo[16] + "/" + characterInfo[17]);
             $("#whiteExperienceLabel").text(characterInfo[16] + "/" + characterInfo[17]);
             $("#experienceBar").width(characterInfo[16]/characterInfo[17] * 100 + "%");
-            $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
-            $("#whiteHPLabel").width($("#healthBar").parent().width());
-            $("#whiteMPLabel").width($("#manaBar").parent().width());
         }
         // character stuff update
         else if (action.type == 201) {
