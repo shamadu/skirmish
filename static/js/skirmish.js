@@ -35,6 +35,13 @@ var initialize = function () {
            $('.vmenu').hide();
        }
     });
+    // reset all user select buttons
+    $(document.body).mouseup(function(){
+        $(".button-player-select.active").each(function(){
+            $(this).removeClass("active");
+            $(this).button("reset");
+        });
+    });
     // initialize right click user context menu
     $('.vmenu .first_li').live('click',function() {
         $('.vmenu').hide();
@@ -64,9 +71,22 @@ var initialize = function () {
             $("#vmenu").css({ left: left_offset, top: e.pageY + 1, zIndex: '101' }).show();
             return false;
         },
-        click : function() {
-            $("#vmenu").data("user_name", $(this).attr('value'));
-            openPrivateChatFunc();
+        mousedown : function(event) {
+            // which = 1, 2, 3 for LMB, MMB,RMB
+            if (event.which == 1) {
+                active_elements = $(".button-player-select.active");
+                user_name = $(this).attr('value');
+                if (active_elements.length > 0) {
+                    $(active_elements).each(function(){
+                        $(this).removeClass("active");
+                        $(this).text(user_name);
+                    });
+                }
+                else {
+                    $("#vmenu").data("user_name", $(this).attr('value'));
+                    openPrivateChatFunc();
+                }
+            }
         }
     });
 
@@ -386,16 +406,6 @@ var pollUpdater = {
         if(action.type == 1) {
             addDivAction(action.div_action);
         }
-        // set skirmish users
-        else if(action.type == 2) {
-            $("#divAction .user_select").each(function(){
-               $(this).empty();
-                for (i = 0; i < action.skirmish_users.length; ++i){
-                    $(this).append("<option value=\"" + action.skirmish_users[i] + "\">" + action.skirmish_users[i] + "</option>");
-                }
-            });
-            resize_battle();
-        }
         // can join
         else if(action.type == 3) {
             $("#joinButton").removeAttr('disabled');
@@ -417,8 +427,8 @@ var pollUpdater = {
             // set self spells
             $("#divAction select.spell_select option:selected").each(function(){
                 if($(this).hasClass("self")) {
-                    $(".user_select option[value=\"" + $("#nameLabel").text() + "\"]", $(this).parent().parent()).attr("selected", "selected");
-                    $(".user_select", $(this).parent().parent()).attr('disabled', 'true');
+                    $(this).parent().parent().find(".button-player-select").text($("#nameLabel").text());
+                    $(this).parent().parent().find(".button-player-select").attr('disabled', 'true');
                 }
             });
         }

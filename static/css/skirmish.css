@@ -83,6 +83,16 @@
     bottom: 0;
 }
 
+.div-chat {
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 0;
+    bottom: 95px;
+    right: 0;
+    left: 5px;
+}
+
 .div-action {
     position: relative;
     width: auto;
@@ -104,16 +114,6 @@
     min-width: 50px;
     text-align: center;
     width: 100%;
-}
-
-.div-chat {
-    position: absolute;
-    width: auto;
-    height: auto;
-    top: 0;
-    bottom: 95px;
-    right: 0;
-    left: 5px;
 }
 
 .tabbable {

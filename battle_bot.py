@@ -1,4 +1,3 @@
-from collections import OrderedDict
 import copy
 import random
 from threading import Thread
@@ -29,9 +28,6 @@ class BattleBot(Thread):
 
     def add_turn_div_action(self, user_name, skirmish_users):
         return Action(1, self.div_args(user_name, skirmish_users))
-
-    def set_turn_users_action(self, skirmish_users):
-        return Action(2, {"skirmish_users" : skirmish_users.keys()})
 
     def can_join_action(self):
         return Action(3, {})
@@ -75,7 +71,6 @@ class BattleBot(Thread):
         actions.append((3, smarty.get_substance_name(user.battle_character.class_id, user.locale)))
         return {
             "actions" : actions,
-            "users" : {},
             "spells" : spells_manager.get_spells(user.battle_character, user.locale)
         }
 
@@ -572,7 +567,6 @@ class BattleBot(Thread):
             self.send_action_to_user(user_name, self.can_leave_action())
             if self.location_users[user_name].state == 1:
                 self.send_action_to_user(user_name, self.add_turn_div_action(user_name, self.battle_users))
-                self.send_action_to_user(user_name, self.set_turn_users_action(self.battle_users))
             if self.location_users[user_name].state == 2: # user ran
                 self.send_action_to_user(user_name, self.reset_to_initial_action())
                 # if it's time to do the turn
@@ -598,7 +592,6 @@ class BattleBot(Thread):
     def round_started(self):
         self.send_action_to_users(2, self.phase) # round has been started
         for user_name in self.battle_users.keys():
-            self.battle_users[user_name].send_action(self.set_turn_users_action(self.battle_users))
             self.battle_users[user_name].send_action(self.can_do_turn_action(user_name, self.battle_users))
 
     def round_ended(self):

@@ -15,7 +15,8 @@ user_offline_time = 30
 
 key_words = [
     "battle",
-    "location"
+    "location",
+    "player"
 ]
 
 locations = [

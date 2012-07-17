@@ -265,7 +265,7 @@ class PollBotHandler(BaseHandler):
         result = {}
         if action.type == 1:
             result["type"] = action.type
-            result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], users=action.args["users"], spells=action.args["spells"])
+            result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], spells=action.args["spells"])
         elif action.type == 202:
             result["type"] = action.args["type"]
             result["spells_div"] = self.render_string("spells_table.html",

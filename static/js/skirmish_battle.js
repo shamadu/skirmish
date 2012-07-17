@@ -61,6 +61,7 @@ var leaveButtonClick = function () {
 };
 
 var resize_battle = function() {
+    return;
     $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
     width = $("#divActionContainer").width();
     $("#divChat").css('right', width + 5 + 'px');
@@ -185,16 +186,15 @@ var addTextTo = function(tab_element_id, message) {
 
 var addDivAction = function(divAction) {
     $("#divActionContainer").append(divAction);
-    resize_battle();
     $("#cancelButton").attr('disabled', 'true');
 
     $("#divAction select.spell_select").change(function(){
         if($("option:selected", this).hasClass("self")) {
-            $(".user_select option[value=\"" + $("#nameLabel").text() + "\"]", $(this).parent().parent().prev()).attr("selected", "selected");
-            $(".user_select", $(this).parent().parent().prev()).attr('disabled', 'true');
+            $(this).parent().parent().find(".button-player-select").text($("#nameLabel").text());
+            $(this).parent().parent().find(".button-player-select").attr('disabled', 'true');
         }
         else {
-            $(".user_select", $(this).parent().parent().prev()).removeAttr('disabled');
+            $(this).parent().parent().find(".button-player-select").removeAttr('disabled');
         }
     });
 
@@ -230,11 +230,24 @@ var addDivAction = function(divAction) {
         }
     });
 
+    $(".button-player-select").click(function(event){
+        if(!$(this).hasClass("active")) {
+            $(this).button("pressed");
+        }
+        else {
+            $(this).button("reset");
+        }
+        // to not propagate event to document body
+        event.stopPropagation();
+        $(this).button("toggle");
+    });
+
     height = $("#divAction").height();
     $("#divAction").height(1);
     $("#divAction").animate({ height: height }, 1000, function() {
 //        resize_battle();
     });
+    resize_battle();
 };
 
 var showTurnInfo = function(turn_info) {
@@ -264,8 +277,8 @@ var showTurnInfo = function(turn_info) {
                 // if there is target user_name and there is such user in list, restore turn part
                 // if there is no such user - do nothing
                 if (turn_parts[1] ) {
-                    if ($(".user_select option[value=\"" + turn_parts[1] + "\"]", $(tr)).length > 0) {
-                        $(".user_select option[value=\"" + turn_parts[1] + "\"]", $(tr)).attr("selected", "selected");
+                    if ($(tr).find(".skirmish-user-label[value=\"" + turn_parts[1] + "\"]").length > 0) {
+                        $(".button-player-select").text(turn_parts[1]);
                         if (turn_parts[2]) {
                             $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(tr)).attr("selected", "selected");
                         }
@@ -316,7 +329,7 @@ var doButtonClick = function() {
         percent = $(".slider", this).slider("value");
         if (percent != 0) {
             turnInfo += $(this).attr("action") + ":";
-            value = $(".user_select option:selected", this).html();
+            value = $(".button-player-select", this).text();
             turnInfo += ((value) ? value : "") + ":";
             value = $(".spell_select option:selected", $(this).next()).val();
             turnInfo += ((value) ? value : "") + ":";

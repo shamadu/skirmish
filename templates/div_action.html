@@ -1,4 +1,4 @@
-{% comment "actions(list of tuples <action id, action name>), users(list of names), spells(list of spells/skills)" %}
+{% comment "actions(list of tuples <action id, action name>), spells(list of spells/skills)" %}
 <div id="divAction" class="div-action">
     <table class="table-common">
         {% for action in actions %}
@@ -21,14 +21,10 @@
                         </td>
                     {% else %}
                         <td>
-                            <select class="select-common user_select" style="margin: auto; width: auto; float:left;">
-                                {% for user in users %}
-                                    <option value="{{ user }}">{{ user }}</option>
-                                {% end %}
-                            </select>
+                            <button  class="btn button-player-select" data-toggle="button" data-pressed-text="{{ _("Select player") }}">{{ _("Choose player") }}</button>
                         </td>
                         <td>
-                            <div style="padding: 10px; width: auto; float:left;">
+                            <div style="padding: 10px; width: auto">
                                 <div class="slider">
                                 </div>
                             </div>
