@@ -514,6 +514,15 @@ button.tabClose {
     background: #49afcd;
 }
 
+.ui-widget-content {
+    background: #eeeeee;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default
+{
+    background: #f6f6f6 ;
+}
+
 .label-percent-amount {
     width: auto;
     float: left;
