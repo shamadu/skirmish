@@ -285,9 +285,9 @@ def get_default_parameters(race_id, class_id):
 
 def get_regeneration(character):
     if character.class_id < 4:
-        return 0.4*character.dexterity + 0.3*character.strength
+        return round(0.4*character.dexterity + 0.3*character.strength, 2)
     else:
-        return 0.4*character.wisdom + 0.3*character.intellect
+        return round(0.4*character.wisdom + 0.3*character.intellect, 2)
 
 def get_attack(character):
     return character.strength*0.4 + character.dexterity*0.6

@@ -74,23 +74,9 @@
     cursor: pointer;
 }
 
-.div-action-container {
-    position: absolute;
-    right: 0;
-    width: auto;
-    height: auto;
-    top: 0;
-    bottom: 0;
-}
-
-.div-chat {
-    position: absolute;
-    width: auto;
-    height: auto;
-    top: 0;
-    bottom: 95px;
-    right: 0;
-    left: 5px;
+.text-chat {
+    overflow : hidden;
+    max-width: 100%;
 }
 
 .div-action {
@@ -116,19 +102,6 @@
     width: 100%;
 }
 
-.tabbable {
-    position: absolute;
-    right: 0;
-    left: 0;
-    height: 100%;
-}
-
-.tab-content {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
 .nav {
     margin-bottom: 10px;
 }
@@ -141,10 +114,16 @@
     height: 30px;
 }
 
+#sendTextArea {
+    width: 270px;
+    height: 30px;
+}
+
 .btn-send {
     position: absolute;
-    left: 320px;
-    width: 100px;
+    left: 300px;
+    width: 50px;
+    height: 40px;
 }
 
 .div-center {
@@ -154,13 +133,6 @@
 .div-center Table {
     margin-left: auto;
     margin-right: auto;
-}
-
-.text-chat {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow : auto
 }
 
 .table-common {
@@ -232,12 +204,12 @@
     width: 150px
 }
 
-.table-content-holder tr {
-    vertical-align : top;
+.table-content-holder {
+    width: 100%;
 }
 
-.table-content-holder >tbody>tr>td {
-    padding-right: 20px;
+.table-content-holder tr {
+    vertical-align : top;
 }
 
 .menu-bar {
@@ -545,4 +517,8 @@ button.tabClose {
 .label-percent-amount {
     width: auto;
     float: left;
+}
+
+.button-player-select {
+    white-space: nowrap;
 }

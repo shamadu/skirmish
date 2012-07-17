@@ -60,13 +60,6 @@ var leaveButtonClick = function () {
     });
 };
 
-var resize_battle = function() {
-    return;
-    $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
-    width = $("#divActionContainer").width();
-    $("#divChat").css('right', width + 5 + 'px');
-};
-
 var sendFunc = function() {
     data = {
         "action" : "new_message",
@@ -185,16 +178,16 @@ var addTextTo = function(tab_element_id, message) {
 };
 
 var addDivAction = function(divAction) {
-    $("#divActionContainer").append(divAction);
+    $("#actionContainer").append(divAction);
     $("#cancelButton").attr('disabled', 'true');
 
     $("#divAction select.spell_select").change(function(){
         if($("option:selected", this).hasClass("self")) {
-            $(this).parent().parent().find(".button-player-select").text($("#nameLabel").text());
-            $(this).parent().parent().find(".button-player-select").attr('disabled', 'true');
+            $(this).parent().parent().prev().find(".button-player-select").text($("#nameLabel").text());
+            $(this).parent().parent().prev().find(".button-player-select").attr('disabled', 'true');
         }
         else {
-            $(this).parent().parent().find(".button-player-select").removeAttr('disabled');
+            $(this).parent().parent().prev().find(".button-player-select").removeAttr('disabled');
         }
     });
 
@@ -245,9 +238,7 @@ var addDivAction = function(divAction) {
     height = $("#divAction").height();
     $("#divAction").height(1);
     $("#divAction").animate({ height: height }, 1000, function() {
-//        resize_battle();
     });
-    resize_battle();
 };
 
 var showTurnInfo = function(turn_info) {
@@ -277,10 +268,10 @@ var showTurnInfo = function(turn_info) {
                 // if there is target user_name and there is such user in list, restore turn part
                 // if there is no such user - do nothing
                 if (turn_parts[1] ) {
-                    if ($(tr).find(".skirmish-user-label[value=\"" + turn_parts[1] + "\"]").length > 0) {
-                        $(".button-player-select").text(turn_parts[1]);
+                    if ($("#divOnlineUsers").find(".skirmish-user-label[value=\"" + turn_parts[1] + "\"]").length > 0) {
+                        $(tr).find(".button-player-select").text(turn_parts[1]);
                         if (turn_parts[2]) {
-                            $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(tr)).attr("selected", "selected");
+                            $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(tr).next()).attr("selected", "selected");
                         }
                         $(".slider", $(tr)).slider("value", parseInt(turn_parts[3]));
                         $(".label-percent-amount", $(tr)).html(turn_parts[3] + "%");
@@ -312,10 +303,8 @@ var disableDivAction = function(divAction, turn_info) {
 };
 
 var removeDivAction = function(divAction) {
-    return;
     $("#divAction").animate({ height: 0 }, 1000, function() {
         $("#divAction").remove();
-        resize_battle()
     });
 };
 

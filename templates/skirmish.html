@@ -95,49 +95,55 @@
             </table>
         </div>
         <div id="battleDivContainer" class="div-content">
-            <div id="divActionContainer" class="div-action-container">
-                <div id="divUsers" class="div-users">
-                    <table class="table-common">
-                        <tr>
-                            <td><div id="divOnlineUsers"></div></td>
-                            <td width="5px"></td>
-                        </tr>
-                    </table>
-                    <table class="table-common">
-                        <tr>
-                            <td><div id="divTeamUsers"></div></td>
-                            <td width="10px"></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <div id="divChat" class="div-chat">
-                <div id="tabChat" class="tabbable">
-                    <ul class="nav nav-tabs tabs-skirmish">
-                        <li class="mainTab active">
-                            <a id="battleTab" href="#battlePane" data-toggle="tab">
-                                <span>{{ _("Battle") }}</span>
-                            </a>
-                        </li>
-                        <li class="mainTab">
-                            <a id="locationTab" href="#locationPane" data-toggle="tab">
-                                <span>{Location_name}</span>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="battlePane">
-                            <div id="battleTextArea" class="text-chat"></div>
+            <table class="table-content-holder">
+                <tr>
+                    <td width="100%" style="min-width: 300px">
+                        <div id="tabChat" class="tabbable">
+                            <ul class="nav nav-tabs tabs-skirmish">
+                                <li class="mainTab active">
+                                    <a id="battleTab" href="#battlePane" data-toggle="tab">
+                                        <span>{{ _("Battle") }}</span>
+                                    </a>
+                                </li>
+                                <li class="mainTab">
+                                    <a id="locationTab" href="#locationPane" data-toggle="tab">
+                                        <span>{Location_name}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="battlePane">
+                                    <div id="battleTextArea" class="text-chat"></div>
+                                </div>
+                                <div class="tab-pane" id="locationPane">
+                                    <div id="locationTextArea" class="text-chat"></div>
+                                </div>
+                            </div>
+                            <div class="div-send">
+                                <textarea id="sendTextArea" class="text-chat" rows="10" cols="0"></textarea><button id="sendButton" class="btn-send">{{ _("Send") }}</button>
+                            </div>
                         </div>
-                        <div class="tab-pane" id="locationPane">
-                            <div id="locationTextArea" class="text-chat"></div>
+                    </td>
+                    <td>
+                        <div id="divUsers" class="div-users">
+                            <table class="table-common">
+                                <tr>
+                                    <td><div id="divOnlineUsers"></div></td>
+                                    <td width="5px"></td>
+                                </tr>
+                            </table>
+                            <table class="table-common">
+                                <tr>
+                                    <td><div id="divTeamUsers"></div></td>
+                                    <td width="10px"></td>
+                                </tr>
+                            </table>
                         </div>
-                    </div>
-                    <div class="div-send">
-                        <textarea id="sendTextArea" class="text-chat" rows="10" cols="0"></textarea><button id="sendButton" class="btn-send">{{ _("Send") }}</button>
-                    </div>
-                </div>
-            </div>
+                    </td>
+                    <td id="actionContainer">
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <div id="teamDivContainer" class="div-content">
@@ -194,7 +200,7 @@
         <div id="framesDivContainer" class="div-content div-frames-container">
             <div id="characterDivFrame" class="well div-character-info">
                 <button class="close">&times;</button>
-                <table class="table-common table-content-holder">
+                <table class="table-common table-content-holder" style="padding-right: 20px;">
                     <tr><td colspan="2"><h4>{{ _("Character") }}</h4></td></tr>
                     <tr>
                         <td>

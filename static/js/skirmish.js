@@ -129,7 +129,6 @@ var showBattle = function() {
     $("#sideBar li:not(#serverStatus)").removeAttr("class");
     $("#battleDivContainer").show();
     $("#battleAnchor").parent().attr("class", "active");
-    resize_battle();
 };
 
 var showCharacter = function() {
@@ -462,35 +461,28 @@ var pollUpdater = {
         // add skirmish user
         else if(action.type == 10) {
             addSkirmishUser(action.skirmish_user);
-            resize_battle();
         }
         // remove skirmish user
         else if(action.type == 11) {
             removeSkirmishUser(action.skirmish_user);
-            resize_battle();
         }
         else if(action.type == 100) {
             initLocationUsers(action.location_users, action.location_team_users, action.skirmish_users, action.online_team_users);
-            resize_battle();
         }
         else if(action.type == 101) {
             addLocationUser(action.user, action.team_mate);
-            resize_battle();
         }
         else if(action.type == 102) {
             removeLocationUser(action.user);
-            resize_battle();
         }
         else if(action.type == 103) {
             openPrivateChat(action.user, action.message);
         }
         else if(action.type == 104) {
             addTeamUser(action.user);
-            resize_battle();
         }
         else if(action.type == 105) {
             removeTeamUser(action.user);
-            resize_battle();
         }
         // character info update
         else if (action.type == 200) {

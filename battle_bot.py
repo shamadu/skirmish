@@ -449,7 +449,7 @@ class BattleBot(Thread):
     def process_regeneration_actions(self, regeneration_actions):
         for action in regeneration_actions:
             who_character = self.battle_users[action.who].battle_character
-            who_character.mana += smarty.get_regeneration(who_character)*action.percent
+            who_character.mana += round(smarty.get_regeneration(who_character)*action.percent, 2)
             who_character.mana = min(who_character.mana, self.battle_users[action.who].character.mana)
 
     def remove_from_skirmish(self, user_name):
