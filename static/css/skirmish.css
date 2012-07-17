@@ -141,7 +141,10 @@
 }
 
 .table-character-stuff td,
-.table-bag-stuff td {
+.table-bag-stuff td,
+.table-spells td {
+    position: relative;
+    cursor: default;
     width: 50px;
     min-width: 50px;
     height: 50px;
@@ -149,10 +152,17 @@
     padding: 0 0 0 0;
     margin: 0 0 0 0;
     border: solid 1px;
-    position: relative;
 }
 
-/* these span should be replaced with images/icons of items */
+.table-spells td {
+    cursor: default;
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+}
+
+/* these span should be replaced with images/icons of items/spells */
 .span-item-icon {
     margin-left: 0;
     float: none;
@@ -160,6 +170,19 @@
     left: 0;
     background-color: #ffffff;
 }
+
+.span-spell-icon {
+    margin-left: 0;
+    float: none;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+}
+
+span.active {
+    border: #ffd700 solid 2px;
+}
+
 /* these span should be replaced with images/icons of items */
 
 .auto-width {

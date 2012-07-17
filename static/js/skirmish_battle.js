@@ -181,17 +181,6 @@ var addDivAction = function(divAction) {
     $("#actionContainer").append(divAction);
     $("#cancelButton").attr('disabled', 'true');
 
-    $("#divAction select.spell_select").change(function(){
-        if($("option:selected", this).hasClass("self")) {
-            $(this).parent().parent().prev().find(".button-player-select").text($("#nameLabel").text());
-            $(this).parent().parent().prev().find(".button-player-select").val($("#nameLabel").text());
-            $(this).parent().parent().prev().find(".button-player-select").attr('disabled', 'true');
-        }
-        else {
-            $(this).parent().parent().prev().find(".button-player-select").removeAttr('disabled');
-        }
-    });
-
     $("#resetButton").click(resetButtonClick);
 
     $("#doButton").click(doButtonClick);
@@ -238,6 +227,32 @@ var addDivAction = function(divAction) {
         $(this).button("toggle");
     });
 
+    $("#spellsTable span").popover({
+        delay: { show: 1000, hide: 100 },
+        placement : "top"
+    });
+
+    $("#spellsTable span").click(function() {
+        if($(this).hasClass("active")) {
+            $(this).removeClass("active");
+            if ($(this).hasClass("self")) {
+                $(this).closest(".tr-spells").prev().find(".button-player-select").removeAttr('disabled');
+            }
+        }
+        else {
+            $("#spellsTable span.active").removeClass("active");
+            $(this).addClass("active");
+            if ($(this).hasClass("self")) {
+                $(this).closest(".tr-spells").prev().find(".button-player-select").text($("#nameLabel").text());
+                $(this).closest(".tr-spells").prev().find(".button-player-select").val($("#nameLabel").text());
+                $(this).closest(".tr-spells").prev().find(".button-player-select").attr('disabled', 'true');
+            }
+            else {
+                $(this).closest(".tr-spells").prev().find(".button-player-select").removeAttr('disabled');
+            }
+        }
+    });
+
     height = $("#divAction").height();
     $("#divAction").height(1);
     $("#divAction").animate({ height: height }, 1000, function() {
@@ -275,7 +290,7 @@ var showTurnInfo = function(turn_info) {
                         $(tr).find(".button-player-select").text(turn_parts[1]);
                         $(tr).find(".button-player-select").val(turn_parts[1]);
                         if (turn_parts[2]) {
-                            $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(tr).next()).attr("selected", "selected");
+                            $("#spellsTable span[value=\"" + turn_parts[2] + "\"]", $(tr).next()).addClass("active");
                         }
                         $(".slider", $(tr)).slider("value", parseInt(turn_parts[3]));
                         $(".label-percent-amount", $(tr)).html(turn_parts[3] + "%");
@@ -284,7 +299,7 @@ var showTurnInfo = function(turn_info) {
                 // if there is no target user - restore turn
                 else {
                     if (turn_parts[2]) {
-                        $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(tr).next()).attr("selected", "selected");
+                        $("#spellsTable span[value=\"" + turn_parts[2] + "\"]", $(tr).next()).addClass("active");
                     }
                     $(".slider", $(tr)).slider("value", parseInt(turn_parts[3]));
                     $(".label-percent-amount", $(tr)).html(turn_parts[3] + "%");
@@ -321,11 +336,11 @@ var doButtonClick = function() {
     $(".action").each(function() {
         percent = $(".slider", this).slider("value");
         user_name = $(".button-player-select", this).val();
-        if (percent != 0 && user_name.length > 0) {
+        if (percent != 0 && (user_name && user_name.length > 0 || $(this).attr("action") == 3)) {
             turnInfo += $(this).attr("action") + ":";
             value = user_name;
             turnInfo += ((value) ? value : "") + ":";
-            value = $(".spell_select option:selected", $(this).next()).val();
+            value = $("#spellsTable span.active", $(this).next()).attr("value");
             turnInfo += ((value) ? value : "") + ":";
             turnInfo += $(".slider", this).slider("value");
             turnInfo += ",";
@@ -346,8 +361,7 @@ var cancelButtonClick = function() {
 };
 
 var resetButtonClick = function() {
-    $("#divAction").each(function() {
-        $(".slider", this).slider("value", 0);
-        $(this).parent().parent().find(".label-percent-amount").html("0%");
-    });
+        $(".slider", $("#divAction")).slider("value", 0);
+        $("#divAction").parent().parent().find(".label-percent-amount").html("0%");
+        $("#spellsTable span.active").removeClass("active");
 };

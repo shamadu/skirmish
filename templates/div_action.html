@@ -21,7 +21,7 @@
                         </td>
                     {% else %}
                         <td>
-                            <button  class="btn button-player-select" data-toggle="button" data-pressed-text="{{ _("Select player") }}">{{ _("Choose player") }}</button>
+                            <button class="btn button-player-select" data-toggle="button" data-pressed-text="{{ _("Select player") }}">{{ _("Choose player") }}</button>
                         </td>
                         <td>
                             <div style="padding: 10px; width: auto">
@@ -34,18 +34,28 @@
                         </td>
                     {% end %}
                 </tr>
-                    {% if action[0] == 2 %}
-                        <tr>
+                    {% if action[0] == 2 and len(spells) > 0 %}
+                        <tr class="tr-spells">
                             <td colspan="3">
-                                <select class="select-common spell_select" style="margin: auto; width: auto; margin-top: 5px;">
-                                    {% for spell in spells %}
-                                    <option value="{{ spell.id }}"
-                                            {% if spell.is_self %}
-                                            class="self"
-                                            {% end %}
-                                            >{{ spell.name }}</option>
+                                <table id="spellsTable" class="table-spells">
+                                    {% for i in range(len(spells)) %}
+                                    {% if i % 3 == 0 %}
+                                    <tr>
                                     {% end %}
-                                </select>
+                                        <td>
+                                            <span value="{{ spells[i].id }}" class="span-spell-icon
+                                                    {% if spells[i].is_self %}
+                                                  self
+                                                    {% end %}
+                                                  " title="{{ spells[i].name }}"
+                                                  data-content="{{ spells[i].description }}"
+                                                    >{{ spells[i].name }}</span>
+                                        </td>
+                                    {% if i % 3 == 2 or i + 1 == len(spells) %}
+                                    </tr>
+                                    {% end %}
+                                    {% end %}
+                                </table>
                             </td>
                         </tr>
                     {% end %}

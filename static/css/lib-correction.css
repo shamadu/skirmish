@@ -38,3 +38,18 @@
     background: #f6f6f6 ;
 }
 
+/* Bootstrap corrections */
+
+.popover-inner {
+    width: auto;
+    padding: 1px;
+}
+
+.popover-inner h3 {
+    font-size: 12px;
+    text-align: center;
+}
+
+.popover-title {
+    line-height: 3px;
+}

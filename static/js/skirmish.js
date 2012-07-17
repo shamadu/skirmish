@@ -430,14 +430,6 @@ var pollUpdater = {
             if (action.turn_info) {
                 showTurnInfo(action.turn_info);
             }
-            // set self spells
-            $("#divAction select.spell_select option:selected").each(function(){
-                if($(this).hasClass("self")) {
-                    $(this).parent().parent().find(".button-player-select").text($("#nameLabel").text());
-                    $(this).parent().parent().find(".button-player-select").val($("#nameLabel").text());
-                    $(this).parent().parent().find(".button-player-select").attr('disabled', 'true');
-                }
-            });
         }
         // can cancel
         else if(action.type == 6) {
