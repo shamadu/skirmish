@@ -40,6 +40,7 @@ var initialize = function () {
         $(".button-player-select.active").each(function(){
             $(this).removeClass("active");
             $(this).button("reset");
+            $(this).val("");
         });
     });
     // initialize right click user context menu
@@ -80,6 +81,7 @@ var initialize = function () {
                     $(active_elements).each(function(){
                         $(this).removeClass("active");
                         $(this).text(user_name);
+                        $(this).val(user_name);
                     });
                 }
                 else {
@@ -432,6 +434,7 @@ var pollUpdater = {
             $("#divAction select.spell_select option:selected").each(function(){
                 if($(this).hasClass("self")) {
                     $(this).parent().parent().find(".button-player-select").text($("#nameLabel").text());
+                    $(this).parent().parent().find(".button-player-select").val($("#nameLabel").text());
                     $(this).parent().parent().find(".button-player-select").attr('disabled', 'true');
                 }
             });

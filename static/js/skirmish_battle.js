@@ -184,6 +184,7 @@ var addDivAction = function(divAction) {
     $("#divAction select.spell_select").change(function(){
         if($("option:selected", this).hasClass("self")) {
             $(this).parent().parent().prev().find(".button-player-select").text($("#nameLabel").text());
+            $(this).parent().parent().prev().find(".button-player-select").val($("#nameLabel").text());
             $(this).parent().parent().prev().find(".button-player-select").attr('disabled', 'true');
         }
         else {
@@ -226,9 +227,11 @@ var addDivAction = function(divAction) {
     $(".button-player-select").click(function(event){
         if(!$(this).hasClass("active")) {
             $(this).button("pressed");
+            $(this).val("");
         }
         else {
             $(this).button("reset");
+            $(this).val("");
         }
         // to not propagate event to document body
         event.stopPropagation();
@@ -270,6 +273,7 @@ var showTurnInfo = function(turn_info) {
                 if (turn_parts[1] ) {
                     if ($("#divOnlineUsers").find(".skirmish-user-label[value=\"" + turn_parts[1] + "\"]").length > 0) {
                         $(tr).find(".button-player-select").text(turn_parts[1]);
+                        $(tr).find(".button-player-select").val(turn_parts[1]);
                         if (turn_parts[2]) {
                             $(".spell_select option[value=\"" + turn_parts[2] + "\"]", $(tr).next()).attr("selected", "selected");
                         }
@@ -316,9 +320,10 @@ var doButtonClick = function() {
     turnInfo = "";
     $(".action").each(function() {
         percent = $(".slider", this).slider("value");
-        if (percent != 0) {
+        user_name = $(".button-player-select", this).val();
+        if (percent != 0 && user_name.length > 0) {
             turnInfo += $(this).attr("action") + ":";
-            value = $(".button-player-select", this).text();
+            value = user_name;
             turnInfo += ((value) ? value : "") + ":";
             value = $(".spell_select option:selected", $(this).next()).val();
             turnInfo += ((value) ? value : "") + ":";
