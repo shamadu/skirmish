@@ -326,7 +326,6 @@ var disableDivAction = function(divAction, turn_info) {
 };
 
 var removeDivAction = function(divAction) {
-    return;
     $("#divAction").animate({ height: 0 }, 1000, function() {
         $("#divAction").remove();
     });
