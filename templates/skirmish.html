@@ -99,46 +99,36 @@
             </table>
         </div>
         <div id="battleDivContainer" class="div-content">
-            <table class="table-content-holder" style="height: 100%;">
-                <tr>
-                    <td class="chat-container">
-                        <div id="tabChat" class="tabbable">
-                            <ul class="nav nav-tabs tabs-skirmish">
-                                <li class="mainTab active">
-                                    <a id="battleTab" href="#battlePane" data-toggle="tab">
-                                        <span>{{ _("Battle") }}</span>
-                                    </a>
-                                </li>
-                                <li class="mainTab">
-                                    <a id="locationTab" href="#locationPane" data-toggle="tab">
-                                        <span>{Location_name}</span>
-                                    </a>
-                                </li>
-                            </ul>
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="battlePane">
-                                    <div id="battleTextArea" class="text-chat"></div>
-                                </div>
-                                <div class="tab-pane" id="locationPane">
-                                    <div id="locationTextArea" class="text-chat"></div>
-                                </div>
-                            </div>
-                            <div class="div-send">
-                                <textarea id="sendTextArea" rows="10" cols="0"></textarea><button id="sendButton" class="btn-send">{{ _("Send") }}</button>
-                            </div>
-                        </div>
-                    </td>
-                    <td style="height: 100%;">
-                        <div class="scroll-container">
-                            <div id="divUsers" class="div-users">
-                                {% raw div_users %}
-                            </div>
-                        </div>
-                    </td>
-                    <td id="actionContainer">
-                    </td>
-                </tr>
-            </table>
+            <div class="scroll-container">
+                <div id="divUsers" class="div-users">
+                    {% raw div_users %}
+                </div>
+            </div>
+            <div id="tabChat" class="tabbable">
+                <ul class="nav nav-tabs tabs-skirmish">
+                    <li class="mainTab active">
+                        <a id="battleTab" href="#battlePane" data-toggle="tab">
+                            <span>{{ _("Battle") }}</span>
+                        </a>
+                    </li>
+                    <li class="mainTab">
+                        <a id="locationTab" href="#locationPane" data-toggle="tab">
+                            <span>{Location_name}</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="battlePane">
+                        <div id="battleTextArea" class="text-chat"></div>
+                    </div>
+                    <div class="tab-pane" id="locationPane">
+                        <div id="locationTextArea" class="text-chat"></div>
+                    </div>
+                </div>
+                <div class="div-send">
+                    <textarea id="sendTextArea" rows="10" cols="0"></textarea><button id="sendButton" class="btn-send">{{ _("Send") }}</button>
+                </div>
+            </div>
         </div>
 
         <div id="teamDivContainer" class="div-content">

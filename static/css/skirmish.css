@@ -83,12 +83,9 @@
     cursor: pointer;
 }
 
-.text-chat {
-}
-
 .tabbable {
     height: 100%;
-    width: 100%;
+    overflow: hidden;
 }
 
 .tab-pane {
@@ -125,21 +122,16 @@
 }
 
 .scroll-container {
-    width: 100%;
+    width: auto;
     height: 100%;
     position: relative;
+    float:  right;
 }
 
 .div-users {
-    position: absolute;
-    left:0;
-    top:0;
     height: 100%;
     overflow-y: scroll;
     width: auto;
-}
-
-.div-text-chat {
 }
 
 #divOnlineUsers label,
