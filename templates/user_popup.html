@@ -1,0 +1,15 @@
+{% comment user - OnlineUserInfo, locale %}
+{% import smarty %}
+<table class="table-common">
+    <tr>
+        <td>
+            {{ user.character.name }}
+        </td>
+        <td>
+            {{ smarty.get_race_name(user.character.race_id, locale) }}
+        </td>
+        <td>
+            {{ smarty.get_class_name(user.character.class_id, locale) }}
+        </td>
+    </tr>
+</table>

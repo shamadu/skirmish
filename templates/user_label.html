@@ -1,0 +1,19 @@
+{% comment type, user_name, team_name, visible %}
+<label
+{% if type == 0 %}
+    class="skirmish-user-label" data-content="description"
+{% elif type == 1 %}
+    class="location-user-label team-user-label"
+{% elif type == 2 %}
+    class="location-user-label"
+{% end %}
+{% if not visible %}
+    style="display: none;"
+{% end %}
+    value="{{ user_name }}" >
+{% if team_name %}
+    {{ user_name }}[{{ team_name }}]
+{% else %}
+    {{ user_name }}
+{% end %}
+</label>
