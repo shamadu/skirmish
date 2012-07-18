@@ -61,24 +61,27 @@ var leaveButtonClick = function () {
 };
 
 var sendFunc = function() {
-    data = {
-        "action" : "new_message",
-        'body' : $("#sendTextArea").val(),
-        'message_type' : 'location'
-    };
-    $("#sendTextArea").val("");
-    $("#sendTextArea").focus();
+    body = $("#sendTextArea").val();
+    if (body.length > 0) {
+        data = {
+            "action" : "new_message",
+            'body' : body,
+            'message_type' : 'location'
+        };
+        $("#sendTextArea").val("");
+        $("#sendTextArea").focus();
 
-    if (!$("#tabChat li.active").hasClass("mainTab")) {
-        data["message_type"] = "private";
-        data["to"] = $("#tabChat li.active >a>span").html();
-    }
-    else if($("#tabChat li.active>a").attr("id") == "teamTab") {
-        data["message_type"] = "team";
-    }
+        if (!$("#tabChat li.active").hasClass("mainTab")) {
+            data["message_type"] = "private";
+            data["to"] = $("#tabChat li.active >a>span").html();
+        }
+        else if($("#tabChat li.active>a").attr("id") == "teamTab") {
+            data["message_type"] = "team";
+        }
 
-    $.postJSON('/action', data, function() {
-    });
+        $.postJSON('/action', data, function() {
+        });
+    }
 };
 
 var keyPress = function(event) {
@@ -172,7 +175,7 @@ var addTextTo = function(tab_element_id, message) {
     {
         tab_element.addClass("blink");
     }
-    element = $(">div", tab_element.attr("href"));
+    element = $(">div>div>div", tab_element.attr("href"));
     element.html(element.html() + message);
     element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
 };
@@ -260,6 +263,7 @@ var addDivAction = function(divAction) {
 };
 
 var showTurnInfo = function(turn_info) {
+    resetButtonClick();
     if (turn_info) {
         turn_infos = turn_info.split(",");
         attack_count = 0;
@@ -322,6 +326,7 @@ var disableDivAction = function(divAction, turn_info) {
 };
 
 var removeDivAction = function(divAction) {
+    return;
     $("#divAction").animate({ height: 0 }, 1000, function() {
         $("#divAction").remove();
     });
@@ -364,4 +369,5 @@ var resetButtonClick = function() {
         $(".slider", $("#divAction")).slider("value", 0);
         $("#divAction").parent().parent().find(".label-percent-amount").html("0%");
         $("#spellsTable span.active").removeClass("active");
+        $(".button-player-select").button("reset");
 };

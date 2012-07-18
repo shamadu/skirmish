@@ -9,42 +9,22 @@ __author__ = 'Pavel Padinker'
 
 class UsersManager(Thread):
 # user action types are:
-# 100 - show all online and skirmish users
 # 101 - add new user
 # 102 - remove online user
-    def initial_users_action(self, location_team_users, online_team_users, location_users, skirmish_users):
-        location_users_list = list()
-        location_team_users_list = list()
-        for user_name in location_users.keys():
-            if user_name not in location_team_users.keys():
-                location_users_list.append(user_name)
-            else:
-                location_team_users_list.append(user_name)
-        skirmish_users_list = list()
-        for user_name in skirmish_users.keys():
-            if not skirmish_users[user_name].character.team_name:
-                skirmish_users_list.append(user_name)
-            else:
-                skirmish_users_list.append("%(user_name)s:%(team_name)s" % {"user_name" : user_name, "team_name" : skirmish_users[user_name].character.team_name})
-        return Action(100, {"location_team_users" : ','.join(location_team_users_list),
-                            "location_users" : ','.join(location_users_list),
-                            "skirmish_users" : ','.join(skirmish_users_list),
-                            "online_team_users" : ','.join(online_team_users.keys())})
-
-    def user_online_action(self, user_name, team_mate):
-        return Action(101, {"user" : user_name, "team_mate" : team_mate})
+    def user_online_action(self, user_name, type):
+        return Action(101, {"user_name" : user_name, "user_type" : type})
 
     def user_offline_action(self, user_name):
-        return Action(102, {"user" : user_name})
+        return Action(102, {"user_name" : user_name})
 
     def open_chat_action(self, user_name, message):
         return Action(103, {"user" : user_name, "message" : message})
 
     def user_team_online_action(self, user_name):
-        return Action(104, {"user" : user_name})
+        return Action(104, {"user_name" : user_name})
 
     def user_team_offline_action(self, user_name):
-        return Action(105, {"user" : user_name})
+        return Action(105, {"user_name" : user_name})
 
     def __init__(self, db_manager, users_holder, characters_manager, battle_manager):
         Thread.__init__(self)
@@ -98,17 +78,6 @@ class UsersManager(Thread):
             self.remove_online_user(user_name)
 
     def user_enter(self, user_name):
-        location = self.online_users[user_name].location
-        location_users = self.location_users[location]
-        skirmish_users = self.battle_manager.battle_bots[location].battle_users
-        user = self.online_users[user_name]
-        if user.character.team_name:
-            location_team_users = self.get_online_team_members(user, location_users)
-            online_team_users = self.get_online_team_members(user, self.online_users)
-        else:
-            location_team_users = dict()
-            online_team_users = dict()
-        self.online_users[user_name].send_action(self.initial_users_action(location_team_users, online_team_users, location_users, skirmish_users))
         for chat_user_name in self.online_users[user_name].opened_chats:
             self.online_users[user_name].send_action(self.open_chat_action(chat_user_name, ""))
 
@@ -118,8 +87,10 @@ class UsersManager(Thread):
         self.send_action_to_all(online_users, self.user_offline_action(user_name))
         if user_name not in self.battle_manager.battle_bots[location].battle_users.keys():
             for online_user in self.location_users[location].values():
-                team_mate = online_user.character.team_name and (user.character.team_name == online_user.character.team_name)
-                online_user.send_action(self.user_online_action(user_name, team_mate))
+                type = 2
+                if online_user.character.team_name and (user.character.team_name == online_user.character.team_name):
+                    type = 1
+                online_user.send_action(self.user_online_action(user_name, type))
         self.location_users[user.location].pop(user_name)
         self.location_users[location][user_name] = user
         self.db_manager.update_user_location(user_name, location)
@@ -138,7 +109,10 @@ class UsersManager(Thread):
             user = self.online_users[user_name]
             # send everyone in his location that he is online
             for online_user in self.location_users[user.location].values():
-                online_user.send_action(self.user_online_action(user_name, user.character.team_name == online_user.character.team_name))
+                type = 2
+                if online_user.character.team_name and (user.character.team_name == online_user.character.team_name):
+                    type = 1
+                online_user.send_action(self.user_online_action(user_name, type))
             # send every his online team mate that he is online
             if self.online_users[user_name].character.team_name:
                 self.send_action_to_all(self.get_online_team_members(user, self.online_users), self.user_team_online_action(user_name))

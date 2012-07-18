@@ -76,12 +76,10 @@ class BattleBot(Thread):
 
     def add_skirmish_user_action(self, user_name):
         user = self.location_users[user_name]
-        if not user.character.team_name:
-            return Action(10, {"skirmish_user" : user.user_name})
-        return Action(10, {"skirmish_user" : "%(user_name)s:%(team_name)s" % {"user_name" : user.user_name, "team_name" : user.character.team_name}})
+        return Action(10, {"user_name" : user.user_name, "team_name" : user.character.team_name})
 
     def remove_skirmish_user_action(self, user_name):
-        return Action(11, {"skirmish_user" : user_name})
+        return Action(11, {"user_name" : user_name})
 
     def __init__(self, users_holder, db_manager, characters_manager, location):
         Thread.__init__(self)

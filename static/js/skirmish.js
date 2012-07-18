@@ -241,99 +241,38 @@ var removeTeamChat = function() {
     removeTab($("#teamTab"));
 };
 
-var createLocationUserLabel = function(user_name) {
-    return "<label class=\"location-user-label\" value=\"" + user_name + "\">" + user_name + "</label>";
-};
-
-var createTeamUserLabel = function(user_name) {
-    return "<label class=\"location-user-label team-user-label\" value=\"" + user_name + "\">" + user_name + "</label>";
-};
-
-var createSkirmishUserLabel = function(user_name, team_name) {
-    if (team_name) {
-        return "<label class=\"skirmish-user-label\" value=\"" + user_name + "\">" + user_name + "[" + team_name + "]</label>";
-    }
-    else {
-        return "<label class=\"skirmish-user-label\" value=\"" + user_name + "\">" + user_name + "</label>";
-    }
-};
-
-var initLocationUsers = function(location_users_str, location_team_users_str, skirmish_users_str, online_team_users_str) {
-    $("#divOnlineUsers").empty();
-    $("#divTeamUsers").empty();
-    var skirmish_users_names = new Array();
-    if (skirmish_users_str) {
-        var skirmish_users = String(skirmish_users_str).split(',');
-        skirmish_users.sort();
-        for (i = 0; i < skirmish_users.length && skirmish_users[i]; ++i) {
-            skirmish_user = skirmish_users[i].split(":");
-            skirmish_users_names.push(skirmish_user[0]);
-            $("#divOnlineUsers").append(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]))
-        }
-    }
-
-    if (location_team_users_str) {
-        var location_team_users = String(location_team_users_str).split(',');
-        location_team_users.sort();
-        for (i = 0; i < location_team_users.length && location_team_users[i]; ++i) {
-            $("#divOnlineUsers").append(createTeamUserLabel(location_team_users[i]));
-            if (jQuery.inArray(location_team_users[i], skirmish_users_names) != -1) {
-                hideLocationUser(location_team_users[i]);
-            }
-        }
-    }
-
-    var location_users = String(location_users_str).split(',');
-    location_users.sort();
-
-    for (i = 0; i < location_users.length; ++i) {
-        $("#divOnlineUsers").append(createLocationUserLabel(location_users[i]));
-        if (jQuery.inArray(location_users[i], skirmish_users_names) != -1) {
-            hideLocationUser(location_users[i]);
-        }
-    }
-
-    if (online_team_users_str) {
-        var online_team_users = String(online_team_users_str).split(',');
-        online_team_users.sort();
-        for (i = 0; i < online_team_users.length && online_team_users[i]; ++i) {
-            $("#divTeamUsers").append(createTeamUserLabel(online_team_users[i]));
-        }
-    }
-};
-
 var removeLocationUser = function(user) {
     $("#divOnlineUsers .location-user-label[value=\"" + user + "\"]").remove();
 };
 
-var addLocationUser = function(user, team_mate) {
+var addLocationUser = function(user_name, user_type, user_label) {
     inserted = false;
-    if (!team_mate) {
+    if (user_type == 2) {
         // insert after specified element
         $(".location-user-label:not(.team-user-label)", $("#divOnlineUsers")).each(function(){
-            if (!inserted && ($(this).text() > user)) {
-                $(this).before(createLocationUserLabel(user));
+            if (!inserted && ($(this).text() > user_name)) {
+                $(this).before(user_label);
                 inserted = true;
             }
         });
         if (!inserted) {
-            $("#divOnlineUsers").append(createLocationUserLabel(user));
+            $("#divOnlineUsers").append(user_label);
         }
     }
     else {
         // insert after specified element
         $(".team-user-label", $("#divOnlineUsers")).each(function(){
-            if (!inserted && ($(this).text() > user)) {
-                $(this).before(createTeamUserLabel(user));
+            if (!inserted && ($(this).text() > user_name)) {
+                $(this).before(user_label);
                 inserted = true;
             }
         });
         if (!inserted) {
             if ($(".team-user-label", $("#divOnlineUsers")).length > 0) { // insert before first online user
-                $(createTeamUserLabel(user)).insertBefore(".location-user-label:not(.team-user-label):first", $("#divOnlineUsers"));
+                $(user_label).insertBefore(".location-user-label:not(.team-user-label):first", $("#divOnlineUsers"));
             }
             else {
-                $("#divOnlineUsers").append(createTeamUserLabel(user));
+                $("#divOnlineUsers").append(user_label);
             }
         }
     }
@@ -352,42 +291,46 @@ var removeSkirmishUser = function(user) {
     showLocationUser(user);
 };
 
-var addSkirmishUser = function(user) {
-    skirmish_user = user.split(":");
-    hideLocationUser(skirmish_user[0]);
+var addSkirmishUser = function(user_name, user_label) {
+    hideLocationUser(user_name);
     inserted = false;
     // insert after specified element
     $("#divOnlineUsers .skirmish-user-label").each(function(){
-        if (!inserted && $(this).text() > user) {
-            $(this).before(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
+        if (!inserted && $(this).text() > user_name) {
+            $(this).before(user_label);
             inserted = true;
         }
     });
     if (!inserted) {
         if ($("#divOnlineUsers .skirmish-user-label").length > 0) {
-            $("#divOnlineUsers .skirmish-user-label:last").after(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
+            $("#divOnlineUsers .skirmish-user-label:last").after(user_label);
         }
         else {
-            $("#divOnlineUsers").prepend(createSkirmishUserLabel(skirmish_user[0], skirmish_user[1]));
+            $("#divOnlineUsers").prepend(user_label);
         }
     }
+
+    $("#divOnlineUsers .skirmish-user-label[value=\"" + user_name + "\"]").popover({
+        delay: { show: 1000, hide: 100 },
+        placement : "left"
+    });
 };
 
 var removeTeamUser = function(user) {
     $("#divTeamUsers label[value=\"" + user + "\"]").remove();
 };
 
-var addTeamUser = function(user) {
+var addTeamUser = function(user_name, user_label) {
     inserted = false;
     // insert after specified element
     $("label", $("#divTeamUsers")).each(function(){
-        if (!inserted && ($(this).text() > user)) {
-            $(this).before(createTeamUserLabel(user));
+        if (!inserted && ($(this).text() > user_name)) {
+            $(this).before(user_label);
             inserted = true;
         }
     });
     if (!inserted) {
-        $("#divTeamUsers").append(createTeamUserLabel(user));
+        $("#divTeamUsers").append(user_label);
     }
 };
 
@@ -460,29 +403,26 @@ var pollUpdater = {
         }
         // add skirmish user
         else if(action.type == 10) {
-            addSkirmishUser(action.skirmish_user);
+            addSkirmishUser(action.user_name, action.user_label);
         }
         // remove skirmish user
         else if(action.type == 11) {
-            removeSkirmishUser(action.skirmish_user);
-        }
-        else if(action.type == 100) {
-            initLocationUsers(action.location_users, action.location_team_users, action.skirmish_users, action.online_team_users);
+            removeSkirmishUser(action.user_name);
         }
         else if(action.type == 101) {
-            addLocationUser(action.user, action.team_mate);
+            addLocationUser(action.user_name, action.user_type, action.user_label);
         }
         else if(action.type == 102) {
-            removeLocationUser(action.user);
+            removeLocationUser(action.user_name);
         }
         else if(action.type == 103) {
             openPrivateChat(action.user, action.message);
         }
         else if(action.type == 104) {
-            addTeamUser(action.user);
+            addTeamUser(action.user_name, action.user_label);
         }
         else if(action.type == 105) {
-            removeTeamUser(action.user);
+            removeTeamUser(action.user_name);
         }
         // character info update
         else if (action.type == 200) {

@@ -112,7 +112,27 @@ class MainHandler(BaseHandler):
                     races=smarty.get_races(self.locale))
             else:
                 self.users_manager.on_user_enter(self.current_user, self.locale)
+# prepare divUsers
+                user = self.users_holder.online_users[self.current_user]
+                online_team_users = dict()
+                if user.character.team_name:
+                    for online_user in self.users_holder.online_users.values():
+                        if online_user.character.team_name == user.character.team_name:
+                            online_team_users[online_user.user_name] = online_user
 
+                location_team_users = dict()
+                for online_user in online_team_users.values():
+                    if online_user.location == user.location and user.user_name != online_user.user_name:
+                        location_team_users[online_user.user_name] = online_user
+
+                div_users = self.render_string("div_users.html",
+                    skirmish_users=self.battle_manager.battle_bots[user.location].battle_users,
+                    location_team_users=location_team_users,
+                    online_team_users=online_team_users,
+                    location_users=self.users_holder.location_users[user.location]
+                    )
+
+# prepare skirmish.html
                 database = dict()
                 database["Items"] = items_manager.get_all(self.locale)
                 database["Spells"] = spells_manager.get_all_spells(self.locale)
@@ -122,7 +142,8 @@ class MainHandler(BaseHandler):
                     substance=smarty.get_substance_name(character.class_id, self.locale),
                     shop={"Items" : items_manager.get_shop(self.locale)},
                     database=database,
-                    locations=locations)
+                    locations=locations,
+                    div_users=div_users)
         else:
             self.clear_all_cookies()
             self.redirect("/")
@@ -266,6 +287,27 @@ class PollBotHandler(BaseHandler):
         if action.type == 1:
             result["type"] = action.type
             result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], spells=action.args["spells"])
+        elif action.type == 10: # add skirmish user
+            result = action.args
+            result["user_label"] = self.render_string("user_label.html",
+                type=0,
+                user_name=action.args["user_name"],
+                team_name=action.args["team_name"],
+                visible=True)
+        elif action.type == 101: # add location user
+            result = action.args
+            result["user_label"] = self.render_string("user_label.html",
+                type=action.args["user_type"],
+                user_name=action.args["user_name"],
+                team_name="",
+                visible=True)
+        elif action.type == 104: # add online team user
+            result = action.args
+            result["user_label"] = self.render_string("user_label.html",
+                type=1,
+                user_name=action.args["user_name"],
+                team_name="",
+                visible=True)
         elif action.type == 202:
             result["type"] = action.args["type"]
             result["spells_div"] = self.render_string("spells_table.html",
