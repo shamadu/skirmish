@@ -86,6 +86,7 @@
 .tabbable {
     height: 100%;
     overflow: hidden;
+    position: relative;
 }
 
 .tab-pane {
