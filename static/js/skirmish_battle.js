@@ -175,7 +175,7 @@ var addTextTo = function(tab_element_id, message) {
     {
         tab_element.addClass("blink");
     }
-    element = $(">div>div>div", tab_element.attr("href"));
+    element = $(">div", tab_element.attr("href"));
     element.html(element.html() + message);
     element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
 };
