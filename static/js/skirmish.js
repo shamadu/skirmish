@@ -273,7 +273,7 @@ var addLocationUser = function(user_name, user_type, user_label) {
             }
         });
         if (!inserted) {
-            if ($(".team-user-label", $("#divOnlineUsers")).length > 0) { // insert before first online user
+            if ($(".location-user-label:not(.team-user-label)", $("#divOnlineUsers")).length > 0) { // insert before first online user
                 $(user_label).insertBefore(".location-user-label:not(.team-user-label):first", $("#divOnlineUsers"));
             }
             else {

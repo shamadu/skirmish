@@ -37,7 +37,11 @@ var onChangeLocation = function() {
 
 var changeLocationFunc = function() {
     removeDivAction();
-    $.postJSON('/action', {"action" : "change_location", "location" : $("option:selected", this).val()}, function() {
+    $.postJSON('/action', {"action" : "change_location", "location" : $("option:selected", this).val()}, function(divUsers) {
+        $("#divUsers").empty();
+        $("#divUsers").append(divUsers);
+        // hide team users list
+        $("#divTeamUsers").hide();
         onChangeLocation()
     });
 };

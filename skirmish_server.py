@@ -88,6 +88,27 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_user_location(self):
         return self.get_secure_cookie("location")
 
+    def render_div_users(self):
+        # prepare divUsers
+        user = self.users_holder.online_users[self.current_user]
+        online_team_users = dict()
+        if user.character.team_name:
+            for online_user in self.users_holder.online_users.values():
+                if online_user.character.team_name == user.character.team_name:
+                    online_team_users[online_user.user_name] = online_user
+
+        location_team_users = dict()
+        for online_user in online_team_users.values():
+            if online_user.location == user.location and user.user_name != online_user.user_name:
+                location_team_users[online_user.user_name] = online_user
+
+        return self.render_string("div_users.html",
+            skirmish_users=self.battle_manager.battle_bots[user.location].battle_users,
+            location_team_users=location_team_users,
+            online_team_users=online_team_users,
+            location_users=self.users_holder.location_users[user.location]
+        )
+
 def user_online(method):
     """Decorate methods with this to check if user online and add if not"""
     @functools.wraps(method)
@@ -112,25 +133,7 @@ class MainHandler(BaseHandler):
                     races=smarty.get_races(self.locale))
             else:
                 self.users_manager.on_user_enter(self.current_user, self.locale)
-# prepare divUsers
-                user = self.users_holder.online_users[self.current_user]
-                online_team_users = dict()
-                if user.character.team_name:
-                    for online_user in self.users_holder.online_users.values():
-                        if online_user.character.team_name == user.character.team_name:
-                            online_team_users[online_user.user_name] = online_user
-
-                location_team_users = dict()
-                for online_user in online_team_users.values():
-                    if online_user.location == user.location and user.user_name != online_user.user_name:
-                        location_team_users[online_user.user_name] = online_user
-
-                div_users = self.render_string("div_users.html",
-                    skirmish_users=self.battle_manager.battle_bots[user.location].battle_users,
-                    location_team_users=location_team_users,
-                    online_team_users=online_team_users,
-                    location_users=self.users_holder.location_users[user.location]
-                    )
+                div_users = self.render_div_users()
 
 # prepare skirmish.html
                 database = dict()
@@ -188,6 +191,7 @@ class ActionHandler(BaseHandler):
         elif self.get_argument("action") == 'change_location':
             self.battle_manager.user_leave(self.current_user)
             self.users_manager.change_location(self.current_user, int(self.get_argument("location")))
+            self.write(self.render_div_users())
         elif self.get_argument("action") == 'put_on':
             if not self.characters_manager.put_on_item(self.current_user, self.get_argument("item_id")):
                 self.write("false")
