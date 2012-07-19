@@ -126,6 +126,7 @@ class UsersManager(Thread):
         self.send_action_to_all(online_users, self.user_offline_action(user_name))
         if user.character.team_name:
             self.send_action_to_all(self.get_online_team_members(user, self.online_users), self.user_team_offline_action(user_name))
+        self.battle_manager.battle_bots[user.location].user_leave(user_name)
         self.online_users.pop(user_name)
         online_users.pop(user_name)
 
