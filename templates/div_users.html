@@ -4,10 +4,6 @@
     <tr>
         <td>
             <div id="divOnlineUsers">
-                {% for i in range(100) %}
-                {% module Template("user_label.html", type=2, user_name="test", team_name="", visible=True) %}
-                {% end %}
-
                 {% set skirmish_users_names = sorted(skirmish_users.keys()) %}
                 {% for user_name in skirmish_users_names %}
                     {% set character = skirmish_users[user_name].character %}

@@ -177,7 +177,8 @@ var addTextTo = function(tab_element_id, message) {
     }
     element = $(">div", tab_element.attr("href"));
     element.html(element.html() + message);
-    element.animate({ scrollTop: element.prop("scrollHeight") - element.height() }, 100);
+    tab_content = element.parent().parent();
+    tab_content.animate({ scrollTop: tab_content.prop("scrollHeight") - tab_content.height() }, 100);
 };
 
 var addDivAction = function(divAction) {
