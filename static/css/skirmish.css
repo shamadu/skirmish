@@ -99,8 +99,11 @@
     left:0;
     top:40px;
     bottom: 30px;
-    overflow-y: auto;
     width: 100%;
+}
+
+.text-chat span {
+    white-space: nowrap;
 }
 
 .div-send {
@@ -132,6 +135,7 @@
 .div-users {
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     width: auto;
 }
 

@@ -126,12 +126,12 @@ var format_message = function(message) {
     body_lines = message.body.split("\n");
     message_formatted = "";
     for(line in body_lines){
-        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]"
+        message_formatted += "<span>[" + hours + ":" + minutes + ":" + seconds + "]"
         if (message.from) {
             message_formatted += "[" + message.from + "]:"
         }
 
-        message_formatted += " " + body_lines[line] + "<br>";
+        message_formatted += " " + body_lines[line] + "</span><br>";
     }
 
     return message_formatted;
@@ -155,7 +155,7 @@ var format_private_message = function(message, income) {
     body_lines = message.body.split("\n");
     message_formatted = "";
     for(line in body_lines){
-        message_formatted += "[" + hours + ":" + minutes + ":" + seconds + "]"
+        message_formatted += "<span>[" + hours + ":" + minutes + ":" + seconds + "]"
         if (income) {
             message_formatted += "<<:"
         }
@@ -163,7 +163,7 @@ var format_private_message = function(message, income) {
             message_formatted += ">>:"
         }
 
-        message_formatted += " " + body_lines[line] + "<br>";
+        message_formatted += " " + body_lines[line] + "</span><br>";
     }
 
     return message_formatted;
