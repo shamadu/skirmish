@@ -12,4 +12,15 @@
             {{ smarty.get_class_name(user.character.class_id, user.locale) }}
         </td>
     </tr>
+    <tr>
+        <td>
+            {{ _("Level %s") % user.character.level }}
+        </td>
+        <td>
+            {{ _("%s hp") % user.character.health }}
+        </td>
+        <td>
+            {{ _("%s mp") % user.character.mana }}
+        </td>
+    </tr>
 </table>

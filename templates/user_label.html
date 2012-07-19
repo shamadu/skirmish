@@ -1,7 +1,7 @@
 {% comment type, user, visible %}
 <label
 {% if type == 0 %}
-    class="skirmish-user-label" title="{{ _("Short Info") }}" data-content='{% module Template("user_popup.html", user=user) %}'
+    class="skirmish-user-label" data-content='{% module Template("user_popup.html", user=user) %}'
 {% elif type == 1 %}
     class="location-user-label team-user-label"
 {% elif type == 2 %}

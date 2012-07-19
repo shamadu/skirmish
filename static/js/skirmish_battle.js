@@ -330,6 +330,7 @@ var removeDivAction = function(divAction) {
     $("#divAction").animate({ height: 0 }, 1000, function() {
         $("#divAction").remove();
     });
+    $(".popover").remove();
 };
 
 var doButtonClick = function() {

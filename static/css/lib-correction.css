@@ -52,4 +52,9 @@
 
 .popover-title {
     line-height: 3px;
+    display: none;
+}
+
+.popover-content {
+    padding: 4px;
 }
