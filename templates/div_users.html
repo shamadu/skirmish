@@ -7,9 +7,7 @@
                 {% set skirmish_users_names = sorted(skirmish_users.keys()) %}
                 {% for user_name in skirmish_users_names %}
                     {% set character = skirmish_users[user_name].character %}
-                    {% if character.team_name %}
-                        {% module Template("user_label.html", type=0, user_name=user_name, team_name=character.team_name, visible=True) %}
-                    {% end %}
+                    {% module Template("user_label.html", type=0, user_name=user_name, team_name=character.team_name, visible=True) %}
                 {% end %}
                 {% set location_team_users_names = sorted(location_team_users.keys()) %}
                 {% for user_name in location_team_users_names %}
