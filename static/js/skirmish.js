@@ -128,6 +128,11 @@ var initialize = function () {
     $("#whiteHPLabel").width($("#healthBar").parent().width());
     $("#whiteMPLabel").width($("#manaBar").parent().width());
     $("#whiteExperienceLabel").width($("#experienceBar").parent().width());
+
+    $("#divOnlineUsers .skirmish-user-label").popover({
+        delay: { show: 1000, hide: 100 },
+        placement : "left"
+    });
 };
 
 var showBattle = function() {
@@ -403,7 +408,7 @@ var pollUpdater = {
         }
         // add skirmish user
         else if(action.type == 10) {
-            addSkirmishUser(action.user_name, action.user_label);
+            addSkirmishUser(action.user_name, $(action.user_label));
         }
         // remove skirmish user
         else if(action.type == 11) {

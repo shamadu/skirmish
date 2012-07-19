@@ -288,25 +288,25 @@ class PollBotHandler(BaseHandler):
             result["type"] = action.type
             result["div_action"] = self.render_string("div_action.html", actions=action.args["actions"], spells=action.args["spells"])
         elif action.type == 10: # add skirmish user
-            result = action.args
+            result["type"] = action.type
+            result["user_name"] = action.args["user"].user_name
             result["user_label"] = self.render_string("user_label.html",
                 type=0,
-                user_name=action.args["user_name"],
-                team_name=action.args["team_name"],
+                user=action.args["user"],
                 visible=True)
         elif action.type == 101: # add location user
-            result = action.args
+            result["type"] = action.type
+            result["user_name"] = action.args["user"].user_name
             result["user_label"] = self.render_string("user_label.html",
                 type=action.args["user_type"],
-                user_name=action.args["user_name"],
-                team_name="",
+                user=action.args["user"],
                 visible=True)
         elif action.type == 104: # add online team user
-            result = action.args
+            result["type"] = action.type
+            result["user_name"] = action.args["user"].user_name
             result["user_label"] = self.render_string("user_label.html",
                 type=1,
-                user_name=action.args["user_name"],
-                team_name="",
+                user=action.args["user"],
                 visible=True)
         elif action.type == 202:
             result["type"] = action.args["type"]

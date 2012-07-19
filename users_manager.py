@@ -12,7 +12,7 @@ class UsersManager(Thread):
 # 101 - add new user
 # 102 - remove online user
     def user_online_action(self, user_name, type):
-        return Action(101, {"user_name" : user_name, "user_type" : type})
+        return Action(101, {"user" : self.online_users[user_name], "user_type" : type})
 
     def user_offline_action(self, user_name):
         return Action(102, {"user_name" : user_name})
@@ -21,7 +21,7 @@ class UsersManager(Thread):
         return Action(103, {"user" : user_name, "message" : message})
 
     def user_team_online_action(self, user_name):
-        return Action(104, {"user_name" : user_name})
+        return Action(104, {"user" : self.online_users[user_name]})
 
     def user_team_offline_action(self, user_name):
         return Action(105, {"user_name" : user_name})

@@ -75,8 +75,7 @@ class BattleBot(Thread):
         }
 
     def add_skirmish_user_action(self, user_name):
-        user = self.location_users[user_name]
-        return Action(10, {"user_name" : user.user_name, "team_name" : user.character.team_name})
+        return Action(10, {"user" : self.location_users[user_name]})
 
     def remove_skirmish_user_action(self, user_name):
         return Action(11, {"user_name" : user_name})

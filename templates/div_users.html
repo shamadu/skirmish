@@ -1,29 +1,27 @@
 {% comment skirmish_users, location_team_users, online_team_users, location_users %}
-
 <table class="table-common">
     <tr>
         <td>
             <div id="divOnlineUsers">
                 {% set skirmish_users_names = sorted(skirmish_users.keys()) %}
                 {% for user_name in skirmish_users_names %}
-                    {% set character = skirmish_users[user_name].character %}
-                    {% module Template("user_label.html", type=0, user_name=user_name, team_name=character.team_name, visible=True) %}
+                    {% module Template("user_label.html", type=0, user=skirmish_users[user_name], visible=True) %}
                 {% end %}
                 {% set location_team_users_names = sorted(location_team_users.keys()) %}
                 {% for user_name in location_team_users_names %}
                     {% if user_name in skirmish_users_names %}
-                        {% module Template("user_label.html", type=1, user_name=user_name, team_name="", visible=False) %}
+                        {% module Template("user_label.html", type=1, user=location_team_users[user_name], visible=False) %}
                     {% else %}
-                        {% module Template("user_label.html", type=1, user_name=user_name, team_name="", visible=True) %}
+                        {% module Template("user_label.html", type=1, user=location_team_users[user_name], visible=True) %}
                     {% end %}
                 {% end %}
                 {% set location_users_names = sorted(location_users.keys()) %}
                 {% for user_name in location_users_names %}
                     {% if not user_name in location_team_users_names %}
                         {% if user_name in skirmish_users_names %}
-                            {% module Template("user_label.html", type=2, user_name=user_name, team_name="", visible=False) %}
+                            {% module Template("user_label.html", type=2, user=location_users[user_name], visible=False) %}
                         {% else %}
-                            {% module Template("user_label.html", type=2, user_name=user_name, team_name="", visible=True) %}
+                            {% module Template("user_label.html", type=2, user=location_users[user_name], visible=True) %}
                         {% end %}
                     {% end %}
                 {% end %}
@@ -38,7 +36,7 @@
             <div id="divTeamUsers">
                 {% set online_team_users_names = sorted(online_team_users.keys()) %}
                 {% for user_name in online_team_users_names %}
-                    {% module Template("user_label.html", type=1, user_name=user_name, team_name="", visible=True) %}
+                    {% module Template("user_label.html", type=1, user=online_team_users[user_name], visible=True) %}
                 {% end %}
             </div>
         </td>
