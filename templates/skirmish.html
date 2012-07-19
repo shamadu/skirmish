@@ -82,12 +82,13 @@
                     <td>
                         <button id="joinButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Join") }}</button><button id="leaveButton" style="margin:0 0 0 0;" disabled="disabled">{{ _("Leave") }}</button>
                     </td>
-                    <td><a id="characterAnchor" class="mouse_pointer"><i class="icon-user"></i></a></td>
-                    <td><a id="bagAnchor" class="mouse_pointer"><i class="icon-gift"></i></a></td>
+                    <td><a id="characterAnchor" title="Character Stuff" class="mouse_pointer"><i class="icon-user"></i></a></td>
+                    <td><a id="spellsAnchor" title="Character Spells" class="mouse_pointer"><i class="icon-tint"></i></a></td>
+                    <td><a id="bagAnchor" title="Character Bag" class="mouse_pointer"><i class="icon-gift"></i></a></td>
                     <td><button id="dropButton">{{ _("Drop") }}</button></td>
                 </tr>
                 <tr>
-                    <td colspan="15">
+                    <td colspan="16">
                         <div class="progress progress-bar-experience">
                             <label class="progress-bar-label" id="experienceLabel"></label>
                             <div id="experienceBar" class="bar bar-common bar-experience" style="width: 1%;">
@@ -245,13 +246,14 @@
                                 </tr>
                             </table>
                         </td>
-                        <td>
-                            <h4>{{ _("Character Spells") }}</h4>
-                            <div id="characterSpellDiv">
-                            </div>
-                        </td>
                     </tr>
                 </table>
+            </div>
+            <div id="spellsDivFrame" class="well div-character-info">
+                <button class="close">&times;</button>
+                <h4>{{ _("Character Spells") }}</h4>
+                <div id="characterSpellDiv">
+                </div>
             </div>
             <div id="bagDivFrame" class="well div-character-info">
                 <button class="close">&times;</button>

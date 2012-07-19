@@ -22,8 +22,10 @@ var initialize = function () {
     $("#logoutAnchor").click(logoutFunc);
 
     $("#characterDivFrame").hide();
+    $("#spellsDivFrame").hide();
     $("#bagDivFrame").hide();
     $("#characterAnchor").click(showCharacter);
+    $("#spellsAnchor").click(showSpells);
     $("#bagAnchor").click(showBag);
 
     // hide team users list
@@ -121,7 +123,7 @@ var initialize = function () {
     });
 
     $(".tabClose").live('click', closePrivateChatFunc);
-    $("#characterDivFrame .close, #bagDivFrame .close").click(function() {
+    $("#characterDivFrame .close, #spellsDivFrame .close, #bagDivFrame .close").click(function() {
         $(this).parent().hide();
     });
 
@@ -147,6 +149,13 @@ var showCharacter = function() {
         $("#framesDivContainer").show();
     }
     $("#characterDivFrame").toggle();
+};
+
+var showSpells = function() {
+    if (!$("#framesDivContainer").is(":visible")){
+        $("#framesDivContainer").show();
+    }
+    $("#spellsDivFrame").toggle();
 };
 
 var showBag = function() {

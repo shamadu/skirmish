@@ -4,7 +4,11 @@
         {% for action in actions %}
             {% if action[0] != 2 or len(spells) > 0 %}
                 <tr class="action" action="{{ action[0] }}">
-                    <td>
+                    <td
+                    {% if action[0] == 2 %}
+                            rowspan="2"
+                    {% end %}
+                    >
                         {{ action[1] }}
                     </td>
                     {% if action[0] == 3 %}
@@ -36,7 +40,6 @@
                 </tr>
                     {% if action[0] == 2 and len(spells) > 0 %}
                         <tr class="tr-spells">
-                            <td></td>
                             <td colspan="2">
                                 <table id="spellsTable" class="table-spells">
                                     {% for i in range(len(spells)) %}

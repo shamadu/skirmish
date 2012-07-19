@@ -17,10 +17,10 @@
             {{ _("Level %s") % user.character.level }}
         </td>
         <td>
-            {{ _("%s hp") % user.character.health }}
+            {{ _("Health {0}").format(user.character.health) }}
         </td>
         <td>
-            {{ _("%s mp") % user.character.mana }}
+            {{ _("{0} {1}").format(smarty.get_substance_name(user.character.class_id, user.locale), user.character.health) }}
         </td>
     </tr>
 </table>
