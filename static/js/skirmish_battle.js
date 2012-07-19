@@ -299,33 +299,51 @@ var showTurnInfo = function(turn_info) {
                         $(tr).find(".button-player-select").text(turn_parts[1]);
                         $(tr).find(".button-player-select").val(turn_parts[1]);
                         if (turn_parts[2]) {
-                            $("#spellsTable span[value=\"" + turn_parts[2] + "\"]", $(tr).next()).addClass("active");
+                            span = $("#spellsTable span[value=\"" + turn_parts[2] + "\"]", $(tr).next());
+                            span.addClass("active");
+                            if (span.hasClass("self")) {
+                                $(tr).find(".button-player-select").text($("#nameLabel").text());
+                                $(tr).find(".button-player-select").val($("#nameLabel").text());
+                                $(tr).find(".button-player-select").attr('disabled', 'true');
+                            }
+                            else {
+                                $(tr).find(".button-player-select").removeAttr('disabled');
+                            }
                         }
                         $(".slider", $(tr)).slider("value", parseInt(turn_parts[3]));
                         $(".label-percent-amount", $(tr)).html(turn_parts[3] + "%");
                     }
                 }
                 // if there is no target user - restore turn
-                else {
+/*                else {
                     if (turn_parts[2]) {
                         $("#spellsTable span[value=\"" + turn_parts[2] + "\"]", $(tr).next()).addClass("active");
+                        if (span.hasClass("self")) {
+                            $(tr).find(".button-player-select").text($("#nameLabel").text());
+                            $(tr).find(".button-player-select").val($("#nameLabel").text());
+                            $(tr).find(".button-player-select").attr('disabled', 'true');
+                        }
+                        else {
+                            $(tr).find(".button-player-select").removeAttr('disabled');
+                        }
                     }
                     $(".slider", $(tr)).slider("value", parseInt(turn_parts[3]));
                     $(".label-percent-amount", $(tr)).html(turn_parts[3] + "%");
                 }
+*/
             }
         }
     }
 };
 
 var enableDivAction = function() {
-    $("#divAction select,#divAction button").removeAttr('disabled');
+    $("#divAction button").removeAttr('disabled');
     $("#divAction .slider>div").removeClass('ui-widget-header-disabled');
     $("#cancelButton").attr('disabled', true);
 };
 
 var disableDivAction = function(divAction, turn_info) {
-    $("#divAction select,#divAction button").attr('disabled', true);
+    $("#divAction button").attr('disabled', true);
     $("#divAction .slider>div").addClass('ui-widget-header-disabled');
     $("#cancelButton").removeAttr('disabled');
 };
@@ -374,5 +392,7 @@ var resetButtonClick = function() {
         $(".slider", $("#divAction")).slider("value", 0);
         $("#divAction").parent().parent().find(".label-percent-amount").html("0%");
         $("#spellsTable span.active").removeClass("active");
-        $(".button-player-select").button("reset");
+        $(".button-player-select").each(function() {
+            $(this).text($(this).attr("data-text"));
+        });
 };

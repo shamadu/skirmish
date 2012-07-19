@@ -39,8 +39,8 @@ var initialize = function () {
     $(document.body).mouseup(function(){
         $(".button-player-select.active").each(function(){
             $(this).removeClass("active");
-            $(this).button("reset");
             $(this).val("");
+            $(this).text($(this).attr("data-text"));
         });
     });
     // initialize right click user context menu
