@@ -59,7 +59,7 @@
     left: 5px;
     right: 5px;
     top: 0;
-    bottom: 5px;
+    bottom: 15px;
 }
 
 .div-content {
@@ -404,4 +404,12 @@ button.tabClose {
 
 .div-users {
     white-space: nowrap;
+}
+
+.footer {
+    bottom: 0;
+    font-size: 8px;
+    width: 100%;
+    position: absolute;
+    text-align: center;
 }
