@@ -312,6 +312,19 @@ class PollBotHandler(BaseHandler):
                 type=1,
                 user=action.args["user"],
                 visible=True)
+        elif action.type == 201:
+            result["type"] = action.args["type"]
+            for key in action.args.keys():
+                if key == "right_hand" or key == "left_hand" or key == "head" or key == "body" \
+                or key == "hands" or key == "legs" or key == "feet" or key == "cloak":
+                    result[key] = self.render_item_cell(int(action.args[key]), self.locale)
+                elif key == "bag":
+                    bag = list()
+                    items = action.args["bag"].split(",")
+                    for item_id in items:
+                        bag.append(self.render_item_cell(int(item_id), self.locale))
+                    result["bag"] = bag
+
         elif action.type == 202:
             result["type"] = action.args["type"]
             result["spells_div"] = self.render_string("spells_table.html",
@@ -353,6 +366,18 @@ class PollBotHandler(BaseHandler):
                 self.finish(result)
 
         tornado.ioloop.IOLoop.instance().add_callback(finish_request)
+
+    def render_item_cell(self, item_id, locale):
+        item = items_manager.get_item(item_id, locale)
+        required = item.required_stats.get_required(locale)
+        bonus = item.bonus_stats.get_bonus(locale)
+        classes = item.classes.get_class_names(locale)
+        return self.render_string("item_cell.html",
+            item=item,
+            group_name=items_manager.get_item_group_name(item.type, self.locale),
+            required=", ".join("{0} {1}".format(stat_name, str(required[stat_name])) for stat_name in required.keys()),
+            bonus=", ".join("{0} {1}".format(stat_name, str(bonus[stat_name])) for stat_name in bonus.keys()),
+            classes=", ".join(classes))
 
     def on_connection_close(self):
         if self.current_user in self.users_holder.online_users:

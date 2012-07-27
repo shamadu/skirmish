@@ -1,0 +1,14 @@
+{% comment item - object with properties - id, name, type, required_stats, bonus_stats, price, description %}
+{% comment group_name (text name of group)%}
+{% comment required and bonus are required and bonus stats, classes are classes who can wear it %}
+<table class="table-common table-item-description">
+    <tr><td>{{ item.name }}</td><td>{{ group_name }}</td><td>{{ _("{0} gold").format(item.price) }}</td></tr>
+    {% if required %}
+    <tr><td colspan="3">{{ _("Reguired {0}").format(required) }}</td></tr>
+    {% end %}
+    {% if bonus %}
+    <tr><td colspan="3">{{ _("Bonus {0}").format(bonus) }}</td></tr>
+    {% end %}
+    <tr><td colspan="3">{{ _("Classes: {0}").format(classes) }}</td></tr>
+    <tr><td colspan="3">{{ item.description }}</td></tr>
+</table>

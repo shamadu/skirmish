@@ -183,34 +183,26 @@ def get_bag_items(character, locale):
 
     return items
 
-def get_items(character, locale):
+def get_items(character):
     items = dict()
     if character.right_hand:
-        item = get_item(int(character.right_hand), locale)
-        items["right_hand"] = ":".join([str(item.id), item.name])
+        items["right_hand"] = character.right_hand
     if character.left_hand:
-        item = get_item(int(character.left_hand), locale)
-        items["left_hand"] = ":".join([str(item.id), item.name])
+        items["left_hand"] = character.left_hand
     if character.head:
-        item = get_item(int(character.head), locale)
-        items["head"] = ":".join([str(item.id), item.name])
+        items["head"] = character.head
     if character.body:
-        item = get_item(int(character.body), locale)
-        items["body"] = ":".join([str(item.id), item.name])
+        items["body"] = character.body
     if character.hands:
-        item = get_item(int(character.hands), locale)
-        items["hands"] = ":".join([str(item.id), item.name])
+        items["hands"] = character.hands
     if character.legs:
-        item = get_item(int(character.legs), locale)
-        items["legs"] = ":".join([str(item.id), item.name])
+        items["legs"] = character.legs
     if character.feet:
-        item = get_item(int(character.feet), locale)
-        items["feet"] = ":".join([str(item.id), item.name])
+        items["feet"] = character.feet
     if character.cloak:
-        item = get_item(int(character.cloak), locale)
-        items["bag"] = ":".join([str(item.id), item.name])
+        items["cloak"] = character.cloak
     if character.bag:
-        items["bag"] = ",".join("%s" % ":".join([str(item.id), item.name]) for item in get_bag_items(character, locale))
+        items["bag"] = character.bag
 
     return items
 

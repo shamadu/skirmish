@@ -1,0 +1,4 @@
+{% comment item - object with properties - id, name, type, required_stats, bonus_stats, price, description %}
+{% comment group_name (text name of group)%}
+{% comment required and bonus are required and bonus stats, classes are classes who can wear it %}
+<span value="{{ item.id }}" class="span-item-icon" data-content='{% include "item_popup.html" %}'>{{ item.name }}</span>

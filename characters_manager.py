@@ -67,9 +67,7 @@ class CharactersManager:
         return Action(200, {"character_info" : ":".join(character_info), "battle_character_info" : ":".join(battle_character_info)})
 
     def character_stuff_action(self, user_name):
-        character = self.online_users[user_name].character
-        locale = self.online_users[user_name].locale
-        return Action(201, items_manager.get_items(character, locale))
+        return Action(201, items_manager.get_items(self.online_users[user_name].character))
 
     def character_spells_action(self, user_name):
         character = self.online_users[user_name].character

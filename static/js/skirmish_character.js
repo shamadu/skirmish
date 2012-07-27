@@ -26,18 +26,23 @@ var initialize_character = function() {
 
 var showWornItem = function(itemCell, item) {
     if (item) {
-        // thing[0]:thing[1]
-        // 0 is id, 1 is name
-        thing = item.split(":");
-        itemCell.append("<span value=\"" + thing[0] + "\" class=\"span-item-icon\">" + thing[1] + "</span>");
+        itemCell.append(item);
+        $(itemCell).find("span").popover({
+            delay: { show: 1000, hide: 100 },
+            placement : "top"
+        });
     }
 };
 
 var showBagItems = function(items) {
-    arrItems = items.split(",");
-    for (i = 0; i < arrItems.length; i++) {
-        thing = arrItems[i].split(":");
-        $("#bagStuffTable td:empty:first").append("<span value=\"" + thing[0] + "\" class=\"span-item-icon\">" + thing[1] + "</span>");
+    for (i = 0; i < items.length; i++) {
+        itemCell = $("#bagStuffTable td:empty:first");
+        itemCell.append(items[i]);
+        $(itemCell).find("span").popover({
+            delay: { show: 1000, hide: 100 },
+            placement : "top",
+            content : "AAA"
+        });
     }
 };
 
