@@ -7,6 +7,7 @@
 var initialize_character = function() {
     $("#characterStuffTable span").live({
         contextmenu : function(e){
+            $(".popover").remove();
             $.postJSON('/action', {"action" : "take_off", "item_id" : $(this).attr("value")}, function() {
             });
             return false;
@@ -15,6 +16,7 @@ var initialize_character = function() {
 
     $("#bagStuffTable span").live({
         contextmenu : function(e){
+            $(".popover").remove();
             $.postJSON('/action', {"action" : "put_on", "item_id" : $(this).attr("value")}, function(response) {
                 if (response == "false") {
                 }
