@@ -241,7 +241,7 @@ class ActionHandler(BaseHandler):
                 spell = spells_manager.get_spell(item_id, self.locale)
                 self.write(self.render_string("spell_description.html",
                     spell=spell,
-                    group_name=smarty.get_class_name(spell.class_id, self.locale),
+                    class_name=smarty.get_class_name(spell.class_id, self.locale),
                     substance_name=smarty.get_substance_name(spell.class_id, self.locale)))
             else:
                 self.write(self.render_item_description(item_id, False))

@@ -413,3 +413,7 @@ button.tabClose {
     position: absolute;
     text-align: center;
 }
+
+h4 {
+    white-space: nowrap;
+}

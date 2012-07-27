@@ -1,23 +1,46 @@
 {% comment spells, spells_to_learn = list of Spell objects, substance_name - mana or energy %}
 {% if len(spells) > 0 %}
+{% set spell_row_size = 3 %}
 <h4>{{ _("Already known spells") }}</h4>
-<table id="characterSpellTable" class="table-common">
-    {% for spell in spells %}
-    <tr><td>{{ spell.name }}</td><td>{{ "{0} {1}".format(spell.mana, substance_name.lower()) }}</td><td>{{ spell.description }}</td></tr>
+<table id="characterSpellTable" class="table-spells">
+    {% for i in range(len(spells)) %}
+    {% if i % spell_row_size == 0 %}
+    <tr>
+        {% end %}
+        <td>
+            <span value="{{ spells[i].id }}" class="span-spell-icon
+                    {% if spells[i].is_self %}
+                  self
+                    {% end %}
+                  " title="{{ spells[i].name }}"
+                  data-content='{% module Template("spell_popup.html", spell=spells[i], substance_name=substance_name, show_price=False) %}'
+                    >{{ spells[i].name }}</span>
+        </td>
+        {% if i % spell_row_size == 2 or i + 1 == len(spells) %}
+    </tr>
+    {% end %}
     {% end %}
 </table>
 {% end %}
 {% if len(spells_to_learn) > 0 %}
 <h4>{{ _("Spells you can learn") }}</h4>
-<table id="learnSpellTable" class="table-common">
-    {% for spell in spells_to_learn %}
+<table id="learnSpellTable" class="table-spells">
+    {% for i in range(len(spells_to_learn)) %}
+    {% if i % spell_row_size == 0 %}
     <tr>
-        <td>{{ spell.name }}</td>
-        <td>{{ _("Spell price: {0}").format(spell.price) }}</td>
-        <td>{{ _("Required level: {0}").format(spell.required_level) }}</td>
-        <td>{{ spell.description }}</td>
-        <td><button id="learnButton" spell_id="{{ spell.id }}">{{ _("Learn") }}</button></td>
+        {% end %}
+        <td>
+            <span value="{{ spells_to_learn[i].id }}" class="span-spell-icon
+                    {% if spells_to_learn[i].is_self %}
+                  self
+                    {% end %}
+                  " title="{{ spells_to_learn[i].name }}"
+                  data-content='{% module Template("spell_popup.html", spell=spells_to_learn[i], substance_name=substance_name, show_price=True) %}'
+                    >{{ spells_to_learn[i].name }}</span>
+        </td>
+        {% if i % spell_row_size == spell_row_size - 1 or i + 1 == len(spells_to_learn) %}
     </tr>
     {% end %}
-{% end %}
+    {% end %}
 </table>
+{% end %}

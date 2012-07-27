@@ -46,6 +46,7 @@ var showBagItems = function(items) {
 };
 
 var learnSpellFunc = function() {
-    $.postJSON('/action', {"action" : "learn_spell", "spell_id" : $(this).attr("spell_id")}, function(response) {
+    $.postJSON('/action', {"action" : "learn_spell", "spell_id" : $(this).attr("value")}, function(response) {
     });
+    $(".popover").remove();
 };

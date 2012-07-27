@@ -546,7 +546,11 @@ var pollUpdater = {
         else if (action.type == 202) {
             $("#characterSpellDiv").empty();
             $("#characterSpellDiv").append(action.spells_div);
-            $("#learnSpellTable button").click(learnSpellFunc);
+            $("#characterSpellDiv span").popover({
+                delay: { show: 1000, hide: 100 },
+                placement : "top"
+            });
+            $("#learnSpellTable span").click(learnSpellFunc);
         }
         // show create team div
         else if (action.type == 203) {

@@ -1,0 +1,20 @@
+{% comment spell - object with properties - id, name, class_id, required_level, mana, price, description %}
+{% comment substance_name, show_price (if true - show spell learn price) %}
+<table class="table-common table-item-description">
+    <tr>
+        <td>{{ spell.name }}</td>
+        {% if show_price %}
+        <td>{{ _("{0} gold").format(spell.price) }}</td>
+        {% end %}
+        <td>{{ _("{0} {1}").format(spell.mana, substance_name.lower()) }}</td>
+    </tr>
+    <tr>
+        <td
+                {% if show_price %}
+                colspan="3"
+                {% else %}
+                colspan="2"
+                {% end %}
+                >{{ spell.description }}</td>
+    </tr>
+</table>
