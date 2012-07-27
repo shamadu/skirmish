@@ -10,10 +10,10 @@
     <title>{{ _("Skirmish") }}</title>
     <link href="../static/css/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="../static/css/jquery-ui-1.8.21.custom.css" rel="stylesheet" type="text/css">
-    <link href="../static/css/skirmish.css" rel="stylesheet" type="text/css">
-    <link href="../static/css/div-action.css" rel="stylesheet" type="text/css">
     <link href="../static/css/lib-correction.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/div-action.css" rel="stylesheet" type="text/css">
     <link href="../static/css/top-bar.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/skirmish.css" rel="stylesheet" type="text/css">
     <script src="../static/js/jquery-1.7.2.min.js" type="text/javascript"></script>
     <script src="../static/js/jquery-ui-1.8.21.custom.min.js" type="text/javascript"></script>
     <script src="../static/js/bootstrap.js" type="text/javascript"></script>
@@ -185,90 +185,90 @@
             <div id="dbItemDescriptions">
             </div>
         </div>
-        <div id="framesDivContainer" class="div-content div-frames-container">
-            <div id="characterDivFrame" class="well div-character-info">
-                <button class="close">&times;</button>
-                <table class="table-common table-content-holder" style="padding-right: 20px;">
-                    <tr><td colspan="2"><h4>{{ _("Character") }}</h4></td></tr>
-                    <tr>
-                        <td>
-                            <table class="table-common">
-                                <tr><td>{{ _("Strength") }}</td><td><label id="battleStrengthLabel"></label></td><td>/</td><td><label id="strengthLabel"></label></td></tr>
-                                <tr><td>{{ _("Dexterity") }}</td><td><label id="battleDexterityLabel"></label></td><td>/</td><td><label id="dexterityLabel"></label></td></tr>
-                                <tr><td>{{ _("Intellect") }}</td><td><label id="battleIntellectLabel"></label></td><td>/</td><td><label id="intellectLabel"></label></td></tr>
-                                <tr><td>{{ _("Wisdom") }}</td><td><label id="battleWisdomLabel"></label></td><td>/</td><td><label id="wisdomLabel"></label></td></tr>
-                                <tr><td>{{ _("Constitution") }}</td><td><label id="battleConstitutionLabel"></label></td><td>/</td><td><label id="constitutionLabel"></label></td></tr>
-                                <tr><td>{{ _("Attack") }}</td><td><label id="battleAttackLabel"></label></td><td>/</td><td><label id="attackLabel"></label></td></tr>
-                                <tr><td>{{ _("Defence") }}</td><td><label id="battleDefenceLabel"></label></td><td>/</td><td><label id="defenceLabel"></label></td></tr>
-                                <tr><td>{{ _("Magic attack") }}</td><td><label id="battleMagicAttackLabel"></label></td><td>/</td><td><label id="magicAttackLabel"></label></td></tr>
-                                <tr><td>{{ _("Magic defence") }}</td><td><label id="battleMagicDefenceLabel"></label></td><td>/</td><td><label id="magicDefenceLabel"></label></td></tr>
-                                <tr><td>{{ _("Armor") }}</td><td><label id="battleArmorLabel"></label></td><td>/</td><td><label id="armorLabel"></label></td></tr>
-                                <tr><td>{{ _("Team") }}</td><td colspan="3"><label id="teamLabel"></label></td></tr>
-                                <tr><td>{{ _("Rank") }}</td><td colspan="3"><label id="rankLabel"></label></td></tr>
-                            </table>
-                        </td>
-                        <td>
-                            <table id="characterStuffTable" class="table-common table-character-stuff">
-                                <tr>
-                                    <td id="headCell"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td id="cloakCell"></td>
-                                </tr>
-                                <tr>
-                                    <td id="bodyCell"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td id="legsCell"></td>
-                                </tr>
-                                <tr>
-                                    <td id="handsCell"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td id="feetCell"></td>
-                                </tr>
-                                <tr>
-                                    <td id="right_ringCell"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td id="left_ringCell"></td>
-                                </tr>
-                                <tr>
-                                    <td id="right_handCell"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td id="left_handCell"></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div id="spellsDivFrame" class="well div-character-info">
-                <button class="close">&times;</button>
-                <div id="characterSpellDiv">
-                </div>
-            </div>
-            <div id="bagDivFrame" class="well div-character-info">
-                <button class="close">&times;</button>
-                <table class="table-common table-content-holder">
-                    <tr><td><h4>{{ _("Bag") }}</h4></td></tr>
-                    <tr>
-                        <td>
-                            <table id="bagStuffTable" class="table-common table-bag-stuff">
-                                <tr><td></td><td></td><td></td><td></td></tr>
-                                <tr><td></td><td></td><td></td><td></td></tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+
+        <div id="characterDivFrame" class="ui-widget-content well div-frame">
+            <button class="close">&times;</button>
+            <table class="table-common table-content-holder" style="padding-right: 20px;">
+                <tr><td colspan="2"><h4>{{ _("Character") }}</h4></td></tr>
+                <tr>
+                    <td>
+                        <table class="table-common">
+                            <tr><td>{{ _("Strength") }}</td><td><label id="battleStrengthLabel"></label></td><td>/</td><td><label id="strengthLabel"></label></td></tr>
+                            <tr><td>{{ _("Dexterity") }}</td><td><label id="battleDexterityLabel"></label></td><td>/</td><td><label id="dexterityLabel"></label></td></tr>
+                            <tr><td>{{ _("Intellect") }}</td><td><label id="battleIntellectLabel"></label></td><td>/</td><td><label id="intellectLabel"></label></td></tr>
+                            <tr><td>{{ _("Wisdom") }}</td><td><label id="battleWisdomLabel"></label></td><td>/</td><td><label id="wisdomLabel"></label></td></tr>
+                            <tr><td>{{ _("Constitution") }}</td><td><label id="battleConstitutionLabel"></label></td><td>/</td><td><label id="constitutionLabel"></label></td></tr>
+                            <tr><td>{{ _("Attack") }}</td><td><label id="battleAttackLabel"></label></td><td>/</td><td><label id="attackLabel"></label></td></tr>
+                            <tr><td>{{ _("Defence") }}</td><td><label id="battleDefenceLabel"></label></td><td>/</td><td><label id="defenceLabel"></label></td></tr>
+                            <tr><td>{{ _("Magic attack") }}</td><td><label id="battleMagicAttackLabel"></label></td><td>/</td><td><label id="magicAttackLabel"></label></td></tr>
+                            <tr><td>{{ _("Magic defence") }}</td><td><label id="battleMagicDefenceLabel"></label></td><td>/</td><td><label id="magicDefenceLabel"></label></td></tr>
+                            <tr><td>{{ _("Armor") }}</td><td><label id="battleArmorLabel"></label></td><td>/</td><td><label id="armorLabel"></label></td></tr>
+                            <tr><td>{{ _("Team") }}</td><td colspan="3"><label id="teamLabel"></label></td></tr>
+                            <tr><td>{{ _("Rank") }}</td><td colspan="3"><label id="rankLabel"></label></td></tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table id="characterStuffTable" class="table-common table-character-stuff">
+                            <tr>
+                                <td id="headCell"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td id="cloakCell"></td>
+                            </tr>
+                            <tr>
+                                <td id="bodyCell"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td id="legsCell"></td>
+                            </tr>
+                            <tr>
+                                <td id="handsCell"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td id="feetCell"></td>
+                            </tr>
+                            <tr>
+                                <td id="right_ringCell"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td id="left_ringCell"></td>
+                            </tr>
+                            <tr>
+                                <td id="right_handCell"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td id="left_handCell"></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="spellsDivFrame" class="ui-widget-content well div-frame">
+            <button class="close">&times;</button>
+            <div id="characterSpellDiv">
             </div>
         </div>
+        <div id="bagDivFrame" class="ui-widget-content well div-frame">
+            <button class="close">&times;</button>
+            <table class="table-common table-content-holder">
+                <tr><td><h4>{{ _("Bag") }}</h4></td></tr>
+                <tr>
+                    <td>
+                        <table id="bagStuffTable" class="table-common table-bag-stuff">
+                            <tr><td></td><td></td><td></td><td></td></tr>
+                            <tr><td></td><td></td><td></td><td></td></tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
     </div>
     <div id="vmenu" class="vmenu">
         <div id="privateChatMenuItem" class="first_li">{{ _("Open private chat") }}</div>

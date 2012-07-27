@@ -28,6 +28,10 @@ var initialize = function () {
     $("#spellsAnchor").click(showSpells);
     $("#bagAnchor").click(showBag);
 
+    $( "#characterDivFrame" ).draggable({ handle : "h4", containment: "parent" });
+    $( "#spellsDivFrame" ).draggable({ handle : "h4", containment: "parent" });
+    $( "#bagDivFrame" ).draggable({ handle : "h4", containment: "parent" });
+
     // hide team users list
     $("#divTeamUsers").hide();
 
@@ -145,23 +149,14 @@ var showBattle = function() {
 };
 
 var showCharacter = function() {
-    if (!$("#framesDivContainer").is(":visible")){
-        $("#framesDivContainer").show();
-    }
     $("#characterDivFrame").toggle();
 };
 
 var showSpells = function() {
-    if (!$("#framesDivContainer").is(":visible")){
-        $("#framesDivContainer").show();
-    }
     $("#spellsDivFrame").toggle();
 };
 
 var showBag = function() {
-    if (!$("#framesDivContainer").is(":visible")){
-        $("#framesDivContainer").show();
-    }
     $("#bagDivFrame").toggle();
 };
 

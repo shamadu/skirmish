@@ -387,16 +387,15 @@ button.tabClose {
     color: #ffffff;
 }*/
 
-.div-character-info,
+.div-frame,
 .div-frames-container {
     width: auto;
     height: auto;
-    top: 100px;
-    right: auto;
     padding: 5px;
 }
 
-.div-character-info {
+.div-frame {
+    position: absolute;
     background-color: #ffffff;
     float: left;
     margin-right: 5px;
@@ -414,6 +413,9 @@ button.tabClose {
     text-align: center;
 }
 
-h4 {
+#characterDivFrame h4,
+#spellsDivFrame h4,
+#bagDivFrame h4 {
     white-space: nowrap;
+    cursor: move;
 }
