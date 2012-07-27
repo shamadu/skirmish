@@ -40,8 +40,7 @@ var showBagItems = function(items) {
         itemCell.append(items[i]);
         $(itemCell).find("span").popover({
             delay: { show: 1000, hide: 100 },
-            placement : "top",
-            content : "AAA"
+            placement : "top"
         });
     }
 };
